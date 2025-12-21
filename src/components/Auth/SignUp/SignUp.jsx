@@ -7,6 +7,7 @@ import isValidEmail from "../../../utils/emailVerfier.js";
 import { Eye, EyeClosed } from "lucide-react";
 import getNextPasswordRule from "../../../utils/passwordNextRule.js";
 import usePost from "../../../hooks/usePost.js";
+import toast from "react-hot-toast";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -50,26 +51,35 @@ export default function SignUp() {
     setShowPassword((prev) => !prev);
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if( !formData.email || !isValidEmail(formData.email) ) {
+    // Email validation
+    if (!formData.email || !isValidEmail(formData.email)) {
       setEmailError("Please enter a valid email before submitting.");
       return;
     }
+
+    // Password validation
     const passwordMessage = getNextPasswordRule(formData.password);
-    if( !formData.password || passwordMessage ) {
+    if (!formData.password || passwordMessage) {
       setPasswordError("Please enter a valid password before submitting.");
       return;
     }
 
-    const response =await  postData();
+    try {
+      const response = await postData();
+      toast.success(
+        response.message || "Verify your email!."
+      );
+    } catch (error) {
+      const message =
+        error?.response?.data?.message ||
+        "Something went wrong. Please try again.";
 
-    console.log(response);
-
-
-  }
+      toast.error(message);
+    }
+  };
 
   return (
     <section className="signup">
@@ -115,7 +125,7 @@ export default function SignUp() {
                 />
               </div>
 
-              <button  className="signup-btn" onClick={handleSubmit}>
+              <button className="signup-btn" onClick={handleSubmit}>
                 Sign Up
               </button>
             </form>

@@ -10,7 +10,6 @@ const usePost = (url, data) => {
       });
       return response.data;
     } catch (error) {
-      console.error("Error posting data:", error);
       throw error;
     }
   };

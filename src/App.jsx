@@ -2,10 +2,12 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Protect from "./components/Protect.jsx";
 import SignUp from "./components/Auth/SignUp/SignUp.jsx";
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <>
+      <Toaster position="top-right" reverseOrder={false} />  
       <BrowserRouter>
         <Routes>
           <Route
@@ -16,11 +18,15 @@ function App() {
           ></Route>
 
            <Route
-            path="/login"
+            path="/sign-up"  
             element={
               <SignUp/>
             }
           ></Route>
+
+          <Route path="/login"  element={<div>Login Page</div>}>
+            
+          </Route>
         </Routes>
       </BrowserRouter>
     </>
