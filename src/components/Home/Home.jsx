@@ -2,7 +2,7 @@ import useAuthRedirect from "../../hooks/useAuthRedirect";
 
 const Home = () => {
 
-    useAuthRedirect();
+    useAuthRedirect("/");
   return (
     <div>Home</div>
   )

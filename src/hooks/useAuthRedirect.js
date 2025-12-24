@@ -4,35 +4,38 @@ import { useSelector, useDispatch } from "react-redux";
 import useGet from "./useGet";
 import { setUserInfo, clearUserInfo } from "../redux/reducers/user";
 
-const useAuthRedirect = () => {
+const useAuthRedirect = (path) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.userInfo);
 
   const token = localStorage.getItem("token");
 
-  //^ FETCH USER
+  //^ Fetch user only if token exists
   const { data, loading, error } = useGet(
     token ? "/user" : null,
     [token]
   );
 
-  //^ STORE USER IN REDUX
+  //^ Store user in redux
   useEffect(() => {
     if (data) {
       dispatch(setUserInfo(data));
     }
   }, [data, dispatch]);
 
-  //^ HANDLE REDIRECT LOGIC
+  //^ Redirect logic
   useEffect(() => {
+    //^ No token → login
     if (!token) {
       navigate("/login");
       return;
     }
 
+    //^ Wait until API finishes
     if (loading) return;
 
+    //^ API error → logout
     if (error) {
       dispatch(clearUserInfo());
       localStorage.removeItem("token");
@@ -40,10 +43,17 @@ const useAuthRedirect = () => {
       return;
     }
 
+    //^ Profile incomplete
     if (user && !user.username) {
       navigate("/complete-profile");
+      return;
     }
-  }, [token, loading, error, user, navigate, dispatch]);
+
+    //^ Everything OK → go to requested path
+    if (user && path) {
+      navigate(path);
+    }
+  }, [token, loading, error, user, path, navigate, dispatch]);
 };
 
 export default useAuthRedirect;

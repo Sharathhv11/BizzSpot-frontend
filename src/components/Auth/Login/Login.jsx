@@ -141,9 +141,15 @@ export default function Login() {
                     )
                   }
                   onIconClick={togglePassword}
+                  errorStatus={null}
                 />
               </div>
 
+                <div className="login-forgot-password-container">
+                  <Link to="/forgot-password" className="forgot-link">
+                    Forgot Password?
+                  </Link>
+                </div>
               <div className="sign-btn-container">
                 {
                  
@@ -154,7 +160,6 @@ export default function Login() {
                 </button>
                   
                 }
-
                 <button
                   type="button"
                   className="google-btn"

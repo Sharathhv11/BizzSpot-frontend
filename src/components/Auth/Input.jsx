@@ -9,8 +9,11 @@ export default function Input({
   onChange,
   errorStatus,
   icon,          
-  onIconClick,    
+  onIconClick,
+      
 }) {
+
+  
   return (
     <div className="auth-ip-container">
       {label && <h1 className="auth-ip-label">{label}</h1>}
@@ -37,11 +40,12 @@ export default function Input({
         )}
       </div>
 
+      {errorStatus !== null && (
       <div className="auth-ip-error-box">
         {errorStatus && (
           <span className="auth-ip-error-text">{errorStatus}</span>
         )}
-      </div>
+      </div> )}
     </div>
   );
 }

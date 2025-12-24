@@ -166,6 +166,18 @@
   height: 30px;
 }
 
+.login-forgot-password-container{
+  height: 15px ;
+  text-align: right;
+  margin:6px 0;
+  font-size: 13px;
+  color :#1e49f8;
+  font-weight:500;
+  cursor: pointer;
+}
+.login-forgot-password-container:hover{
+  text-decoration: underline;
+}
 
 /* RESPONSIVE */
 @media (max-width: 1300px) {
