@@ -1,7 +1,8 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Protect from "./components/Protect.jsx";
 import SignUp from "./components/Auth/SignUp/SignUp.jsx";
+import Login from "./components/Auth/Login/Login.jsx";
+import Home from "./components/Home/Home.jsx";
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -13,7 +14,7 @@ function App() {
           <Route
             path="/"
             element={
-              <Protect/>
+              <Home/>
             }
           ></Route>
 
@@ -24,7 +25,7 @@ function App() {
             }
           ></Route>
 
-          <Route path="/login"  element={<div>Login Page</div>}>
+          <Route path="/login"  element={<Login />}>
             
           </Route>
         </Routes>

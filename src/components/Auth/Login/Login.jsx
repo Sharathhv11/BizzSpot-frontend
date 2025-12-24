@@ -1,29 +1,33 @@
 import { useState, useEffect } from "react";
-import "./../Auth.css";
+import "./../Auth.css"; // reuse same CSS
 import banner from "./../../../assets/bannerSignup.png";
 import logo from "./../../../assets/logo.png";
 import Input from "../Input";
 import isValidEmail from "../../../utils/emailVerfier.js";
 import { Eye, EyeOff, Mail,LoaderCircle } from "lucide-react";
-import getNextPasswordRule from "../../../utils/passwordNextRule.js";
 import usePost from "../../../hooks/usePost.js";
 import toast from "react-hot-toast";
 import googleIcon from "../../../assets/google.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-export default function SignUp() {
+
+export default function Login() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  document.title = "BizSpot | Sign Up";
+  document.title = "BizSpot | Login";
 
   const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const { postData, responseData, error, loading } = usePost();
+  const navigate = useNavigate();
+
+  //^  usePost hook for posting the login information 
+
+   const { postData, responseData, error, loading } = usePost();
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,52 +37,49 @@ export default function SignUp() {
     }));
   };
 
+  /* Email validation only */
   useEffect(() => {
     const timeout = setTimeout(() => {
-      /* EMAIL */
       const email = formData.email.trim();
       if (email && !isValidEmail(email)) {
         setEmailError("Email is not valid");
       } else {
         setEmailError("");
       }
-
-      /* PASSWORD (one rule at a time) */
-      const passwordMessage = getNextPasswordRule(formData.password);
-      setPasswordError(passwordMessage);
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [formData.email, formData.password]);
+  }, [formData.email]);
 
   const togglePassword = () => {
     setShowPassword((prev) => !prev);
   };
 
-  //^ Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    //!Email validation
     if (!formData.email || !isValidEmail(formData.email)) {
-      setEmailError("Please enter a valid email before submitting.");
+      setEmailError("Please enter a valid email.");
       return;
     }
 
-    //!Password validation
-    const passwordMessage = getNextPasswordRule(formData.password);
-    if (!formData.password || passwordMessage) {
-      setPasswordError("Please enter a valid password before submitting.");
+    if (!formData.password) {
+      toast.error("Please enter your password.");
       return;
     }
 
     try {
-      const response = await postData("/auth/sign-up", formData);
-      toast.success(response.message || "An Email has been sent to your inbox!");
+
+      const response = await postData("/auth/login",formData);
+     
+      localStorage.setItem("token", response.token);
+      toast.success(response.message || "Login successful!");
+
+      navigate("/");
     } catch (error) {
       const message =
         error?.response?.data?.message ||
-        "Something went wrong. Please try again.";
+        "Invalid email or password.";
 
       toast.error(message);
     }
@@ -99,11 +100,12 @@ export default function SignUp() {
             <img src={logo} alt="BizzSpot Logo" />
           </div>
 
+          {/* Heading */}
           <div className="sign-heading-container">
-            <h1>Create your BizzSpot account</h1>
+            <h1>Welcome back to BizzSpot</h1>
             <p>
-              Sign up to manage your business presence and connect with
-              customers effortlessly.
+              Login to manage your business and stay connected with your
+              customers.
             </p>
           </div>
 
@@ -139,33 +141,43 @@ export default function SignUp() {
                     )
                   }
                   onIconClick={togglePassword}
-                  errorStatus={passwordError}
                 />
               </div>
 
               <div className="sign-btn-container">
+                {
+                 
                 <button className="signup-btn" onClick={handleSubmit}>
-                 { loading ? <LoaderCircle className="animate-spin" color="white" /> : "Sign Up"}
+                  {
+                     loading ? <LoaderCircle className="animate-spin" color="white" /> : "Login"
+                  }
                 </button>
+                  
+                }
+
                 <button
                   type="button"
                   className="google-btn"
                   onClick={() => {
-                    console.log("oauth");
+                    console.log("google oauth login");
                   }}
                 >
-                  <img src={googleIcon} alt="Google" className="google-icon" />
+                  <img
+                    src={googleIcon}
+                    alt="Google"
+                    className="google-icon"
+                  />
                   Continue with Google
                 </button>
               </div>
             </form>
           </div>
 
-          {/*footer */}
+          {/* Footer */}
           <div className="sign-footer">
-            <Link to="/login">
+            <Link to="/sign-up">
               <h3>
-                Do have an Account? <span>Login In</span>
+                Don’t have an account? <span>Sign Up</span>
               </h3>
             </Link>
           </div>
