@@ -1,150 +1,162 @@
-import { useState } from "react";
-import useAuthRedirect from "../../../hooks/useAuthRedirect";
-import axiosInstance from "../../../APIs/AxiosInstance";
-import toast from "react-hot-toast";
+import { useState, useEffect } from "react";
 import "./completeProfile.css";
-
-const interestsList = [
-  "Clothing Store",
-  "Electronics",
-  "Mobile Store",
-  "Furniture",
-  "Restaurant",
-  "Cafe",
-  "Bakery",
-  "IT Services",
-  "Marketing Agency",
-  "Hospital",
-  "Clinic",
-  "Fitness Centre",
-];
+import nullProfile from "./../../../assets/noDp.png";
+import { Pencil, Phone, User, UserCheck } from "lucide-react";
+import Input from "./../Input.jsx";
 
 const CompleteProfile = () => {
-  useAuthRedirect("/");
-
   const [formData, setFormData] = useState({
-    name: "",
-    username: "",
-    phone_no: "",
-    interest: [],
-    profilePicture: "",
+    name: null,
+    username: null,
+    phone_no: null,
   });
 
-  const [loading, setLoading] = useState(false);
-
-  // 🔹 Handle text input
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // 🔹 Toggle interest buttons
-  const toggleInterest = (item) => {
     setFormData((prev) => ({
       ...prev,
-      interest: prev.interest.includes(item)
-        ? prev.interest.filter((i) => i !== item)
-        : [...prev.interest, item],
+      [name]: value,
     }));
   };
 
-  // 🔹 Submit profile
-  const handleSubmit = async () => {
-    if (!formData.name || !formData.username || !formData.phone_no) {
-      toast.error("Please fill all required fields");
-      return;
-    }
-
-    if (formData.interest.length === 0) {
-      toast.error("Select at least one interest");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      await axiosInstance.patch("/user/complete-profile", formData);
-      toast.success("Profile completed successfully");
-      window.location.href = "/";
-    } catch (err) {
-      toast.error(err?.response?.data?.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const categories = [
+    "Clothing Store",
+    "Electronics",
+    "Mobile Store",
+    "Furniture",
+    "Jewellery",
+    "Home Appliances",
+    "Supermarket",
+    "Grocery Store",
+    "Footwear",
+    "Cosmetics",
+    "Restaurant",
+    "Cafe",
+    "Bakery",
+    "Fast Food",
+    "Catering Service",
+    "Hotel",
+    "Resort",
+    "Salon",
+    "Spa",
+    "Car Repair",
+    "Bike Repair",
+    "Plumber",
+    "Electrician",
+    "House Cleaning",
+    "Pest Control",
+    "Laundry Service",
+    "Internet Service",
+    "Printing Service",
+    "School",
+    "College",
+    "Coaching Centre",
+    "Tuition Centre",
+    "Training Institute",
+    "Computer Institute",
+    "Hospital",
+    "Clinic",
+    "Pharmacy",
+    "Diagnostic Lab",
+    "Fitness Centre",
+    "Yoga Studio",
+    "Cricket Club",
+    "Gaming Zone",
+    "Playground",
+    "Cinema",
+    "Mall",
+    "Real Estate",
+    "Finance",
+    "Insurance",
+    "Consulting",
+    "IT Services",
+    "Marketing Agency",
+    "Event Management",
+    "Photography Service",
+  ];
 
   return (
-    <div className="profile-page">
-      {/* LEFT PANEL */}
-      <div className="profile-left">
-        <div className="avatar-box">
-          <img
-            src={
-              formData.profilePicture ||
-              "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-            }
-            alt="Profile"
-          />
-        </div>
+   <section className="Complete-profile-section">
+  <div className="profile-header">
+    <h1>Complete your profile information</h1>
+  </div>
 
-        <input
-          type="text"
-          name="profilePicture"
-          placeholder="Profile Image URL"
-          value={formData.profilePicture}
-          onChange={handleChange}
-        />
-
-        <input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          value={formData.name}
-          onChange={handleChange}
-        />
-
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={formData.username}
-          onChange={handleChange}
-        />
-
-        <input
-          type="text"
-          name="phone_no"
-          placeholder="Phone Number"
-          value={formData.phone_no}
-          onChange={handleChange}
-        />
-
-        <button onClick={handleSubmit} disabled={loading}>
-          {loading ? "Saving..." : "Save & Continue"}
+  <div className="profile-content">
+    <div className="profile-form-container">
+      <div className="dp-container">
+        <img src={nullProfile} alt="profile" />
+        <button type="button">
+          <Pencil className="w-4 h-4" color="black" />
         </button>
       </div>
 
-      {/* RIGHT PANEL */}
-      <div className="profile-right">
-        <h2>Select Your Interests</h2>
-        <p>You can choose multiple</p>
+      <div className="form-container">
+        <form className="profile-form">
+          <Input
+            label="name"
+            id="name"
+            type="text"
+            name="name"
+            placeholder="Enter your full name"
+            value={formData.name}
+            onChange={handleChange}
+            icon={<User strokeWidth={0.5} />}
+          />
 
-        <div className="interest-grid">
-          {interestsList.map((item) => (
-            <button
-              key={item}
-              className={
-                formData.interest.includes(item)
-                  ? "interest-btn active"
-                  : "interest-btn"
-              }
-              onClick={() => toggleInterest(item)}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
+          <Input
+            label="username"
+            id="username"
+            type="text"
+            name="username"
+            placeholder="Enter your username"
+            value={formData.username}
+            onChange={handleChange}
+            icon={<UserCheck strokeWidth={0.5} />}
+          />
+
+          <Input
+            label="phone_no"
+            id="phone_no"
+            type="text"
+            name="phone_no"
+            placeholder="Enter your phone number"
+            value={formData.phone_no}
+            onChange={handleChange}
+            icon={<Phone strokeWidth={0.5} />}
+          />
+
+          <div className="mobile-interest-heading">
+            <h1>Select your interests</h1>
+          </div>
+
+          <div className="category-container category-container-phone">
+            {categories.map((category, index) => (
+              <button key={index} type="button" className="category-item">
+                {category}
+              </button>
+            ))}
+          </div>
+        </form>
+
+        <button className="submit-btn">Complete profile</button>
       </div>
     </div>
+
+    <div className="interest-container">
+      <h1>Select your interests</h1>
+      <div className="category-container">
+        {categories.map((category, index) => (
+          <button key={index} type="button" className="category-item">
+            {category}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
   );
 };
 
