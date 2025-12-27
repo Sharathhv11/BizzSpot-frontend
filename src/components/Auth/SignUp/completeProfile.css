@@ -8,7 +8,7 @@
 
 .profile-header {
   padding: 20px 30px;
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 0.5px solid #eaeaea;
   text-align: center;
 }
 
@@ -45,25 +45,28 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+  object-position: top;
 }
 
 .dp-container button {
   position: absolute;
-  bottom: 5px;
-  right: 5px;
+  bottom: 10px;
+  right: 22px;
   height: 30px;
   width: 30px;
   border-radius: 50%;
   border: none;
-  background: rgba(179, 179, 179, 0.5);
+  background: rgb(255, 255, 255);
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  overflow:hidden;
+  border:0.5px solid #ccc;
 }
 
 .dp-container button:hover {
-  background: rgba(150, 150, 150, 0.7);
+  background: rgba(255, 255, 255, 0.916);
 }
 
 .form-container {
@@ -128,6 +131,20 @@
   background: #e0e7ff;
 }
 
+.category-item-selected {
+  padding: 10px 15px;
+  border-radius: 20px;
+  border: none;
+  background: #c7d2fe;
+  color: #1e40af;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
 .category-container-phone {
   display: none;
   max-height: 200px;
@@ -145,6 +162,9 @@
   color: #444;
   font-family: 'Poppins', sans-serif;
 }
+
+
+
 
 @media (width <= 1000px) {
   .profile-header {

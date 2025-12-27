@@ -16,7 +16,7 @@ export default function Input({
   
   return (
     <div className="auth-ip-container">
-      {label && <h1 className="auth-ip-label">{label}</h1>}
+      {label && <h1 className="auth-ip-label">{label[0].toUpperCase() + label.slice(1)}</h1>}
 
       <div className={`auth-ip-wrapper ${icon ? "has-icon" : ""}`}>
         <input
