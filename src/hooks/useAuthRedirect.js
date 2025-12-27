@@ -17,10 +17,12 @@ const useAuthRedirect = (path) => {
     [token]
   );
 
+  
+
   //^ Store user in redux
   useEffect(() => {
     if (data) {
-      dispatch(setUserInfo(data));
+      dispatch(setUserInfo(data?.data));
     }
   }, [data, dispatch]);
 

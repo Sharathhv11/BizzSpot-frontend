@@ -3,8 +3,21 @@ import "./completeProfile.css";
 import nullProfile from "./../../../assets/noDp.png";
 import { Pencil, Phone, User, UserCheck, X } from "lucide-react";
 import Input from "./../Input.jsx";
+import usePatch from "./../../../hooks/usePatch.js";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const CompleteProfile = () => {
+  //& verify the user is allowed to route usefull for page refresh
+
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!userInfo) navigate("/");
+  }, [userInfo, navigate]);
+
   const [formData, setFormData] = useState({
     name: "",
     username: "",
@@ -15,6 +28,8 @@ const CompleteProfile = () => {
   const fileRef = useRef();
 
   const [imagePreview, setImagePreview] = useState(null);
+
+  const { patchData, responseData, error, loading } = usePatch();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -80,7 +95,47 @@ const CompleteProfile = () => {
     "Photography Service",
   ];
 
-  const handleInterest = (e) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!userInfo?.id) return;
+
+    const payload = new FormData();
+
+    if (formData.name) {
+      payload.append("name", formData.name);
+    }
+
+    if (formData.username) {
+      payload.append("username", formData.username);
+    }
+
+    if (formData.phone_no) {
+      payload.append("phone_no", formData.phone_no);
+    }
+
+    if (formData.interest.length) {
+      formData.interest.forEach((item) => payload.append("interest", item));
+    }
+
+    if (fileRef.current?.files?.[0]) {
+      payload.append("profilePicture", fileRef.current.files[0]);
+    }
+
+    try {
+      const response = await patchData(`/user/${userInfo.id}`, payload, {
+        "Content-Type": "multipart/form-data",
+      });
+
+      toast.success("Profile information updated successfully")
+      navigate("/");
+      
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleInterest  = (e) => {
     const selectedInterest = e.target.innerText;
     if (selectedInterest && !formData.interest.includes(selectedInterest)) {
       setFormData((prev) => ({
@@ -156,12 +211,15 @@ const CompleteProfile = () => {
               <Input
                 label="phone_no"
                 id="phone_no"
-                type="text"
+                type="tel"
                 name="phone_no"
                 placeholder="Enter your phone number"
                 value={formData.phone_no}
                 onChange={handleChange}
                 icon={<Phone strokeWidth={0.5} />}
+                pattern="[0-9]{10}"
+                maxLength={10}
+                inputMode="numeric"
               />
 
               <div className="mobile-interest-heading">
@@ -208,7 +266,9 @@ const CompleteProfile = () => {
               </div>
             </form>
 
-            <button className="submit-btn">Complete profile</button>
+            <button className="submit-btn" onClick={handleSubmit}>
+              Complete profile
+            </button>
           </div>
         </div>
 

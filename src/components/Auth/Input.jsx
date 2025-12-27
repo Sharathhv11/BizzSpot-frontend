@@ -10,6 +10,7 @@ export default function Input({
   errorStatus,
   icon,          
   onIconClick,
+  ...rest
       
 }) {
 
@@ -27,6 +28,7 @@ export default function Input({
           value={value}
           onChange={onChange}
           className="auth-input-field"
+          {...rest}
         />
 
         {icon && (
