@@ -1,18 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 import "./completeProfile.css";
 import nullProfile from "./../../../assets/noDp.png";
-import { Pencil, Phone, User, UserCheck, X } from "lucide-react";
+import { Pencil, Phone, User, X, LoaderCircle } from "lucide-react";
 import Input from "./../Input.jsx";
 import usePatch from "./../../../hooks/usePatch.js";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserInfo } from "../../../redux/reducers/user.js";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const CompleteProfile = () => {
-  //& verify the user is allowed to route usefull for page refresh
-
+  // Verify user access (important for refresh)
   const userInfo = useSelector((state) => state.user.userInfo);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!userInfo) navigate("/");
@@ -20,16 +21,17 @@ const CompleteProfile = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    username: "",
     phone_no: "",
     interest: [],
   });
 
-  const fileRef = useRef();
+  const [phoneError, setPhoneError] = useState("");
+  const [NameError, setNameError] = useState("");
 
+  const fileRef = useRef();
   const [imagePreview, setImagePreview] = useState(null);
 
-  const { patchData, responseData, error, loading } = usePatch();
+  const { patchData, loading, error, responseData } = usePatch();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -97,22 +99,26 @@ const CompleteProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!userInfo?.id) return;
+
+    if (!formData.name) {
+      setNameError("Name is required");
+      return;
+    } else {
+      setNameError("");
+    }
+
+    if (!formData.phone_no) {
+      setPhoneError("Phone number is required");
+      return;
+    } else {
+      setPhoneError("");
+    }
 
     const payload = new FormData();
 
-    if (formData.name) {
-      payload.append("name", formData.name);
-    }
-
-    if (formData.username) {
-      payload.append("username", formData.username);
-    }
-
-    if (formData.phone_no) {
-      payload.append("phone_no", formData.phone_no);
-    }
+    payload.append("name", formData.name);
+    payload.append("phone_no", formData.phone_no);
 
     if (formData.interest.length) {
       formData.interest.forEach((item) => payload.append("interest", item));
@@ -123,32 +129,57 @@ const CompleteProfile = () => {
     }
 
     try {
-      const response = await patchData(`/user/${userInfo.id}`, payload, {
+      await patchData(`/user/${userInfo.id}`, payload, {
         "Content-Type": "multipart/form-data",
       });
 
-      toast.success("Profile information updated successfully")
+      toast.success("Profile information updated successfully");
+      dispatch(
+        setUserInfo({
+          ...userInfo,
+          ...formData,
+        })
+      );
       navigate("/");
-      
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || "Failed to update profile");
     }
   };
 
-  const handleInterest  = (e) => {
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const name = formData.name.trim();
+      if (name.length !== 0) {
+        setNameError("");
+      }
+
+      const phone = formData.phone_no.trim();
+      if (phone.length !== 0 && !/^[0-9]{10}$/.test(phone)) {
+        setPhoneError("Phone number must be 10 digits");
+      } else if (phone.length === 0) {
+        setPhoneError("");
+      }
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [formData.name, formData.phone_no]);
+
+  const handleInterest = (e) => {
     const selectedInterest = e.target.innerText;
-    if (selectedInterest && !formData.interest.includes(selectedInterest)) {
+
+    if (!selectedInterest) return;
+
+    if (!formData.interest.includes(selectedInterest)) {
       setFormData((prev) => ({
         ...prev,
         interest: [...prev.interest, selectedInterest],
       }));
-    } else if (selectedInterest) {
-      const updatedInterests = formData.interest.filter(
-        (interest) => interest !== selectedInterest
-      );
+    } else {
       setFormData((prev) => ({
         ...prev,
-        interest: updatedInterests,
+        interest: prev.interest.filter(
+          (interest) => interest !== selectedInterest
+        ),
       }));
     }
   };
@@ -163,64 +194,56 @@ const CompleteProfile = () => {
         <div className="profile-form-container">
           <div className="dp-container">
             <img src={imagePreview || nullProfile} alt="profile" />
+
             <input
               type="file"
-              name="profile"
-              id="profile"
               ref={fileRef}
               accept="image/*"
-              onChange={(e) =>
-                setImagePreview(URL.createObjectURL(e.target.files[0]))
-              }
               hidden
+              onChange={(e) =>
+                setImagePreview(
+                  e.target.files?.[0]
+                    ? URL.createObjectURL(e.target.files[0])
+                    : null
+                )
+              }
             />
-            <button
-              type="button"
-              onClick={(e) => {
-                fileRef.current.click();
-              }}
-            >
+
+            <button type="button" onClick={() => fileRef.current.click()}>
               <Pencil className="w-4 h-4 pencil" color="black" />
             </button>
           </div>
 
           <div className="form-container">
             <form className="profile-form">
-              <Input
-                label="name"
-                id="name"
-                type="text"
-                name="name"
-                placeholder="Enter your full name"
-                value={formData.name}
-                onChange={handleChange}
-                icon={<User strokeWidth={0.5} />}
-              />
+              <div className="cmp-profile-ip-container">
+                <Input
+                  label="name"
+                  id="name"
+                  type="text"
+                  name="name"
+                  placeholder="Enter your full name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  errorStatus={NameError}
+                  icon={<User strokeWidth={0.5} />}
+                />
 
-              <Input
-                label="username"
-                id="username"
-                type="text"
-                name="username"
-                placeholder="Enter your username"
-                value={formData.username}
-                onChange={handleChange}
-                icon={<UserCheck strokeWidth={0.5} />}
-              />
-
-              <Input
-                label="phone_no"
-                id="phone_no"
-                type="tel"
-                name="phone_no"
-                placeholder="Enter your phone number"
-                value={formData.phone_no}
-                onChange={handleChange}
-                icon={<Phone strokeWidth={0.5} />}
-                pattern="[0-9]{10}"
-                maxLength={10}
-                inputMode="numeric"
-              />
+                <Input
+                  label="phone_no"
+                  id="phone_no"
+                  type="tel"
+                  name="phone_no"
+                  placeholder="Enter your phone number"
+                  value={formData.phone_no}
+                  onChange={handleChange}
+                  icon={<Phone strokeWidth={0.5} />}
+                  pattern="[0-9]{10}"
+                  maxLength={10}
+                  inputMode="numeric"
+                  errorStatus={phoneError}
+                />
+              </div>
 
               <div className="mobile-interest-heading">
                 <h1>Select your interests</h1>
@@ -240,9 +263,7 @@ const CompleteProfile = () => {
                       strokeWidth={0.5}
                       onClick={() =>
                         handleInterest({
-                          target: {
-                            innerText: interest,
-                          },
+                          target: { innerText: interest },
                         })
                       }
                     />
@@ -250,9 +271,7 @@ const CompleteProfile = () => {
                 ))}
 
                 {categories
-                  .filter(
-                    (categories) => !formData.interest.includes(categories)
-                  )
+                  .filter((category) => !formData.interest.includes(category))
                   .map((category, index) => (
                     <button
                       key={index}
@@ -267,13 +286,18 @@ const CompleteProfile = () => {
             </form>
 
             <button className="submit-btn" onClick={handleSubmit}>
-              Complete profile
+              {loading ? (
+                <LoaderCircle className="animate-spin" color="white" />
+              ) : (
+                "Sign Up"
+              )}
             </button>
           </div>
         </div>
 
         <div className="interest-container">
           <h1>Select your interests</h1>
+
           <div className="category-container">
             {formData.interest.map((interest, index) => (
               <button
@@ -288,9 +312,7 @@ const CompleteProfile = () => {
                   strokeWidth={0.5}
                   onClick={() =>
                     handleInterest({
-                      target: {
-                        innerText: interest,
-                      },
+                      target: { innerText: interest },
                     })
                   }
                 />
@@ -298,7 +320,7 @@ const CompleteProfile = () => {
             ))}
 
             {categories
-              .filter((categories) => !formData.interest.includes(categories))
+              .filter((category) => !formData.interest.includes(category))
               .map((category, index) => (
                 <button
                   key={index}

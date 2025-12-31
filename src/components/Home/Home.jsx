@@ -7,7 +7,7 @@ const Home = () => {
 
   const user = useSelector((state) => state.user.userInfo);
   useEffect(() => {
-    console.log("userInfo changed:", user);
+    
   }, [user]);
 
   return (

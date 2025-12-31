@@ -9,15 +9,12 @@ const useAuthRedirect = (path) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.userInfo);
 
+  const userDeepCopy = {...user};
+
   const token = localStorage.getItem("token");
 
   //^ Fetch user only if token exists
-  const { data, loading, error } = useGet(
-    token ? "/user" : null,
-    [token]
-  );
-
-  
+  const { data, loading, error } = useGet(token ? "/user" : null, [token]);
 
   //^ Store user in redux
   useEffect(() => {
@@ -46,8 +43,9 @@ const useAuthRedirect = (path) => {
     }
 
     //^ Profile incomplete
-    if (user && !user.username) {
-      navigate("/complete-profile");
+    if (user && !user.name) {
+      if(userDeepCopy && !userDeepCopy.name)
+          navigate("/complete-profile");
       return;
     }
 

@@ -27,7 +27,7 @@ const usePatch = () => {
     }
   };
 
-  return { patchData };
+  return { patchData,loading,error,responseData };
 };
 
 export default usePatch;

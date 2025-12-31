@@ -4,7 +4,7 @@ import banner from "./../../../assets/bannerSignup.png";
 import logo from "./../../../assets/logo.png";
 import Input from "../Input";
 import isValidEmail from "../../../utils/emailVerfier.js";
-import { Eye, EyeOff, Mail,LoaderCircle } from "lucide-react";
+import { Eye, EyeOff, Mail, User, LoaderCircle } from "lucide-react";
 import getNextPasswordRule from "../../../utils/passwordNextRule.js";
 import usePost from "../../../hooks/usePost.js";
 import toast from "react-hot-toast";
@@ -14,16 +14,18 @@ import { Link } from "react-router-dom";
 export default function SignUp() {
   const [formData, setFormData] = useState({
     email: "",
+    username: "",
     password: "",
   });
 
   document.title = "BizSpot | Sign Up";
 
   const [emailError, setEmailError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const { postData, responseData, error, loading } = usePost();
+  const { postData, loading } = usePost();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,29 +45,49 @@ export default function SignUp() {
         setEmailError("");
       }
 
+      /* USERNAME */
+      const username = formData.username.trim();
+      
+       if (username.length > 0 && !/^[a-z0-9._]{3,20}$/.test(username)) {
+        setUsernameError(
+          "Username must be 3–20 characters (a–z, 0–9, . or _)"
+        );
+      } else {
+        setUsernameError("");
+      }
+
       /* PASSWORD (one rule at a time) */
       const passwordMessage = getNextPasswordRule(formData.password);
       setPasswordError(passwordMessage);
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [formData.email, formData.password]);
+  }, [formData.email, formData.username, formData.password]);
 
   const togglePassword = () => {
     setShowPassword((prev) => !prev);
   };
 
-  //^ Handle form submission
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    //!Email validation
-    if (!formData.email || !isValidEmail(formData.email)) {
+    const email = formData.email.trim();
+    const username = formData.username.trim().toLowerCase();
+
+    // Email validation
+    if (!email || !isValidEmail(email)) {
       setEmailError("Please enter a valid email before submitting.");
       return;
     }
 
-    //!Password validation
+    // Username validation
+    if (!username || usernameError) {
+      setUsernameError("Please enter a valid username.");
+      return;
+    }
+
+    // Password validation
     const passwordMessage = getNextPasswordRule(formData.password);
     if (!formData.password || passwordMessage) {
       setPasswordError("Please enter a valid password before submitting.");
@@ -73,8 +95,15 @@ export default function SignUp() {
     }
 
     try {
-      const response = await postData("/auth/sign-up", formData);
-      toast.success(response.message || "An Email has been sent to your inbox!");
+      const response = await postData("/auth/sign-up", {
+        email,
+        username,
+        password: formData.password,
+      });
+
+      toast.success(
+        response?.message || "An email has been sent to your inbox!"
+      );
     } catch (error) {
       const message =
         error?.response?.data?.message ||
@@ -116,11 +145,23 @@ export default function SignUp() {
                   id="email"
                   type="email"
                   name="email"
-                  placeholder="E-mail: Example@gmail.com"
+                  placeholder="E-mail: example@gmail.com"
                   value={formData.email}
                   onChange={handleChange}
                   errorStatus={emailError}
                   icon={<Mail strokeWidth={0.5} />}
+                />
+
+                <Input
+                  label="Username"
+                  id="username"
+                  type="text"
+                  name="username"
+                  placeholder="username: john_doe"
+                  value={formData.username}
+                  onChange={handleChange}
+                  errorStatus={usernameError}
+                  icon={<User strokeWidth={0.5} />}
                 />
 
                 <Input
@@ -145,8 +186,13 @@ export default function SignUp() {
 
               <div className="sign-btn-container">
                 <button className="signup-btn" onClick={handleSubmit}>
-                 { loading ? <LoaderCircle className="animate-spin" color="white" /> : "Sign Up"}
+                  {loading ? (
+                    <LoaderCircle className="animate-spin" color="white" />
+                  ) : (
+                    "Sign Up"
+                  )}
                 </button>
+
                 <button
                   type="button"
                   className="google-btn"
@@ -154,14 +200,18 @@ export default function SignUp() {
                     console.log("oauth");
                   }}
                 >
-                  <img src={googleIcon} alt="Google" className="google-icon" />
+                  <img
+                    src={googleIcon}
+                    alt="Google"
+                    className="google-icon"
+                  />
                   Continue with Google
                 </button>
               </div>
             </form>
           </div>
 
-          {/*footer */}
+          {/* Footer */}
           <div className="sign-footer">
             <Link to="/login">
               <h3>
