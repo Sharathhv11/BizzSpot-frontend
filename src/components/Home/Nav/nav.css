@@ -1,0 +1,156 @@
+.nav {
+  width: 100%;
+  height: 70px;
+  border-bottom: 0.5px solid rgb(230, 230, 230);
+  background-color: white;
+}
+
+.nav-container {
+  width: 90%;
+  height: 100%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  width: 140px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.nav-logo img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.nav-right {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 30px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.theme-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 0.5px solid rgba(120, 120, 120, 0.5);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.theme-btn:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.search-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 0.5px solid rgba(120, 120, 120, 0.5);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+}
+
+.search-tab:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-menu li {
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+  position: relative;
+}
+
+.nav-menu li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 1px;
+
+  background: linear-gradient(
+    to right,
+    currentColor 70%,
+    transparent 100%
+  );
+
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+}
+
+.nav-menu li:hover::after {
+  transform: scaleX(1);
+}
+
+.nav-profile {
+  width: 40px;
+  height: 40px;
+  position: relative;
+}
+
+.hover-menu{
+    border:0.5px solid  rgba(120, 120, 120, 0.5); 
+    width:100px;
+    position: absolute;
+    top: 50px;
+    left:-10px;
+    display: none;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: white;
+
+}
+
+.hover-menu ul li{
+    font-family:"Poppins", sans-serif ;
+}
+
+.nav-profile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.nav-profile:hover .hover-menu{
+    display: block;
+}

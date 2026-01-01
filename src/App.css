@@ -11,3 +11,7 @@
   width: 100%;
   display: flex;
 }
+
+#root{
+  min-width:300px;
+}
