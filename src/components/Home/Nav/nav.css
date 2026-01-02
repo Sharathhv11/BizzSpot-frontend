@@ -1,156 +1,285 @@
-.nav {
+
+.navv2 {
   width: 100%;
-  height: 70px;
-  border-bottom: 0.5px solid rgb(230, 230, 230);
-  background-color: white;
+  height: 72px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background 0.25s ease, color 0.25s ease;
 }
 
-.nav-container {
-  width: 90%;
+.navv2-inner {
+  max-width: 1280px;
   height: 100%;
   margin: auto;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.nav-logo {
-  width: 140px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-}
 
-.nav-logo img {
+.navv2-logo{
+  width:100px;
+  height: 100%;
+}
+.navv2-logo img {
+  height: 100%;        /* normal desktop size */
   width: 100%;
-  height: auto;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: top;
 }
 
-.nav-right {
-  flex: 1;
-  height: 100%;
+
+.navv2-links {
+  display: flex;
+  gap: 32px;
+}
+
+.navv2-links a {
+  font-size: 15px;
+  text-decoration: none;
+  position: relative;
+  color: inherit;
+}
+
+.navv2-links a::after {
+  content: "";
+  position: absolute;
+  left:-15%;
+  top: -15%;
+  width: 130%;
+  height: 130%;
+  background: currentColor;
+  border-radius: 3px;
+  opacity: 0;
+  
+  transition: opacity 0.25s ease;
+}
+
+.navv2-links a:hover::after {
+  opacity: 0.1;
+}
+
+
+.navv2-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 30px;
+  gap: 14px;
 }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 40px;
-}
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.theme-btn {
+.icon-btn {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 0.5px solid rgba(120, 120, 120, 0.5);
+  border: 1px solid transparent;
   background: transparent;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
 }
 
-.theme-btn:hover {
-  background-color: rgba(0, 0, 0, 0.06);
-}
-
-.search-tab {
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 0.5px solid rgba(120, 120, 120, 0.5);
-  background: transparent;
+.search-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 120, 120, 0.4);
+  background: transparent;
   cursor: pointer;
-  font-family: "Poppins", sans-serif;
   font-size: 14px;
 }
 
-.search-tab:hover {
-  background-color: rgba(0, 0, 0, 0.04);
+.search-text {
+  white-space: nowrap;
 }
 
-.nav-menu {
+
+
+.profile {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 50px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
 }
 
-.nav-menu li {
-  font-family: "Poppins", sans-serif;
-  font-size: 15px;
+/* avatar */
+.profile img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
   cursor: pointer;
-  position: relative;
 }
 
-.nav-menu li::after {
+/* hover bridge (prevents flicker) */
+.profile::before {
   content: "";
   position: absolute;
-  left: 0;
-  bottom: -3px;
-  width: 100%;
+  top: 100%;
+  right: -10px;
+  width: 60px;
+  height: 14px;
+}
+
+/* menu */
+.profile-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 180px;
+  padding: 10px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border:0.2px solid #ccc;
+  background-color: white;
+  /* animation state */
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+/* show menu */
+.profile:hover .profile-menu,
+.profile-menu:hover {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* buttons */
+.profile-menu button {
+  padding: 10px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font-size: 14px;
+}
+
+.profile-menu button:hover {
+  background-color: #cccccc27;
+}
+
+/* divider */
+.profile-menu .divider {
   height: 1px;
-
-  background: linear-gradient(
-    to right,
-    currentColor 70%,
-    transparent 100%
-  );
-
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.35s ease;
+  margin: 6px 0;
+  background: rgba(120, 120, 120, 0.25);
 }
 
-.nav-menu li:hover::after {
-  transform: scaleX(1);
+/* danger */
+.profile-menu .danger {
+  color: #ef4444;
 }
 
-.nav-profile {
-  width: 40px;
-  height: 40px;
-  position: relative;
-}
 
-.hover-menu{
-    border:0.5px solid  rgba(120, 120, 120, 0.5); 
-    width:100px;
-    position: absolute;
-    top: 50px;
-    left:-10px;
-    display: none;
-    padding: 10px;
-    border-radius: 10px;
-    background-color: white;
 
-}
-
-.hover-menu ul li{
-    font-family:"Poppins", sans-serif ;
-}
-
-.nav-profile img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
   cursor: pointer;
 }
 
-.nav-profile:hover .hover-menu{
+
+.navv2.light {
+  background: #ffffff;
+  color: #111;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.navv2.light .icon-btn,
+.navv2.light .search-btn {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+
+.navv2.dark {
+  background: #0a0933;
+  color: #eaeaea;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navv2.dark .icon-btn,
+.navv2.dark .search-btn {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.navv2.dark .profile-menu {
+  background: #151515;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75);
+}
+
+.navv2.dark .profile-menu button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+
+@media (max-width: 1000px) {
+  /* hide center links */
+  .navv2-links {
+    display: none;
+  }
+
+  /* hide theme toggle */
+  .icon-btn {
+    display: none;
+  }
+
+  /* show hamburger */
+  .mobile-menu-btn {
     display: block;
+  }
+
+  /* tighten spacing */
+  .navv2-actions {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 1000px) and (min-width: 501px) {
+  .search-btn {
+    padding: 6px 16px;
+    min-width: 180px;
+    justify-content: flex-start;
+    opacity: 0.9;
+  }
+
+  .search-text {
+    display: inline;
+    color: inherit;
+  }
+}
+
+@media (max-width: 500px) {
+  .search-btn {
+    padding: 8px;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    justify-content: center;
+  }
+
+  .search-text {
+    display: none;
+  }
+}
+
+.navv2.dark .search-btn {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.navv2.dark .search-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
 }

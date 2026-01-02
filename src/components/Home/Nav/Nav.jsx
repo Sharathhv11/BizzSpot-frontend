@@ -1,53 +1,64 @@
-import React from "react";
 import "./nav.css";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { changeTheme } from "../../../redux/reducers/pageState";
+import logoLight from "./../../../assets/logo.png";
+import logoDark from "./../../../assets/logoD.png";
 import dftImage from "./../../../assets/noDp.png";
-import logo from "./../../../assets/logo.png";
-import { Search, Sun } from "lucide-react";
+import { Search, Sun, Moon, Menu } from "lucide-react";
 
 const Nav = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
+  const isLight = useSelector((state) => state.pageState.theme);
+  const dispatch = useDispatch();
 
   return (
-    <nav className="nav">
-      <div className="nav-container">
-        <div className="nav-logo">
-          <img src={logo} alt="bizzSpot" />
+    <header className={`navv2 ${isLight ? "light" : "dark"}`}>
+      <div className="navv2-inner">
+        {/* LOGO */}
+        <div className="navv2-logo">
+          <img src={isLight ? logoLight : logoDark} alt="NearGo" />
         </div>
 
-        <div className="nav-right">
-          <div className="nav-links">
-            <div className="nav-actions">
-              <button className="theme-btn" aria-label="Toggle theme">
-                <Sun size={18} />
-              </button>
+        {/* CENTER LINKS */}
+        <nav className="navv2-links">
+          <a href="#">Explore</a>
+          <a href="#">About</a>
+          <a href="#">Contact</a>
+        </nav>
 
-              <button className="search-tab">
-                Search
-                <Search size={16} />
-              </button>
-            </div>
+        {/* ACTIONS */}
+        <div className="navv2-actions">
+          <button
+            className="icon-btn"
+            onClick={() => dispatch(changeTheme())}
+            aria-label="Toggle theme"
+          >
+            {isLight ? <Moon size={18} /> : <Sun size={18} />}
+          </button>
 
-            <ul className="nav-menu">
-              <li>Explore</li>
-              <li>About</li>
-              <li>Contact</li>
-            </ul>
-          </div>
+          <button className="search-btn">
+            <Search size={16} />
+            <span className="search-text">Search nearby</span>
+          </button>
 
-          <div className="nav-profile">
+          {/* PROFILE */}
+          <div className="profile">
             <img src={userInfo?.profilePicture || dftImage} alt="profile" />
-            <div className="hover-menu">
-              <ul>
-                <li>Explore</li>
-                <li>About</li>
-                <li>Contact</li>
-              </ul>
-            </div>  
+            <div className="profile-menu">
+              <button>Profile</button>
+              <button>Settings</button>
+              <div className="divider" />
+              <button className="danger">Logout</button>
+            </div>
           </div>
+
+          {/* MOBILE MENU */}
+          <button className="mobile-menu-btn">
+            <Menu size={22} />
+          </button>
         </div>
       </div>
-    </nav>
+    </header>
   );
 };
 
