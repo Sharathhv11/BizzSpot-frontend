@@ -4,7 +4,7 @@ import { changeTheme } from "../../../redux/reducers/pageState";
 import logoLight from "./../../../assets/logo.png";
 import logoDark from "./../../../assets/logoD.png";
 import dftImage from "./../../../assets/noDp.png";
-import { Search, Sun, Moon, Menu } from "lucide-react";
+import { Search, Sun, Moon, Menu, LogOut, CircleUser, Settings } from "lucide-react";
 
 const Nav = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -45,10 +45,18 @@ const Nav = () => {
           <div className="profile">
             <img src={userInfo?.profilePicture || dftImage} alt="profile" />
             <div className="profile-menu">
-              <button>Profile</button>
-              <button>Settings</button>
+              <button>
+                <CircleUser/>
+                <span>Profile</span>
+                </button>
+              <button>
+                <Settings/>
+                <span>Settings</span></button>
               <div className="divider" />
-              <button className="danger">Logout</button>
+              <button className="danger">
+                <LogOut />
+                <span>Logout</span>
+              </button>
             </div>
           </div>
 
