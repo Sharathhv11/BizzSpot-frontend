@@ -4,6 +4,7 @@ import SignUp from "./components/Auth/SignUp/SignUp.jsx";
 import Login from "./components/Auth/Login/Login.jsx";
 import Home from "./components/Home/Home.jsx";
 import CompleteProfile from "./components/Auth/SignUp/CompleteProfile.jsx";
+import Profile from "./components/Home/Profile/Profile.jsx";
 import { Toaster } from 'react-hot-toast';
 import { ForgotPassword } from "./components/Auth/Login/ForgotPassword.jsx";
 
@@ -35,6 +36,9 @@ function App() {
               <ForgotPassword/>
             }
           ></Route>
+          <Route path="/profile" element={<Profile/>}>
+
+          </Route>
         </Routes>
       </BrowserRouter>
     </>

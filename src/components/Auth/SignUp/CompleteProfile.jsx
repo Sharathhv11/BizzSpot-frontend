@@ -21,12 +21,14 @@ const CompleteProfile = () => {
 
   const [formData, setFormData] = useState({
     name: "",
+    username: "",
     phone_no: "",
     interest: [],
   });
 
   const [phoneError, setPhoneError] = useState("");
   const [NameError, setNameError] = useState("");
+  const [UserNameError, setUserNameError] = useState("");
 
   const fileRef = useRef();
   const [imagePreview, setImagePreview] = useState(null);
@@ -101,23 +103,63 @@ const CompleteProfile = () => {
     e.preventDefault();
     if (!userInfo?.id) return;
 
-    if (!formData.name) {
-      setNameError("Name is required");
-      return;
-    } else {
+    const isGoogleUser = userInfo?.authProvider === "google";
+
+    // *LOCAL USER → NAME REQUIRED
+    if (!isGoogleUser) {
+      if (!formData.name.trim()) {
+        setNameError("Name is required");
+        return;
+      }
       setNameError("");
     }
 
-    if (!formData.phone_no) {
-      setPhoneError("Phone number is required");
-      return;
-    } else {
-      setPhoneError("");
+    // *GOOGLE USER → USERNAME REQUIRED
+    if (isGoogleUser) {
+      const username = formData.username; // !safe fallback
+
+      if (!username || !username.trim()) {
+        setUserNameError("Username is required");
+        return;
+      }
+
+      if (username.includes("@")) {
+        setUserNameError("Username cannot contain '@'");
+        return;
+      }
+
+      if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+        setUserNameError(
+          "Username must be 3–20 characters and contain only letters, numbers, or _"
+        );
+        return;
+      }
+
+      setUserNameError("");
     }
 
+    // * PHONE (COMMON FOR BOTH)
+    if (!formData.phone_no.trim()) {
+      setPhoneError("Phone number is required");
+      return;
+    }
+
+    if (!/^[0-9]{10}$/.test(formData.phone_no)) {
+      setPhoneError("Phone number must be 10 digits");
+      return;
+    }
+
+    setPhoneError("");
+
+    // * BUILD PAYLOAD
     const payload = new FormData();
 
-    payload.append("name", formData.name);
+    if (isGoogleUser) {
+      payload.append("username", formData.username ?? formData.name);
+    } else {
+      payload.append("name", formData.name);
+    }
+
     payload.append("phone_no", formData.phone_no);
 
     if (formData.interest.length) {
@@ -128,18 +170,28 @@ const CompleteProfile = () => {
       payload.append("profilePicture", fileRef.current.files[0]);
     }
 
+
+    
+
     try {
       await patchData(`/user/${userInfo.id}`, payload, {
         "Content-Type": "multipart/form-data",
       });
 
       toast.success("Profile information updated successfully");
+
       dispatch(
         setUserInfo({
           ...userInfo,
-          ...formData,
+          ...(isGoogleUser
+            ? { username: formData.username}
+            : { name: formData.name }),
+          phone_no: formData.phone_no,
+          interest: formData.interest,
+          profileCompleted:true
         })
       );
+
       navigate("/");
     } catch (error) {
       toast.error(error.message || "Failed to update profile");
@@ -148,21 +200,49 @@ const CompleteProfile = () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      const name = formData.name.trim();
-      if (name.length !== 0) {
-        setNameError("");
+      const isGoogleUser = userInfo?.authProvider === "google";
+
+      //* name for local auth users
+      if (!isGoogleUser) {
+        const name = formData.name.trim();
+        if (name.length !== 0) {
+          setNameError("");
+        }
       }
 
+      //* username for oauth users
+      if (isGoogleUser) {
+        const username = formData.username.trim();
+
+        if (username.length === 0) {
+          setUserNameError("");
+        } else if (username.includes("@")) {
+          setUserNameError("Username cannot contain '@'");
+        } else if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+          setUserNameError(
+            "Username must be 3–20 characters and contain only letters, numbers, or _"
+          );
+        } else {
+          setUserNameError("");
+        }
+      }
+
+      //* Phone
       const phone = formData.phone_no.trim();
       if (phone.length !== 0 && !/^[0-9]{10}$/.test(phone)) {
         setPhoneError("Phone number must be 10 digits");
-      } else if (phone.length === 0) {
+      } else if (phone.length === 0 || phone.length === 10) {
         setPhoneError("");
       }
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [formData.name, formData.phone_no]);
+  }, [
+    formData.name,
+    formData.username,
+    formData.phone_no,
+    userInfo?.authProvider,
+  ]);
 
   const handleInterest = (e) => {
     const selectedInterest = e.target.innerText;
@@ -193,7 +273,10 @@ const CompleteProfile = () => {
       <div className="profile-content">
         <div className="profile-form-container">
           <div className="dp-container">
-            <img src={imagePreview || nullProfile} alt="profile" />
+            <img
+              src={imagePreview || userInfo?.profilePicture || nullProfile}
+              alt="profile"
+            />
 
             <input
               type="file"
@@ -217,17 +300,31 @@ const CompleteProfile = () => {
           <div className="form-container">
             <form className="profile-form">
               <div className="cmp-profile-ip-container">
-                <Input
-                  label="name"
-                  id="name"
-                  type="text"
-                  name="name"
-                  placeholder="Enter your full name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  errorStatus={NameError}
-                  icon={<User strokeWidth={0.5} />}
-                />
+                {userInfo?.authProvider === "google" ? (
+                  <Input
+                    label="userName"
+                    id="username"
+                    type="text"
+                    name="username"
+                    placeholder="Enter username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    errorStatus={UserNameError}
+                    icon={<User strokeWidth={0.5} />}
+                  />
+                ) : (
+                  <Input
+                    label="name"
+                    id="name"
+                    type="text"
+                    name="name"
+                    placeholder="Enter your full name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    errorStatus={NameError}
+                    icon={<User strokeWidth={0.5} />}
+                  />
+                )}
 
                 <Input
                   label="phone_no"

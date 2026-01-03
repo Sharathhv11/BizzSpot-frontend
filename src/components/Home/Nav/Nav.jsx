@@ -5,6 +5,7 @@ import logoLight from "./../../../assets/logo.png";
 import logoDark from "./../../../assets/logoD.png";
 import dftImage from "./../../../assets/noDp.png";
 import { Search, Sun, Moon, Menu, LogOut, CircleUser, Settings } from "lucide-react";
+import { Link } from "react-router-dom"
 
 const Nav = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -46,8 +47,10 @@ const Nav = () => {
             <img src={userInfo?.profilePicture || dftImage} alt="profile" />
             <div className="profile-menu">
               <button>
+                <Link to="/profile" className="w-full h-full flex gap-1.5 items-center justify-start">
                 <CircleUser/>
                 <span>Profile</span>
+                </Link>
                 </button>
               <button>
                 <Settings/>

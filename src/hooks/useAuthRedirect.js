@@ -43,8 +43,8 @@ const useAuthRedirect = (path) => {
     }
 
     //^ Profile incomplete
-    if (user && !user.name) {
-      if(userDeepCopy && !userDeepCopy.name)
+    if (user && !user.profileCompleted) {
+      if(userDeepCopy && !userDeepCopy.profileCompleted)
           navigate("/complete-profile");
       return;
     }

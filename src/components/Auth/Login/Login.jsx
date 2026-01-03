@@ -4,18 +4,25 @@ import banner from "./../../../assets/bannerSignup.png";
 import logo from "./../../../assets/logo.png";
 import Input from "../Input";
 import isValidEmail from "../../../utils/emailVerfier.js";
-import { Eye, EyeOff, Mail,LoaderCircle } from "lucide-react";
+import { Eye, EyeOff, Mail, LoaderCircle } from "lucide-react";
 import usePost from "../../../hooks/usePost.js";
 import toast from "react-hot-toast";
 import googleIcon from "../../../assets/google.png";
 import { Link, useNavigate } from "react-router-dom";
-
+import useGoogleOauth from "../../../hooks/useGoogleOauth.js";
 
 export default function Login() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const {
+    googleLogin,
+    data,
+    loading: loadingGoogle,
+    error: errorByGoogle,
+  } = useGoogleOauth();
 
   document.title = "BizSpot | Login";
 
@@ -24,10 +31,9 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  //^  usePost hook for posting the login information 
+  //^  usePost hook for posting the login information
 
-   const { postData, responseData, error, loading } = usePost();
-  
+  const { postData, responseData, error, loading } = usePost();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,17 +75,15 @@ export default function Login() {
     }
 
     try {
+      const response = await postData("/auth/login", formData);
 
-      const response = await postData("/auth/login",formData);
-     
       localStorage.setItem("token", response.token);
       toast.success(response.message || "Login successful!");
 
       navigate("/");
     } catch (error) {
       const message =
-        error?.response?.data?.message ||
-        "Invalid email or password.";
+        error?.response?.data?.message || "Invalid email or password.";
 
       toast.error(message);
     }
@@ -145,33 +149,29 @@ export default function Login() {
                 />
               </div>
 
-                <div className="login-forgot-password-container">
-                  <Link to="/forgot-password" className="forgot-link">
-                    Forgot Password?
-                  </Link>
-                </div>
+              <div className="login-forgot-password-container">
+                <Link to="/forgot-password" className="forgot-link">
+                  Forgot Password?
+                </Link>
+              </div>
               <div className="sign-btn-container">
                 {
-                 
-                <button className="signup-btn" onClick={handleSubmit}>
-                  {
-                     loading ? <LoaderCircle className="animate-spin" color="white" /> : "Login"
-                  }
-                </button>
-                  
+                  <button className="signup-btn" onClick={handleSubmit}>
+                    {loading ? (
+                      <LoaderCircle className="animate-spin" color="white" />
+                    ) : (
+                      "Login"
+                    )}
+                  </button>
                 }
                 <button
                   type="button"
                   className="google-btn"
                   onClick={() => {
-                    console.log("google oauth login");
+                    googleLogin();
                   }}
                 >
-                  <img
-                    src={googleIcon}
-                    alt="Google"
-                    className="google-icon"
-                  />
+                  <img src={googleIcon} alt="Google" className="google-icon" />
                   Continue with Google
                 </button>
               </div>

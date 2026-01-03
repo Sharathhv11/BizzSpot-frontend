@@ -10,6 +10,7 @@ import usePost from "../../../hooks/usePost.js";
 import toast from "react-hot-toast";
 import googleIcon from "../../../assets/google.png";
 import { Link } from "react-router-dom";
+import useGoogleOauth from "../../../hooks/useGoogleOauth.js";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -26,6 +27,8 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
 
   const { postData, loading } = usePost();
+
+  const {googleLogin,data,loading:loadingGoogle,error} = useGoogleOauth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,11 +50,9 @@ export default function SignUp() {
 
       /* USERNAME */
       const username = formData.username.trim();
-      
-       if (username.length > 0 && !/^[a-z0-9._]{3,20}$/.test(username)) {
-        setUsernameError(
-          "Username must be 3–20 characters (a–z, 0–9, . or _)"
-        );
+
+      if (username.length > 0 && !/^[a-z0-9._]{3,20}$/.test(username)) {
+        setUsernameError("Username must be 3–20 characters (a–z, 0–9, . or _)");
       } else {
         setUsernameError("");
       }
@@ -197,14 +198,10 @@ export default function SignUp() {
                   type="button"
                   className="google-btn"
                   onClick={() => {
-                    console.log("oauth");
+                    googleLogin();
                   }}
                 >
-                  <img
-                    src={googleIcon}
-                    alt="Google"
-                    className="google-icon"
-                  />
+                  <img src={googleIcon} alt="Google" className="google-icon" />
                   Continue with Google
                 </button>
               </div>
