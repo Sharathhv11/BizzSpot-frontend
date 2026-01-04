@@ -11,6 +11,7 @@ const Profile = () => {
   const user = useSelector((state) => state.user.userInfo);
   const pageState = useSelector((state) => state.pageState.theme);
   const navigate = useNavigate();
+  const [showFollowList,setShowFollowList] = useState(false);
 
   useEffect(() => {
     if (!user) navigate("/");
@@ -19,7 +20,8 @@ const Profile = () => {
   return (
     <>
       <Nav pageState={pageState} user={user} navigate={navigate} />
-      <Main user={user} pageState={pageState} />
+      <Main user={user} pageState={pageState} updateFollowList={setShowFollowList}/>
+      <FollowList visibility={showFollowList} updateVisibility={setShowFollowList}/>
     </>
   );
 };
@@ -48,15 +50,15 @@ const Nav = ({ pageState, user, navigate }) => {
   );
 };
 
-
-
-const Main = ({ user, pageState }) => {
-  const { data } = useGet(
-    user?.id ? `follow/count?userID=${user?.id}` : null
-  );
+const Main = ({ user, pageState: theme,updateFollowList }) => {
+  const { data } = useGet(user?.id ? `follow/count?userID=${user?.id}` : null);
 
   return (
-    <main className="profile-main">
+    <main
+      className={`profile-main ${
+        theme ? "light-profile-main" : "dark-profile-main"
+      }`}
+    >
       <section>
         <div className="profile-header">
           {/* Profile Image */}
@@ -72,24 +74,31 @@ const Main = ({ user, pageState }) => {
             </div>
 
             {/* Following */}
-            <div className="profile-following">
+            <button className="profile-following" onClick={()=>{
+              updateFollowList(true);
+            }} >
               <span>Following</span>
-              <span className="follow-count">
-                {data?.data?.count ?? 0}
-              </span>
-            </div>
+              <span className="follow-count">{data?.data?.count ?? 0}</span>
+            </button>
 
             {/* Edit Button */}
-              <button className="edit-btn">
-                <SquarePen size={16} />
-                Edit
-              </button>
+            <button className="edit-btn">
+              <SquarePen size={16} />
+              Edit
+            </button>
           </div>
         </div>
-
-        <div className="profile-divider" />
       </section>
     </main>
   );
 };
+
+const FollowList = function ({visibility,setShowFollowList}) {
+  return <section className="user-following-list" style={{
+    display:visibility?"block":"none"
+  }}>
+    yeah this is the following list
+  </section>;
+};
+
 export default Profile;

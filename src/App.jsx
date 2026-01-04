@@ -8,7 +8,9 @@ import Profile from "./components/Home/Profile/Profile.jsx";
 import { Toaster } from 'react-hot-toast';
 import { ForgotPassword } from "./components/Auth/Login/ForgotPassword.jsx";
 
+
 function App() {
+  
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />  
