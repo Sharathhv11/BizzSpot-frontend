@@ -1,7 +1,9 @@
-:root{
-  --border-dark:1px solid #565252ae;
-  --border-light:1px solid #eaeaea;
+:root {
+  --border-dark: 1px solid #565252ae;
+  --border-light: 1px solid #eaeaea;
 }
+
+
 
 .profile-nav {
   height: 60px;
@@ -15,8 +17,6 @@
   color: white;
   border-bottom: var(--border-dark);
 }
-
-
 
 .profile-nav > div {
   width: 80%;
@@ -77,44 +77,43 @@
   border-radius: 5px;
   background-color: black;
 }
-.profile-nav-back-btn-dark:hover{
+.profile-nav-back-btn-dark:hover {
   background-color: rgba(75, 73, 73, 0.605);
 }
 
 /* main body of the profile page  */
-.profile-main{
-  width:100%;
-  height: 100%;
+.profile-main {
+  width: 100%;
+  height: 700px;
   position: absolute;
   min-width: 300px;
 }
 
-.dark-profile-main{
+
+
+.dark-profile-main {
   background-color: rgb(13, 13, 13);
 }
 
 
-
-
-.profile-header{
-   width: 800px;
+.profile-header {
+  width: 800px;
   min-height: 300px;
   height: max-content;
-  margin: 50px auto;
+  margin: 10px auto;
   display: flex;
-  align-items: center;          
+  align-items: center;
   gap: 24px;
   padding: 24px;
   position: relative;
   border-bottom: var(--border-light);
 }
 
-.dark-profile-main .profile-header{
+.dark-profile-main .profile-header {
   border-bottom: var(--border-dark);
 }
 
-
-.profile-header img{
+.profile-header img {
   width: 200px;
   height: 200px;
   border-radius: 50%;
@@ -122,7 +121,7 @@
   flex-shrink: 0;
 }
 
-.profile-right{
+.profile-right {
   width: 80%;
   height: 200px;
   display: flex;
@@ -130,12 +129,17 @@
   padding: 16px;
   border-radius: 10px;
   background-color: #fafafa;
+  border:var(--border-light);
 }
 
 .dark-profile-main .profile-right{
+  border:var(--border-dark)
+}
+
+.dark-profile-main .profile-right {
   background-color: #3333345b;
 }
-.profile-info{
+.profile-info {
   width: 70%;
   height: 100%;
   padding-right: 20px;
@@ -145,8 +149,6 @@
   flex-direction: column;
 }
 
-
-
 .profile-info h1 {
   margin: 0 0 8px 0;
   font-size: 22px;
@@ -154,8 +156,8 @@
   color: #111827;
 }
 
-.dark-profile-main .profile-info h1{
-  color:white;
+.dark-profile-main .profile-info h1 {
+  color: white;
 }
 
 .profile-info span {
@@ -165,11 +167,10 @@
   line-height: 1.6;
 }
 
-
 .profile-following {
   width: 27%;
   height: 100%;
-  border-left:var(--border-light);
+  border-left: var(--border-light);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -177,8 +178,8 @@
   cursor: pointer;
 }
 
-.dark-profile-main .profile-following{
-  border-left:var(--border-dark);
+.dark-profile-main .profile-following {
+  border-left: var(--border-dark);
 }
 
 .profile-following span:first-child {
@@ -186,8 +187,8 @@
   color: #6b7280;
   margin-bottom: 6px;
 }
-.dark-profile-main .profile-following span:first-child{
-  color:white;
+.dark-profile-main .profile-following span:first-child {
+  color: white;
 }
 .follow-count {
   font-size: 24px;
@@ -195,8 +196,8 @@
   color: #111827;
 }
 
-.dark-profile-main .follow-count{
-  color:white;
+.dark-profile-main .follow-count {
+  color: white;
 }
 
 /* ================= EDIT BUTTON ================= */
@@ -221,16 +222,97 @@
 }
 
 .edit-btn:hover {
-  background-color: rgba(0, 0, 0, 0.854)
+  background-color: rgba(0, 0, 0, 0.854);
 }
 
-.dark-profile-main  .edit-btn{
+.dark-profile-main .edit-btn {
   background-color: white;
-  color:black
+  color: black;
 }
-.dark-profile-main  .edit-btn:hover{
-   background-color: rgba(255, 255, 255, 0.838);
+.dark-profile-main .edit-btn:hover {
+  background-color: rgba(255, 255, 255, 0.838);
 }
+
+/* css for follow list */
+
+/* Overlay (already good) */
+.user-following-list {
+  width: 100%;
+  height: 100dvh;
+  position: absolute;
+  background-color: #0104095a;
+  z-index: 1000;
+  top: 0;
+}
+
+.business_registration-container {
+  width: 800px;
+  min-height: 200px;
+  height: max-content;
+  min-width: 300px;
+  margin: 20px auto;
+
+}
+
+.business-not-registered-container {
+  height: 200px;
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction:column ;
+  gap: 20px;
+}
+.business-not-registered-container span {
+  height: 10%;
+  width: 100%;
+  font-size: 16px;
+  font-style: italic;
+  color: #555;
+  letter-spacing: 0.4px;
+  text-align: center;
+  user-select: none;
+}
+
+.business-not-registered-container div {
+  height: 90%;
+  width: 100%;
+  background-color: #fafafa;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border: var(--border-light);
+  cursor: pointer;
+}
+
+.dark-profile-main .business-not-registered-container div{
+  background-color: #1a1a1b;
+  border: var(--border-dark);
+}
+
+.business-not-registered-container div::after,
+.business-not-registered-container div::before {
+  content: "";
+  display: block;
+  width: 15px;
+  height: 100px;
+  background-color: #d3d2d2;
+  border-radius: 10px;
+}
+.dark-profile-main
+.business-not-registered-container div::after,
+.dark-profile-main
+.business-not-registered-container div::before{
+  background-color:#343232 ;
+}
+
+.business-not-registered-container div::after {
+  transform: translateX(-14px) rotate(90deg);
+}
+
 /* ================= TABLET ================= */
 
 @media (max-width: 900px) {
@@ -294,9 +376,10 @@
     margin-top: 16px;
   }
 
-.dark-profile-main .profile-following{
-  border-top: var(--border-dark);
-}
+  .dark-profile-main .profile-following {
+    border-top: var(--border-dark);
+    border-left: none;
+  }
   .profile-following span:first-child {
     font-size: 14px;
   }
@@ -312,18 +395,27 @@
     font-size: 12px;
     padding: 6px 12px;
   }
-}
 
+  .business_registration-container {
+    width: calc(100% - 24px);
+    margin: 20px auto;
+    padding: 16px;
+  }
 
-/* css for follow list */
+  .business-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
 
-.user-following-list{
-  width: 100%;
-  height:100dvh;
-  position: absolute;
-  background-color: #0104095a;
-  z-index: 1000;
-  top:0;
+  .business-info {
+    font-size: 14px;
+  }
+
+  .business-register-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 @media (width<=700px) {

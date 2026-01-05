@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "./profile.css";
 import noDp from "./../../../assets/noDp.png";
-import { MoveLeft } from "lucide-react";
+import { MoveLeft, Plus } from "lucide-react";
 import useGet from "./../../../hooks/useGet";
 import { SquarePen } from "lucide-react";
 
@@ -11,7 +11,7 @@ const Profile = () => {
   const user = useSelector((state) => state.user.userInfo);
   const pageState = useSelector((state) => state.pageState.theme);
   const navigate = useNavigate();
-  const [showFollowList,setShowFollowList] = useState(false);
+  const [showFollowList, setShowFollowList] = useState(false);
 
   useEffect(() => {
     if (!user) navigate("/");
@@ -20,8 +20,15 @@ const Profile = () => {
   return (
     <>
       <Nav pageState={pageState} user={user} navigate={navigate} />
-      <Main user={user} pageState={pageState} updateFollowList={setShowFollowList}/>
-      <FollowList visibility={showFollowList} updateVisibility={setShowFollowList}/>
+      <Main
+        user={user}
+        pageState={pageState}
+        updateFollowList={setShowFollowList}
+      />
+      <FollowList
+        visibility={showFollowList}
+        updateVisibility={setShowFollowList}
+      />
     </>
   );
 };
@@ -50,8 +57,12 @@ const Nav = ({ pageState, user, navigate }) => {
   );
 };
 
-const Main = ({ user, pageState: theme,updateFollowList }) => {
+const Main = ({ user, pageState: theme, updateFollowList }) => {
   const { data } = useGet(user?.id ? `follow/count?userID=${user?.id}` : null);
+
+  const { data: businessList } = useGet(
+    user?.id ? `business?ownedBy=${user?.id}` : null
+  );
 
   return (
     <main
@@ -74,9 +85,12 @@ const Main = ({ user, pageState: theme,updateFollowList }) => {
             </div>
 
             {/* Following */}
-            <button className="profile-following" onClick={()=>{
-              updateFollowList(true);
-            }} >
+            <button
+              className="profile-following"
+              onClick={() => {
+                updateFollowList(true);
+              }}
+            >
               <span>Following</span>
               <span className="follow-count">{data?.data?.count ?? 0}</span>
             </button>
@@ -88,17 +102,39 @@ const Main = ({ user, pageState: theme,updateFollowList }) => {
             </button>
           </div>
         </div>
+        <div className="business_registration-container">
+          {businessList?.data?.length > 0 ? (
+            <div>
+              {/* this div is when user  have any business registered */}
+            </div>
+          ) : (
+            <div className="business-not-registered-container" >
+              <span>
+                not yet registered Business
+              </span>
+              <div>
+
+              </div>
+             
+            </div>
+          )}
+        </div>
       </section>
     </main>
   );
 };
 
-const FollowList = function ({visibility,setShowFollowList}) {
-  return <section className="user-following-list" style={{
-    display:visibility?"block":"none"
-  }}>
-    yeah this is the following list
-  </section>;
+const FollowList = function ({ visibility, setShowFollowList }) {
+  return (
+    <section
+      className="user-following-list"
+      style={{
+        display: visibility ? "block" : "none",
+      }}
+    >
+      yeah this is the following list
+    </section>
+  );
 };
 
 export default Profile;
