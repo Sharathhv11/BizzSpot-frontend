@@ -3,9 +3,9 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "./profile.css";
 import noDp from "./../../../assets/noDp.png";
-import { MoveLeft, Plus } from "lucide-react";
 import useGet from "./../../../hooks/useGet";
 import { SquarePen } from "lucide-react";
+import Nav2 from "../Util/Nav2";
 
 const Profile = () => {
   const user = useSelector((state) => state.user.userInfo);
@@ -19,7 +19,7 @@ const Profile = () => {
 
   return (
     <>
-      <Nav pageState={pageState} user={user} navigate={navigate} />
+      <Nav2 pageState={pageState} user={user}  />
       <Main
         user={user}
         pageState={pageState}
@@ -35,27 +35,27 @@ const Profile = () => {
 
 /* ================= NAV ================= */
 
-const Nav = ({ pageState, user, navigate }) => {
-  return (
-    <nav className={`profile-nav ${!pageState ? "profile-nav-dark" : ""}`}>
-      <div>
-        <button
-          className={`${
-            !pageState ? "profile-nav-back-btn-dark" : "profile-nav-back-btn"
-          }`}
-          onClick={() => navigate("/")}
-        >
-          <MoveLeft />
-        </button>
+// const Nav = ({ pageState, user, navigate }) => {
+//   return (
+//     <nav className={`profile-nav ${!pageState ? "profile-nav-dark" : ""}`}>
+//       <div>
+//         <button
+//           className={`${
+//             !pageState ? "profile-nav-back-btn-dark" : "profile-nav-back-btn"
+//           }`}
+//           onClick={() => navigate("/")}
+//         >
+//           <MoveLeft />
+//         </button>
 
-        <div className="nav-profile-info-container">
-          <img src={user?.profilePicture || noDp} alt="profile" />
-          <h3>{user?.username}</h3>
-        </div>
-      </div>
-    </nav>
-  );
-};
+//         <div className="nav-profile-info-container">
+//           <img src={user?.profilePicture || noDp} alt="profile" />
+//           <h3>{user?.username}</h3>
+//         </div>
+//       </div>
+//     </nav>
+//   );
+// };
 
 const Main = ({ user, pageState: theme, updateFollowList }) => {
   const { data } = useGet(user?.id ? `follow/count?userID=${user?.id}` : null);
@@ -63,6 +63,8 @@ const Main = ({ user, pageState: theme, updateFollowList }) => {
   const { data: businessList } = useGet(
     user?.id ? `business?ownedBy=${user?.id}` : null
   );
+
+  const navigate = useNavigate();
 
   return (
     <main
@@ -102,7 +104,9 @@ const Main = ({ user, pageState: theme, updateFollowList }) => {
             </button>
           </div>
         </div>
-        <div className="business_registration-container">
+        <div className="business_registration-container" onClick={()=>{
+          navigate("/register-business")
+        }}>
           {businessList?.data?.length > 0 ? (
             <div>
               {/* this div is when user  have any business registered */}

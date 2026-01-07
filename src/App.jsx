@@ -7,6 +7,8 @@ import CompleteProfile from "./components/Auth/SignUp/CompleteProfile.jsx";
 import Profile from "./components/Home/Profile/Profile.jsx";
 import { Toaster } from 'react-hot-toast';
 import { ForgotPassword } from "./components/Auth/Login/ForgotPassword.jsx";
+import BusinessRegistration from "./components/Home/Business/BusinessRegistration.jsx";
+import 'leaflet/dist/leaflet.css';
 
 
 function App() {
@@ -38,9 +40,8 @@ function App() {
               <ForgotPassword/>
             }
           ></Route>
-          <Route path="/profile" element={<Profile/>}>
-
-          </Route>
+          <Route path="/profile" element={<Profile/>}></Route>
+          <Route path="/register-business" element={<BusinessRegistration/>}/>
         </Routes>
       </BrowserRouter>
     </>

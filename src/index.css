@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+/* MUST be in the same file */
+@layer base {
+  :root {
+    --border-dark: 1px solid #565252ae;
+    --border-light: 1px solid #eaeaea;
+  }
+}
