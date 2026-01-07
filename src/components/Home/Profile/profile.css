@@ -341,8 +341,3 @@
   }
 }
 
-@media (width<=700px) {
-  .profile-nav > div {
-    width: 100%;
-  }
-}

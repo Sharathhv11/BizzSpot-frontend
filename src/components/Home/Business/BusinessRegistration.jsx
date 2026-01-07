@@ -14,6 +14,13 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { CircleX } from "lucide-react";
+
+
+//* phone number validator 
+import PhoneInput from 'react-phone-input-2'
+
+import 'react-phone-input-2/lib/material.css'
 
 /* ================= LEAFLET MARKER FIX ================= */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -26,6 +33,7 @@ L.Icon.Default.mergeOptions({
 
 /* ================= RECENTER MAP ================= */
 const RecenterMap = ({ position }) => {
+
   const map = useMap();
 
   useEffect(() => {
@@ -54,7 +62,34 @@ const BusinessRegistration = () => {
   const user = useSelector((state) => state.user.userInfo);
   const isLight = useSelector((state) => state.pageState.theme);
 
+  //*email error message pop up state
+  const [emailError, setEmailError] = useState("");
+
   const [position, setPosition] = useState([51.505, -0.09]);
+
+  //* business information state
+  const [form, setForm] = useState({
+    businessName: "",
+    description: "",
+    email: "",
+    phone: "",
+    location: { country: "", state: "", city: "", pincode: "" },
+  });
+
+  //^hook for checking and notifying the error in the business Mail id
+  useEffect(() => {
+    const emailValidator = setTimeout(() => {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (form.email && !emailPattern.test(form.email)) {
+        setEmailError("Invalid email pattern");
+      } else {
+        setEmailError("");
+      }
+    }, 500);
+
+    return ()=>clearTimeout(emailValidator);
+  }, [form.email]);
 
   /* Get user current location */
   useEffect(() => {
@@ -71,14 +106,6 @@ const BusinessRegistration = () => {
   useEffect(() => {
     if (!user) navigate("/");
   }, [user, navigate]);
-
-  const [form, setForm] = useState({
-    businessName: "",
-    description: "",
-    email: "",
-    phone: "",
-    location: { country: "", state: "", city: "", pincode: "" },
-  });
 
   const [imagePreview, setImagePreview] = useState(null);
 
@@ -137,6 +164,12 @@ const BusinessRegistration = () => {
                     placeholder="contact@business.com"
                     onChange={handleChange}
                   />
+                  {emailError && (
+                    <div className="Error">
+                      <CircleX size={14} />
+                      <span>{emailError}</span>
+                    </div>
+                  )}
                 </label>
 
                 <label>
@@ -181,14 +214,14 @@ const BusinessRegistration = () => {
 
               <section className="section">
                 <h3>Contact</h3>
+               
+               
                 <div className="phone-row">
-                  <input value="+91" disabled />
-                  <input
-                    placeholder="Phone number"
-                    onChange={(e) =>
-                      setForm({ ...form, phone: e.target.value })
-                    }
-                  />
+
+                 <PhoneInput
+                  country={"in"}
+                 />
+                  
                 </div>
               </section>
             </div>
@@ -205,7 +238,10 @@ const BusinessRegistration = () => {
                     scrollWheelZoom={false}
                     className="map-container"
                   >
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
 
                     <RecenterMap position={position} />
                     <ClickToMoveMarker setPosition={setPosition} />
