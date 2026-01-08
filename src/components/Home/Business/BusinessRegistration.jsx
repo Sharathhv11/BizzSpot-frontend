@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef} from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Nav2 from "./../Util/Nav2.jsx";
 import "./business.css";
+import { CircleX } from "lucide-react";
 
 import {
   MapContainer,
@@ -14,15 +15,11 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { CircleX } from "lucide-react";
 
+import usePost from "../../../hooks/usePost.js";
+import toast from "react-hot-toast"
 
-//* phone number validator 
-import PhoneInput from 'react-phone-input-2'
-
-import 'react-phone-input-2/lib/material.css'
-
-/* ================= LEAFLET MARKER FIX ================= */
+//!LEAFLET MARKER FI/!*/
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -31,9 +28,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-/* ================= RECENTER MAP ================= */
+//!RECENTER MA/!*/
 const RecenterMap = ({ position }) => {
-
   const map = useMap();
 
   useEffect(() => {
@@ -45,7 +41,7 @@ const RecenterMap = ({ position }) => {
   return null;
 };
 
-/* ================= CLICK TO MOVE MARKER ================= */
+//!CLICK TO MOVE MARKE/!*/
 const ClickToMoveMarker = ({ setPosition }) => {
   useMapEvents({
     click(e) {
@@ -62,18 +58,28 @@ const BusinessRegistration = () => {
   const user = useSelector((state) => state.user.userInfo);
   const isLight = useSelector((state) => state.pageState.theme);
 
-  //*email error message pop up state
-  const [emailError, setEmailError] = useState("");
+  const { postData, responseData, error, loading } = usePost();
+  const profileRef = useRef();
 
   const [position, setPosition] = useState([51.505, -0.09]);
 
-  //* business information state
+  const [emailError, setEmailError] = useState("");
+  const [phoneNumberError, setPhoneNumberError] = useState("");
+  const [pincodeError, setPincodeError] = useState("");
+  const [submitError, setSubmitError] = useState();
   const [form, setForm] = useState({
     businessName: "",
     description: "",
     email: "",
     phone: "",
-    location: { country: "", state: "", city: "", pincode: "" },
+    location: {
+      country: "",
+      state: "",
+      district: "",
+      city: "",
+      area: "",
+      pincode: "",
+    },
   });
 
   //^hook for checking and notifying the error in the business Mail id
@@ -86,10 +92,27 @@ const BusinessRegistration = () => {
       } else {
         setEmailError("");
       }
+
+      const phoneNumberPattern = /^[6789][0-9]{9}$/;
+      if (form.phone && !phoneNumberPattern.test(form.phone)) {
+        setPhoneNumberError("Invalid Indian mobile number.");
+      } else {
+        setPhoneNumberError("");
+      }
+
+      const pinCodePattern = /^[1-9][0-9]{2}\s?[0-9]{3}$/;
+      if (
+        form.location.pincode &&
+        !pinCodePattern.test(form.location.pincode)
+      ) {
+        setPincodeError("Invalid Indian Pincode.");
+      } else {
+        setPincodeError("");
+      }
     }, 500);
 
-    return ()=>clearTimeout(emailValidator);
-  }, [form.email]);
+    return () => clearTimeout(emailValidator);
+  }, [form.email, form.phone, form.location.pincode]);
 
   /* Get user current location */
   useEffect(() => {
@@ -127,6 +150,117 @@ const BusinessRegistration = () => {
     if (!file) return;
     setImagePreview(URL.createObjectURL(file));
   };
+
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  //* Email
+  if (emailError) return;
+  if (!emailError && form.email.length === 0) {
+    setSubmitError("Please provide the business email ID.");
+    return;
+  }
+
+  //* Phone
+  if (phoneNumberError) return;
+  if (!phoneNumberError && !form.phone.length) {
+    setSubmitError("Please provide the business phone number.");
+    return;
+  }
+
+  //* Pincode
+  if (pincodeError) return;
+  if (!pincodeError && !form.location.pincode.length) {
+    setSubmitError("Please provide the business pincode.");
+    return;
+  }
+
+  //! MAJOR FIELDS
+  if (!form.businessName.trim()) {
+    setSubmitError("Please enter the business name.");
+    return;
+  }
+
+  if (!form.description.trim()) {
+    setSubmitError("Please add a short business description.");
+    return;
+  }
+
+  if (!form.location.country.trim()) {
+    setSubmitError("Please fill the country.");
+    return;
+  }
+
+  if (!form.location.state.trim()) {
+    setSubmitError("Please select the state.");
+    return;
+  }
+
+  if (!form.location.district.trim()) {
+    setSubmitError("Please enter the district.");
+    return;
+  }
+
+  if (!form.location.city.trim()) {
+    setSubmitError("Please enter the city.");
+    return;
+  }
+
+  setSubmitError("");
+
+  //  Add coordinates
+  const updatedForm = {
+    ...form,
+    location: {
+      ...form.location,
+      coordinates: {
+        type: "Point",
+        coordinates: position, // [lng, lat]
+      },
+    },
+  };
+
+  const formData = new FormData();
+
+formData.append("businessName", form.businessName);
+formData.append("description", form.description);
+formData.append("email", form.email);
+
+// Location
+formData.append("location[country]", form.location.country);
+formData.append("location[state]", form.location.state);
+formData.append("location[district]", form.location.district);
+formData.append("location[city]", form.location.city);
+formData.append("location[area]", form.location.area);
+formData.append("location[pincode]", form.location.pincode);
+
+formData.append("location[coordinates][type]", "Point");
+formData.append("location[coordinates][coordinates][0]", position[0]);
+formData.append("location[coordinates][coordinates][1]", position[1]);
+
+// Phone array
+formData.append("phoneNo[0][phone][countryCode]", "+91");
+formData.append("phoneNo[0][phone][number]", form.phone);
+
+// File
+if (profileRef.current?.files?.[0]) {
+  formData.append("profile", profileRef.current.files[0]);
+}
+
+
+  try {
+    const serverResponse = await postData("/business", formData, {
+        "Content-Type": "multipart/form-data",
+    });
+
+    toast.success(serverResponse.message);
+
+  } catch (error) {
+    console.error(error);
+    toast.error(error?.response?.data?.message || "something went wrong please try again.");
+  }
+};
+
 
   return (
     <>
@@ -200,8 +334,21 @@ const BusinessRegistration = () => {
 
                 <div className="grid-2">
                   <input
+                    name="district"
+                    placeholder="District"
+                    onChange={handleLocationChange}
+                  />
+                  <input
                     name="city"
                     placeholder="City"
+                    onChange={handleLocationChange}
+                  />
+                </div>
+
+                <div className="grid-2">
+                  <input
+                    name="area"
+                    placeholder="area"
                     onChange={handleLocationChange}
                   />
                   <input
@@ -209,20 +356,32 @@ const BusinessRegistration = () => {
                     placeholder="Pincode"
                     onChange={handleLocationChange}
                   />
+                  {pincodeError && (
+                    <div className="Error">
+                      <CircleX size={14} />
+                      <span>{pincodeError}</span>
+                    </div>
+                  )}
                 </div>
               </section>
 
               <section className="section">
                 <h3>Contact</h3>
-               
-               
                 <div className="phone-row">
-
-                 <PhoneInput
-                  country={"in"}
-                 />
-                  
+                  <input value="+91" disabled />
+                  <input
+                    placeholder="Phone number"
+                    onChange={(e) =>
+                      setForm({ ...form, phone: e.target.value })
+                    }
+                  />
                 </div>
+                {phoneNumberError && (
+                  <div className="Error">
+                    <CircleX size={14} />
+                    <span>{phoneNumberError}</span>
+                  </div>
+                )}
               </section>
             </div>
 
@@ -238,10 +397,7 @@ const BusinessRegistration = () => {
                     scrollWheelZoom={false}
                     className="map-container"
                   >
-                    <TileLayer
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
                     <RecenterMap position={position} />
                     <ClickToMoveMarker setPosition={setPosition} />
@@ -277,6 +433,7 @@ const BusinessRegistration = () => {
                     type="file"
                     accept="image/*"
                     onChange={handleImageUpload}
+                    ref={profileRef}
                   />
                 </div>
               </section>
@@ -285,7 +442,22 @@ const BusinessRegistration = () => {
 
           {/* FOOTER */}
           <footer className="reg-footer">
-            <button className="primary-btn">Complete Registration</button>
+            <button
+              className={`primary-btn ${
+                emailError || phoneNumberError || pincodeError || submitError
+                  ? "primary-btn-block"
+                  : null
+              }`}
+              onClick={handleSubmit}
+            >
+              Complete Registration
+            </button>
+            {submitError && (
+              <div className="Error">
+                <CircleX size={14} />
+                <span>{submitError}</span>
+              </div>
+            )}
           </footer>
         </form>
       </main>

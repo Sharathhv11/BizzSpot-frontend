@@ -266,7 +266,7 @@ const CompleteProfile = () => {
 
   return (
     <section className="Complete-profile-section">
-      <div className="profile-header">
+      <div className="profile-header-complete-profile">
         <h1>Complete your profile information</h1>
       </div>
 

@@ -134,6 +134,8 @@ textarea:focus {
   margin-top: 16px;
   display: flex;
   justify-content: flex-end;
+  align-items: end;
+  flex-direction: column;
 }
 
 .primary-btn {
@@ -145,7 +147,6 @@ textarea:focus {
   cursor: pointer;
   font-weight: 500;
 }
-
 
 /* DARK MODE */
 .dark {
@@ -176,7 +177,10 @@ textarea:focus {
   color: #9ca3af;
 }
 
-
+.dark .phone-row input:first-child {
+  background: #0d0d0d;
+  color: white;
+}
 
 .dark .primary-btn {
   background: #ffffff;
@@ -205,116 +209,22 @@ textarea:focus {
   color: #FECACA;
 }
 
-
-.phone-row{
-  height: 46px;
+.primary-btn-block{
+  cursor:not-allowed;
+  opacity: 0.8;
 }
 
-.form-control {
-  height: 100%;
-  border:var(--border-light) !important;
-  overflow: hidden  !important;
-}
-.selected-flag{
-  position: relative;
-  top: 3px;
-}
-
-.special-label{
-  position: relative;
-  top: -2px !important;
-  font-family: 'Poppins', sans-serif !important;
-}
-
-.dark .form-control{
-  border: var(--border-dark) !important;
-  background:#0d0d0d !important;
-}
-.dark .selected-flag{
-  background-color: #0d0d0d;
-  height: 20px !important;
-  width: 20px  !important;
-
-  transform: translate(10%,80%);
-}
-
-
-.dark .special-label{
-  background-color: transparent !important;
-}
-
-.country-list{
-  min-height: 100px !important;
-  height: 100px !important;
-  position: relative !important;
-  top: 20px !important;
-} 
-
-.dark .country-list li{
-  background-color: #0d0d0d !important;
-}
-
-.phone-inp-container{
-  border:2px solid black;
-  background-color: black;
-  min-height: max-content;
-}
-
-/* ===== FIX: Phone country dropdown above Leaflet map ===== */
-
-/* Force dropdown above map */
-.country-list {
-  z-index: 9999 !important;
-}
-
-/* Lower Leaflet map stacking so it never overlaps inputs */
-.leaflet-pane,
-.leaflet-top,
-.leaflet-bottom {
-  z-index: 100 !important;
-}
-
-/* Ensure phone container creates stacking context */
-.phone-row {
-  position: relative;
-  z-index: 9999;
-}
 
 
 @media (max-width: 900px) {
-
   .reg-body {
     grid-template-columns: 1fr;
   }
 
   .reg-footer {
     justify-content: center;
-  }
-
-  .country-list {
-    position: absolute !important;
-    top: 50px !important;
-    left: 0 !important;
-    right: 0 !important;
-    max-height: 220px !important;
-    overflow-y: auto !important;
-  }
-
-  .phone-row{
-    width:80% !important;
-  }
-
-}
-
-
-@media (max-width: 400px) {
-  .phone-row {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .phone-row .form-control {
-    width: 100% !important;
-    box-sizing: border-box !important;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
   }
 }
