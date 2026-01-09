@@ -1,11 +1,26 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "./profile.css";
 import noDp from "./../../../assets/noDp.png";
 import useGet from "./../../../hooks/useGet";
-import { SquarePen } from "lucide-react";
+import {
+  SquarePen,
+  MapPin,
+  Phone,
+  Star,
+  BadgeCheck,
+  Store,
+} from "lucide-react";
 import Nav2 from "../Util/Nav2";
+import businessPlaceHolder from "./../../../assets/businessPlaceHolder.png"
+
+
+import Box from "@mui/material/Box";
+import Rating from "@mui/material/Rating";
+import Typography from "@mui/material/Typography"
+
+import { setUserBusiness } from "../../../redux/reducers/user";
 
 const Profile = () => {
   const user = useSelector((state) => state.user.userInfo);
@@ -19,7 +34,7 @@ const Profile = () => {
 
   return (
     <>
-      <Nav2 pageState={pageState} user={user}  />
+      <Nav2 pageState={pageState} user={user} />
       <Main
         user={user}
         pageState={pageState}
@@ -33,36 +48,36 @@ const Profile = () => {
   );
 };
 
-/* ================= NAV ================= */
 
-// const Nav = ({ pageState, user, navigate }) => {
-//   return (
-//     <nav className={`profile-nav ${!pageState ? "profile-nav-dark" : ""}`}>
-//       <div>
-//         <button
-//           className={`${
-//             !pageState ? "profile-nav-back-btn-dark" : "profile-nav-back-btn"
-//           }`}
-//           onClick={() => navigate("/")}
-//         >
-//           <MoveLeft />
-//         </button>
-
-//         <div className="nav-profile-info-container">
-//           <img src={user?.profilePicture || noDp} alt="profile" />
-//           <h3>{user?.username}</h3>
-//         </div>
-//       </div>
-//     </nav>
-//   );
-// };
+const greenRatingStyle = (theme) => ({
+  "& .MuiRating-iconFilled": {
+    color: theme.palette.success.main,
+  },
+  "& .MuiRating-iconHover": {
+    color: theme.palette.success.dark,
+  },
+});
 
 const Main = ({ user, pageState: theme, updateFollowList }) => {
+  //* api call to get the user profile information
   const { data } = useGet(user?.id ? `follow/count?userID=${user?.id}` : null);
 
-  const { data: businessList } = useGet(
-    user?.id ? `business?ownedBy=${user?.id}` : null
+  const dispatch = useDispatch();
+  const { usersBusiness, hasFetchedBusinesses } = useSelector(
+    (state) => state.user
   );
+
+  const shouldFetch = user?.id && !hasFetchedBusinesses;
+
+  const { data: businessList } = useGet(
+    shouldFetch ? `business?ownedBy=${user?.id}` : null
+  );
+
+  useEffect(() => {
+    if (businessList?.data && !hasFetchedBusinesses) {
+      dispatch(setUserBusiness(businessList.data));
+    }
+  }, [businessList, hasFetchedBusinesses, dispatch]);
 
   const navigate = useNavigate();
 
@@ -104,22 +119,84 @@ const Main = ({ user, pageState: theme, updateFollowList }) => {
             </button>
           </div>
         </div>
-        <div className="business_registration-container" onClick={()=>{
-          navigate("/register-business")
-        }}>
-          {businessList?.data?.length > 0 ? (
-            <div>
-              {/* this div is when user  have any business registered */}
-            </div>
-          ) : (
-            <div className="business-not-registered-container" >
-              <span>
-                not yet registered Business
-              </span>
-              <div>
+        <div className="business_registration-container">
+          {usersBusiness?.length > 0 ? (
+            usersBusiness.map((business) => (
+              <div className="business-rich" key={business._id}>
+                {/* Image */}
+                <div className="business-img-wrapper">
+                  <img
+                    src={business.profile || businessPlaceHolder}
+                    alt={business.businessName}
+                    className="business-rich-img"
+                  />
+                </div>
 
+                {/* Info */}
+                <div className="business-rich-info">
+                  {/* Header */}
+                  <div className="business-rich-header">
+                    <div className="title">
+                      <Store size={18} />
+                      <h3>{business.businessName}</h3>
+                    </div>
+
+                    <span
+                      className={`business-status ${
+                        business.status === "Open" ? "open" : "closed"
+                      }`}
+                    >
+                      {business.status}
+                    </span>
+                  </div>
+
+                  {/* Description */}
+                  <p className="business-rich-desc">{business.description}</p>
+
+                  {/* Meta */}
+                  <div className="business-rich-meta">
+                    <span>
+                      <MapPin size={16} />
+                      {business.location.area}, {business.location.city},{" "}
+                      {business.location.state}
+                    </span>
+
+                    <span>
+                      <Phone size={16} />+
+                      {business.phoneNo?.[0]?.phone?.countryCode}{" "}
+                      {business.phoneNo?.[0]?.phone?.number}
+                    </span>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="business-rich-footer">
+                    <span className="rating">
+                      <Star size={16} />
+                      {business.rating.totalReview > 0
+                        ? (
+                            business.rating.sumOfReview /
+                            business.rating.totalReview
+                          ).toFixed(1)
+                        : "New"}
+                    </span>
+
+                    <span className="completion">
+                      <BadgeCheck size={16} />
+                      {business.profileCompletion}% Complete
+                    </span>
+                  </div>
+                </div>
               </div>
-             
+            ))
+          ) : (
+            <div
+              className="business-not-registered-container"
+              onClick={() => {
+                navigate("/register-business");
+              }}
+            >
+              <span>not yet registered Business</span>
+              <div></div>
             </div>
           )}
         </div>

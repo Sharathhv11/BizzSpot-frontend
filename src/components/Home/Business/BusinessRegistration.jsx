@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef} from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Nav2 from "./../Util/Nav2.jsx";
 import "./business.css";
 import { CircleX } from "lucide-react";
+import { setUserBusiness } from "../../../redux/reducers/user";
 
 import {
   MapContainer,
@@ -17,7 +18,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
 import usePost from "../../../hooks/usePost.js";
-import toast from "react-hot-toast"
+import toast from "react-hot-toast";
 
 //!LEAFLET MARKER FI/!*/
 delete L.Icon.Default.prototype._getIconUrl;
@@ -57,6 +58,9 @@ const BusinessRegistration = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.userInfo);
   const isLight = useSelector((state) => state.pageState.theme);
+  let userOwedBusiness = useSelector((state) => state.user.usersBusiness);
+
+  const dispatch = useDispatch();
 
   const { postData, responseData, error, loading } = usePost();
   const profileRef = useRef();
@@ -151,116 +155,122 @@ const BusinessRegistration = () => {
     setImagePreview(URL.createObjectURL(file));
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  //* Email
-  if (emailError) return;
-  if (!emailError && form.email.length === 0) {
-    setSubmitError("Please provide the business email ID.");
-    return;
-  }
+    //* Email
+    if (emailError) return;
+    if (!emailError && form.email.length === 0) {
+      setSubmitError("Please provide the business email ID.");
+      return;
+    }
 
-  //* Phone
-  if (phoneNumberError) return;
-  if (!phoneNumberError && !form.phone.length) {
-    setSubmitError("Please provide the business phone number.");
-    return;
-  }
+    //* Phone
+    if (phoneNumberError) return;
+    if (!phoneNumberError && !form.phone.length) {
+      setSubmitError("Please provide the business phone number.");
+      return;
+    }
 
-  //* Pincode
-  if (pincodeError) return;
-  if (!pincodeError && !form.location.pincode.length) {
-    setSubmitError("Please provide the business pincode.");
-    return;
-  }
+    //* Pincode
+    if (pincodeError) return;
+    if (!pincodeError && !form.location.pincode.length) {
+      setSubmitError("Please provide the business pincode.");
+      return;
+    }
 
-  //! MAJOR FIELDS
-  if (!form.businessName.trim()) {
-    setSubmitError("Please enter the business name.");
-    return;
-  }
+    //! MAJOR FIELDS
+    if (!form.businessName.trim()) {
+      setSubmitError("Please enter the business name.");
+      return;
+    }
 
-  if (!form.description.trim()) {
-    setSubmitError("Please add a short business description.");
-    return;
-  }
+    if (!form.description.trim()) {
+      setSubmitError("Please add a short business description.");
+      return;
+    }
 
-  if (!form.location.country.trim()) {
-    setSubmitError("Please fill the country.");
-    return;
-  }
+    if (!form.location.country.trim()) {
+      setSubmitError("Please fill the country.");
+      return;
+    }
 
-  if (!form.location.state.trim()) {
-    setSubmitError("Please select the state.");
-    return;
-  }
+    if (!form.location.state.trim()) {
+      setSubmitError("Please select the state.");
+      return;
+    }
 
-  if (!form.location.district.trim()) {
-    setSubmitError("Please enter the district.");
-    return;
-  }
+    if (!form.location.district.trim()) {
+      setSubmitError("Please enter the district.");
+      return;
+    }
 
-  if (!form.location.city.trim()) {
-    setSubmitError("Please enter the city.");
-    return;
-  }
+    if (!form.location.city.trim()) {
+      setSubmitError("Please enter the city.");
+      return;
+    }
 
-  setSubmitError("");
+    setSubmitError("");
 
-  //  Add coordinates
-  const updatedForm = {
-    ...form,
-    location: {
-      ...form.location,
-      coordinates: {
-        type: "Point",
-        coordinates: position, // [lng, lat]
+    //  Add coordinates
+    const updatedForm = {
+      ...form,
+      location: {
+        ...form.location,
+        coordinates: {
+          type: "Point",
+          coordinates: position, // [lng, lat]
+        },
       },
-    },
-  };
+    };
 
-  const formData = new FormData();
+    const formData = new FormData();
 
-formData.append("businessName", form.businessName);
-formData.append("description", form.description);
-formData.append("email", form.email);
+    formData.append("businessName", form.businessName);
+    formData.append("description", form.description);
+    formData.append("email", form.email);
 
-// Location
-formData.append("location[country]", form.location.country);
-formData.append("location[state]", form.location.state);
-formData.append("location[district]", form.location.district);
-formData.append("location[city]", form.location.city);
-formData.append("location[area]", form.location.area);
-formData.append("location[pincode]", form.location.pincode);
+    // Location
+    formData.append("location[country]", form.location.country);
+    formData.append("location[state]", form.location.state);
+    formData.append("location[district]", form.location.district);
+    formData.append("location[city]", form.location.city);
+    formData.append("location[area]", form.location.area);
+    formData.append("location[pincode]", form.location.pincode);
 
-formData.append("location[coordinates][type]", "Point");
-formData.append("location[coordinates][coordinates][0]", position[0]);
-formData.append("location[coordinates][coordinates][1]", position[1]);
+    formData.append("location[coordinates][type]", "Point");
+    formData.append("location[coordinates][coordinates][0]", position[0]);
+    formData.append("location[coordinates][coordinates][1]", position[1]);
 
-// Phone array
-formData.append("phoneNo[0][phone][countryCode]", "+91");
-formData.append("phoneNo[0][phone][number]", form.phone);
+    // Phone array
+    formData.append("phoneNo[0][phone][countryCode]", "+91");
+    formData.append("phoneNo[0][phone][number]", form.phone);
 
-// File
-if (profileRef.current?.files?.[0]) {
-  formData.append("profile", profileRef.current.files[0]);
-}
+    // File
+    if (profileRef.current?.files?.[0]) {
+      formData.append("profile", profileRef.current.files[0]);
+    }
 
+   
 
-  try {
-    const serverResponse = await postData("/business", formData, {
+    try {
+      const serverResponse = await postData("/business", formData, {
         "Content-Type": "multipart/form-data",
-    });
+      });
 
-    toast.success(serverResponse.message);
+     userOwedBusiness = [...userOwedBusiness,serverResponse.data];
+     dispatch(setUserBusiness(userOwedBusiness));
+      toast.success(serverResponse.message);
 
-  } catch (error) {
-    console.error(error);
-    toast.error(error?.response?.data?.message || "something went wrong please try again.");
-  }
-};
-
+      navigate("/profile");
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error?.response?.data?.message ||
+          "something went wrong please try again."
+      );
+    }
+  };
 
   return (
     <>
