@@ -13,12 +13,11 @@ import {
   Store,
 } from "lucide-react";
 import Nav2 from "../Util/Nav2";
-import businessPlaceHolder from "./../../../assets/businessPlaceHolder.png"
-
+import businessPlaceHolder from "./../../../assets/businessPlaceHolder.png";
 
 import Box from "@mui/material/Box";
 import Rating from "@mui/material/Rating";
-import Typography from "@mui/material/Typography"
+import Typography from "@mui/material/Typography";
 
 import { setUserBusiness } from "../../../redux/reducers/user";
 
@@ -47,7 +46,6 @@ const Profile = () => {
     </>
   );
 };
-
 
 const greenRatingStyle = (theme) => ({
   "& .MuiRating-iconFilled": {
@@ -151,7 +149,16 @@ const Main = ({ user, pageState: theme, updateFollowList }) => {
                   </div>
 
                   {/* Description */}
-                  <p className="business-rich-desc">{business.description}</p>
+                  <p className="business-rich-desc">
+                    {business.description.length <= 50 ? (
+                      business.description
+                    ) : (
+                      <>
+                        {business.description.slice(0, 50)}…
+                        <span className="read-more"> more</span>
+                      </>
+                    )}
+                  </p>
 
                   {/* Meta */}
                   <div className="business-rich-meta">
@@ -199,6 +206,20 @@ const Main = ({ user, pageState: theme, updateFollowList }) => {
               <div></div>
             </div>
           )}
+
+          {usersBusiness?.length > 0 ? (
+            <div className="profile-register-more-btn-container">
+              <button
+                className="profile-register-more-btn"
+                onClick={() => {
+                  navigate("/register-business");
+                }}
+              >
+                <Store />
+                register business
+              </button>
+            </div>
+          ) : null}
         </div>
       </section>
     </main>
