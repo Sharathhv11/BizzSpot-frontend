@@ -9,6 +9,7 @@ import { Toaster } from 'react-hot-toast';
 import { ForgotPassword } from "./components/Auth/Login/ForgotPassword.jsx";
 import BusinessRegistration from "./components/Home/Business/BusinessRegistration.jsx";
 import 'leaflet/dist/leaflet.css';
+import BusinessProfile from "./components/Home/BusinessProfile/BusinessProfile.jsx";
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
           ></Route>
           <Route path="/profile" element={<Profile/>}></Route>
           <Route path="/register-business" element={<BusinessRegistration/>}/>
+          <Route path="/business/:businessID" element={<BusinessProfile/>}/>
         </Routes>
       </BrowserRouter>
     </>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Navigate } from "react-router-dom";
 import "./profile.css";
 import noDp from "./../../../assets/noDp.png";
 import useGet from "./../../../hooks/useGet";
@@ -27,9 +27,9 @@ const Profile = () => {
   const navigate = useNavigate();
   const [showFollowList, setShowFollowList] = useState(false);
 
-  useEffect(() => {
-    if (!user) navigate("/");
-  }, [user, navigate]);
+ if (!user) {
+   return <Navigate to="/" replace />;
+  }
 
   return (
     <>
@@ -120,7 +120,9 @@ const Main = ({ user, pageState: theme, updateFollowList }) => {
         <div className="business_registration-container">
           {usersBusiness?.length > 0 ? (
             usersBusiness.map((business) => (
-              <div className="business-rich" key={business._id}>
+              <div className="business-rich" key={business._id} onClick={()=>{
+                navigate(`/business/${business._id}`);
+              }}>
                 {/* Image */}
                 <div className="business-img-wrapper">
                   <img

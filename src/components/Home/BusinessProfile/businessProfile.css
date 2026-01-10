@@ -1,0 +1,21 @@
+::root{
+  --max-width:800px;
+}
+
+
+.business-profile-main{
+  width: 100%;
+  height : 1200px;
+  min-height: max-content;
+  background-color: red;
+  position: absolute;
+  padding: 10px 20px;
+}
+
+.business-profile-info-container{
+  height:400px;
+  width: 80%;
+  max-width: var(--max-width);
+  background-color: white;
+  margin:0 auto
+}

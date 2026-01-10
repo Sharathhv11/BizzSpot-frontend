@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Navigate } from "react-router-dom";
 import Nav2 from "./../Util/Nav2.jsx";
 import "./business.css";
 import { CircleX } from "lucide-react";
@@ -130,9 +130,9 @@ const BusinessRegistration = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (!user) navigate("/");
-  }, [user, navigate]);
+  if (!user) {
+   return <Navigate to="/" replace />;
+  }
 
   const [imagePreview, setImagePreview] = useState(null);
 

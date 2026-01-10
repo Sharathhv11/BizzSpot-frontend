@@ -53,11 +53,11 @@
   padding: 16px;
   border-radius: 10px;
   background-color: #fff;
-  border:var(--border-light);
+  /* border:var(--border-light); */
 }
 
 .dark-profile-main .profile-right{
-  border:var(--border-dark)
+  /* border:var(--border-dark) */
 }
 
 .dark-profile-main .profile-right {
