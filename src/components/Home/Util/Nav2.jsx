@@ -3,7 +3,7 @@ import {MoveLeft} from "lucide-react"
 import "./nav2.css"
 import noDp from "./../../../assets/noDp.png";
 
-const Nav2 = ({ pageState, user }) => {
+const Nav2 = ({ pageState, user,redirect }) => {
   const navigate = useNavigate();
   return (
     <nav className={`profile-nav ${!pageState ? "profile-nav-dark" : ""}`}>
@@ -12,7 +12,7 @@ const Nav2 = ({ pageState, user }) => {
           className={`${
             !pageState ? "profile-nav-back-btn-dark" : "profile-nav-back-btn"
           }`}
-          onClick={() => navigate("/")}
+          onClick={() => navigate(redirect?redirect:"/")}
         >
           <MoveLeft />
         </button>
