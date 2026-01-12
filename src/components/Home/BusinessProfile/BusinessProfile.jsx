@@ -14,7 +14,11 @@ import {
   Phone,
   Star,
   Pen,
+  TriangleAlert
 } from "lucide-react";
+
+import businessNotFound from "./../../../assets/businessNoFound.png"
+import getUserFriendlyMessage from "../../../utils/userFriendlyErrors";
 
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
@@ -63,15 +67,22 @@ const BusinessProfile = () => {
       if (data?.data?.owner === user?.id) setOwned(true);
       setBusinessInfo(data?.data);
     }
-
-    console.log( businessInfo?.rating?.sumOfReview /
-                        businessInfo?.rating?.totalReview);
   }, [data]);
+
+
+  
 
   return (
     <>
       <Nav2 pageState={pageState} user={user} redirect={"/profile"} />
-      <main className="business-profile-main">
+      {error?
+      <div className="broken-link-container">
+        <div>
+           <img src={businessNotFound} alt="business not found" />
+        </div>
+          <div><div className="error-lucide"><TriangleAlert/></div>{getUserFriendlyMessage(error)}</div>
+      </div>
+      :<main className="business-profile-main">
         {owned && businessInfo.profileCompletion < 100 && (
           <div className="notify-business-profile-completion">
             <div className="information-complete">
@@ -211,13 +222,12 @@ const BusinessProfile = () => {
               </div>
             </div>
             <button className="update-profile">
-  <Pen size={16} />
-  Edit profile
-</button>
-
+              <Pen size={16} />
+              Edit profile
+            </button>
           </div>
         </div>
-      </main>
+      </main>}
     </>
   );
 };
