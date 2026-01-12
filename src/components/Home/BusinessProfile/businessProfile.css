@@ -5,7 +5,7 @@
   --border-light: 1px solid #eaeaea;
 }
 
-.broken-link-container{
+.broken-link-container {
   height: 100dvh;
   width: 100%;
   display: flex;
@@ -15,14 +15,14 @@
   padding: 20px;
 }
 
-.broken-link-container > div:first-child{
+.broken-link-container > div:first-child {
   height: 400px;
-  max-width:400px;
+  max-width: 400px;
   min-width: 300px;
 }
 
-.broken-link-container > div:last-child{
- max-width:400px;
+.broken-link-container > div:last-child {
+  max-width: 400px;
   min-width: 300px;
   height: 60px;
   position: relative;
@@ -32,14 +32,12 @@
   display: flex;
   gap: 10px;
 }
-.error-lucide{
+.error-lucide {
   width: 16px;
   height: 16px;
-  
 }
 
-
-.broken-link-container img{
+.broken-link-container img {
   height: 100%;
   width: 100%;
   object-fit: cover;
@@ -112,8 +110,8 @@
   background-color: #f0edff;
 }
 
-.business-info-container{
-  padding:0 20px;
+.business-info-container {
+  padding: 0 20px;
 }
 .business-profile-info-container {
   padding: 10px 20px;
@@ -132,10 +130,9 @@
   /* border:2px solid black; */
 }
 
-
 .business-profile-image-container {
   width: 40%;
-  height: 100%; 
+  height: 100%;
   /* border:2px solid black; */
 }
 .business-profile-image-container img {
@@ -153,7 +150,6 @@
   display: flex;
   justify-content: start;
   flex-direction: column;
-  
 }
 
 .name-container {
@@ -203,7 +199,6 @@
   top: 4px;
   display: flex;
   gap: 10px;
-
 }
 
 .lucide-icon {
@@ -255,7 +250,11 @@
   text-transform: capitalize;
   cursor: pointer;
 }
-.description-container,.information,.location-container,.number-container,.rating-container{
+.description-container,
+.information,
+.location-container,
+.number-container,
+.rating-container {
   margin-top: 5px;
   /* justify-items: start; */
 }
@@ -293,11 +292,245 @@
 
   cursor: pointer;
   transition: all 0.2s ease;
+}
 
+.business-section2-profile-info {
+  width: 100%;
+  height: 300px;
+  min-height: max-content;
+  padding: 0 20px;
+}
+
+/* Main container */
+.business-section2-profile-info > div:first-child {
+  height: 100%;
+  min-height: max-content;
+  max-width: var(--max-width);
+  width: 100%;
+  margin: 0 auto;
+  /* padding: 10px; */
+  border: var(--border-light);
+  border-radius: var(--border-radius);
+  display: flex;
+  flex-wrap: wrap;
+  background-color: var(--bg-primary, #fff);
+}
+
+/* Followers */
+.followers-container {
+  height: 100%;
+  min-width: 220px;
+  width: 20%;
+  border-right: var(--border-light);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+}
+
+.followers-container h2 {
+  font-weight: 500;
+  font-size: 16px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.followers-container h5 {
+  font-weight: 500;
+  font-size: 14px;
+  text-align: center;
+  color: rgb(96, 95, 95);
+}
+
+.analytics-btn {
+  margin: 10px auto 0;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  height: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary-color, #512eff);
+
+  background-color: #f7f2f263;
+  border: var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.analytics-btn:hover {
+  background-color: #ece4e463;
+}
+
+.analytics-btn .lucide-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Working hours */
+.working-hours {
+  width: 30%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  flex-direction: column;
+  gap: 6px;
+  border-right: var(--border-light);
+}
+
+.working-hours > div{
+  min-width: max-content;
+  position: relative;
+  top: 13%;
+  height: 100%;
+  /* background-color: red; */
+}
+
+.working-hours h2 {
+  font-weight: 500;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.working-hours h2 span {
+  font-size: 12px;
+  color: #777;
+}
+
+.working-hours p {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.4;
+}
+
+/* Map container */
+.map-container {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  gap: 8px;
+  padding: 10px;
+  padding-top: 35px;
+}
+
+.map-container h2 {
+  font-weight: 500;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Map wrapper */
+.map-wrapper {
+  /* flex: 1; */
+  height: 100%;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px dashed #ccc;
+  /* background-color: red; */
+}
+
+/* Leaflet internal container */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
 }
 
 
+.block2-icons{
+  position: relative;
+  top: -2px;
+}
 
+
+.recenter-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 1000;
+  background: white;
+  border: var(--border-light);
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.recenter-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.status-green,
+.status-red {
+  width: max-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+}
+
+/* Open / Active */
+.status-green {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #ffffff;
+}
+
+/* Closed / Inactive */
+.status-red {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  color: #ffffff;
+}
+
+@media (width<=1200px){
+  .followers-container,.working-hours{
+    width: 50%;
+    height: 70%;
+    border: var(--border-light);
+  }
+
+  .map-container{
+    width: 100%;
+    padding-top: 5px;
+  }
+}
+
+@media ( width<=500px){
+  .followers-container,.working-hours{
+    width: 100%;
+    height: 70%;
+    border: var(--border-light);
+  }
+}
 
 @media (max-width: 768px) {
   .notify-business-profile-completion {
@@ -313,17 +546,17 @@
     max-width: 100%;
   }
 
-  .business-profile-info-container{
+  .business-profile-info-container {
     flex-direction: column;
   }
-  
-  .business-profile-image-container{
+
+  .business-profile-image-container {
     height: 40%;
-    width:100%;
+    width: 100%;
   }
-  .business-details-container{
+  .business-details-container {
     height: 60%;
     width: 100%;
-    padding:10px 0;
-  }
+    padding: 10px 0;
+  } 
 }

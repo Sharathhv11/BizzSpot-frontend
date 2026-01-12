@@ -14,12 +14,32 @@ import {
   Phone,
   Star,
   Pen,
-  TriangleAlert
+  TriangleAlert,
+  UserRoundCheck,
+  Clock,
+  LocateFixed,
+  ChartNoAxesColumn,
 } from "lucide-react";
 
-import businessNotFound from "./../../../assets/businessNoFound.png"
+//^leaflet imports
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
+import businessNotFound from "./../../../assets/businessNoFound.png";
 import getUserFriendlyMessage from "../../../utils/userFriendlyErrors";
 
+import Switch from "@mui/material/Switch";
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
 
@@ -69,167 +89,297 @@ const BusinessProfile = () => {
     }
   }, [data]);
 
-
-  
-
   return (
     <>
       <Nav2 pageState={pageState} user={user} redirect={"/profile"} />
-      {error?
-      <div className="broken-link-container">
-        <div>
-           <img src={businessNotFound} alt="business not found" />
-        </div>
-          <div><div className="error-lucide"><TriangleAlert/></div>{getUserFriendlyMessage(error)}</div>
-      </div>
-      :<main className="business-profile-main">
-        {owned && businessInfo.profileCompletion < 100 && (
-          <div className="notify-business-profile-completion">
-            <div className="information-complete">
-              <div className="info-header">
-                <AlertCircle size={20} />
-                <h4>Complete your business profile</h4>
-              </div>
-
-              <p>
-                Your profile is{" "}
-                <strong>{businessInfo.profileCompletion}%</strong> complete. Add
-                the remaining details to improve visibility, build trust, and
-                help customers understand your business better.
-              </p>
-
-              <button className="complete-profile-btn">
-                Complete profile
-                <ArrowRight size={16} />
-              </button>
-            </div>
+      {error ? (
+        <div className="broken-link-container">
+          <div>
+            <img src={businessNotFound} alt="business not found" />
           </div>
-        )}
-        <div className="business-info-container">
-          <div className="business-profile-info-container">
-            <div className="business-profile-image-container">
-              <img
-                src={businessInfo?.profile || businessNoProfile}
-                alt={businessInfo?.name}
-              />
+          <div>
+            <div className="error-lucide">
+              <TriangleAlert />
             </div>
-            <div className="business-details-container">
-              <div className="name-container">
-                {businessInfo ? (
-                  <>
-                    <span>
-                      <Store className="lucide-icon" />
-                      {businessInfo.businessName}
-                    </span>
-                    <span>{businessInfo.email}</span>{" "}
-                  </>
-                ) : (
-                  <div></div>
-                )}
+            {getUserFriendlyMessage(error)}
+          </div>
+        </div>
+      ) : (
+        <main className="business-profile-main">
+          {owned && businessInfo.profileCompletion < 100 && (
+            <div className="notify-business-profile-completion">
+              <div className="information-complete">
+                <div className="info-header">
+                  <AlertCircle size={20} />
+                  <h4>Complete your business profile</h4>
+                </div>
+
+                <p>
+                  Your profile is{" "}
+                  <strong>{businessInfo.profileCompletion}%</strong> complete.
+                  Add the remaining details to improve visibility, build trust,
+                  and help customers understand your business better.
+                </p>
+
+                <button className="complete-profile-btn">
+                  Complete profile
+                  <ArrowRight size={16} />
+                </button>
               </div>
-              <div className="description-container">
-                <span>
-                  <FileText className="lucide-icon" />
-                  Description
-                </span>
-                <span className="information">
-                  {businessInfo?.description.length > 150 && !descVisibility ? (
+            </div>
+          )}
+          <section className="business-info-container">
+            <div className="business-profile-info-container">
+              <div className="business-profile-image-container">
+                <img
+                  src={businessInfo?.profile || businessNoProfile}
+                  alt={businessInfo?.name}
+                />
+              </div>
+              <div className="business-details-container">
+                <div className="name-container">
+                  {businessInfo ? (
                     <>
-                      {businessInfo?.description.slice(0, 150)}
-                      <button
-                        className="more"
-                        onClick={() => {
-                          setDescVisibility(true);
-                        }}
-                      >
-                        ...more
-                      </button>
+                      <span>
+                        <Store className="lucide-icon" />
+                        {businessInfo.businessName}
+                      </span>
+                      <span>{businessInfo.email}</span>{" "}
                     </>
                   ) : (
-                    <>
-                      {businessInfo?.description}
-                      <button
-                        className={`more ${
-                          businessInfo?.description.length > 150
-                            ? null
-                            : "hidden"
-                        }`}
-                        onClick={() => {
-                          setDescVisibility(false);
-                        }}
-                      >
-                        less
-                      </button>
-                    </>
+                    <div></div>
                   )}
-                </span>
-              </div>
-              <div className="location-container">
-                <span>
-                  <MapPin className="lucide-icon" />
-                  location
-                </span>
-                <span className="information location-text">
-                  {[
-                    businessInfo?.location?.area,
-                    businessInfo?.location?.city,
-                    businessInfo?.location?.district,
-                    businessInfo?.location?.state,
-                    businessInfo?.location?.country,
-                  ]
-                    .filter(Boolean)
-                    .join(", ")}
-                  {businessInfo?.location?.pincode && (
-                    <span className="pincode">
-                      {" "}
-                      ({businessInfo.location.pincode})
-                    </span>
-                  )}
-                </span>
-              </div>
-              <div className="number-container">
-                <span>
-                  <Phone className="lucide-icon" />
-                  Phone
-                </span>
-                <span className="information">
-                  {businessInfo?.phoneNo[0]?.phone.countryCode +
-                    " " +
-                    businessInfo?.phoneNo[0]?.phone.number}
-                </span>
-              </div>
-              <div className="rating-container">
-                <span>
-                  <Star className="lucide-icon" />
-                  Rating
-                </span>
-                <span>
-                  <Stack spacing={1}>
-                    <Rating
-                      name="half-rating-read"
-                      value={
-                        businessInfo?.rating?.sumOfReview /
-                        businessInfo?.rating?.totalReview
-                      }
-                      precision={0.5}
-                      readOnly
-                    />
-                  </Stack>
-                  <span className="review-count">
-                    ({businessInfo?.rating?.totalReview} reviews)
+                </div>
+                <div className="description-container">
+                  <span>
+                    <FileText className="lucide-icon" />
+                    Description
                   </span>
-                </span>
+                  <span className="information">
+                    {businessInfo?.description.length > 150 &&
+                    !descVisibility ? (
+                      <>
+                        {businessInfo?.description.slice(0, 150)}
+                        <button
+                          className="more"
+                          onClick={() => {
+                            setDescVisibility(true);
+                          }}
+                        >
+                          ...more
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {businessInfo?.description}
+                        <button
+                          className={`more ${
+                            businessInfo?.description.length > 150
+                              ? null
+                              : "hidden"
+                          }`}
+                          onClick={() => {
+                            setDescVisibility(false);
+                          }}
+                        >
+                          less
+                        </button>
+                      </>
+                    )}
+                  </span>
+                </div>
+                <div className="location-container">
+                  <span>
+                    <MapPin className="lucide-icon" />
+                    location
+                  </span>
+                  <span className="information location-text">
+                    {[
+                      businessInfo?.location?.area,
+                      businessInfo?.location?.city,
+                      businessInfo?.location?.district,
+                      businessInfo?.location?.state,
+                      businessInfo?.location?.country,
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
+                    {businessInfo?.location?.pincode && (
+                      <span className="pincode">
+                        {" "}
+                        ({businessInfo.location.pincode})
+                      </span>
+                    )}
+                  </span>
+                </div>
+                <div className="number-container">
+                  <span>
+                    <Phone className="lucide-icon" />
+                    Phone
+                  </span>
+                  <span className="information">
+                    {businessInfo?.phoneNo[0]?.phone.countryCode +
+                      " " +
+                      businessInfo?.phoneNo[0]?.phone.number}
+                  </span>
+                </div>
+                <div className="rating-container">
+                  <span>
+                    <Star className="lucide-icon" />
+                    Rating
+                  </span>
+                  <span>
+                    <Stack spacing={1}>
+                      <Rating
+                        name="half-rating-read"
+                        value={
+                          businessInfo?.rating?.sumOfReview /
+                          businessInfo?.rating?.totalReview
+                        }
+                        precision={0.5}
+                        readOnly
+                      />
+                    </Stack>
+                    <span className="review-count">
+                      ({businessInfo?.rating?.totalReview} reviews)
+                    </span>
+                  </span>
+                </div>
               </div>
+              <button className="update-profile">
+                <Pen size={16} />
+                Edit profile
+              </button>
             </div>
-            <button className="update-profile">
-              <Pen size={16} />
-              Edit profile
-            </button>
-          </div>
-        </div>
-      </main>}
+          </section>
+          <InfoBlock2 businessInfo={businessInfo} />
+        </main>
+      )}
     </>
   );
 };
+
+function InfoBlock2({ businessInfo }) {
+  function RecenterButton({ position }) {
+    const map = useMap();
+
+    return (
+      <button
+        className="recenter-btn"
+        onClick={() => map.setView(position, 13)}
+        title="Back to business location"
+      >
+        <LocateFixed size={18} />
+      </button>
+    );
+  }
+
+  const { data } = useGet(
+    businessInfo ? `follow/count?businessID=${businessInfo._id}` : null
+  );
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const position = businessInfo?.location?.coordinates?.coordinates
+    ? [
+        businessInfo.location.coordinates.coordinates[0],
+        businessInfo.location.coordinates.coordinates[1],
+      ]
+    : [12.9716, 77.5946]; // Bangalore fallback
+
+  const navigate = useNavigate();
+
+  return (
+    <section className="business-section2-profile-info">
+      <div>
+        <div className="followers-container">
+          <h2>
+            <UserRoundCheck className="lucide-icon block2-icons" />
+            Followers
+          </h2>
+
+          <h5>{data?.data?.count ?? 0}</h5>
+
+          <button
+            className="analytics-btn"
+            title="View business analytics"
+            onClick={() => navigate(`/business/${businessInfo._id}/analytics`)}
+          >
+            <ChartNoAxesColumn className="lucide-icon block2-icons" />
+            <span>Analytics</span>
+          </button>
+        </div>
+
+        <div className="working-hours">
+          <div>
+            <h2>
+              <Clock className="lucide-icon block2-icons" />
+              Working Hours{" "}
+              {!businessInfo?.workingHours && <span>(Default)</span>}
+            </h2>
+
+            <p>
+              <strong>Weekdays:</strong>{" "}
+              {businessInfo?.workingHours?.weekdays?.open &&
+              businessInfo?.workingHours?.weekdays?.close
+                ? `${businessInfo.workingHours.weekdays.open} - ${businessInfo.workingHours.weekdays.close}`
+                : "9:00 AM - 6:00 PM"}
+            </p>
+
+            <p>
+              <strong>Weekends:</strong>{" "}
+              {businessInfo?.workingHours?.weekends?.open &&
+              businessInfo?.workingHours?.weekends?.close
+                ? `${businessInfo.workingHours.weekends.open} - ${businessInfo.workingHours.weekends.close}`
+                : "Closed"}
+            </p>
+            <span
+              className={`${
+                businessInfo?.status === "open" ? "status-green" : "status-red"
+              }`}
+            >
+              {businessInfo?.status ?? "closed"}
+            </span>
+            <Switch
+              checked={isOpen}
+              onChange={(e) => setIsOpen(e.target.checked)}
+              sx={{
+                "& .MuiSwitch-switchBase.Mui-checked": {
+                  color: "#22c55e",
+                },
+                "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                  backgroundColor: "#22c55e",
+                },
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="map-container">
+          <h2>
+            <MapPin className="lucide-icon " />
+            Business Location
+          </h2>
+          <div className="map-wrapper">
+            <MapContainer
+              key={position.join(",")}
+              center={position}
+              zoom={13}
+              scrollWheelZoom={false}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <Marker position={position}>
+                <Popup>{businessInfo?.businessName}</Popup>
+              </Marker>
+              <RecenterButton position={position} />
+            </MapContainer>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default BusinessProfile;
