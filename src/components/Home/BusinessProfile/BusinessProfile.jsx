@@ -252,6 +252,7 @@ const BusinessProfile = () => {
             </div>
           </section>
           <InfoBlock2 businessInfo={businessInfo} />
+          <MediaBlock media={businessInfo?.media ?? []} theme={pageState} />
         </main>
       )}
     </>
@@ -379,6 +380,174 @@ function InfoBlock2({ businessInfo }) {
         </div>
       </div>
     </section>
+  );
+}
+
+import { Box } from "@mui/material";
+import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
+
+function MediaBlock({ media, theme }) {
+  return (
+    <div className="business-media-wrapper">
+      <div>
+        <h1>Business Media</h1>
+        <p>Photos and videos showcasing this business</p>
+      </div>
+
+      <div className="business-media-container">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent:"center",
+            
+            gap: 2,
+            overflowX: "auto",
+            py: 1,
+            width:"100%",
+
+            "&::-webkit-scrollbar": {
+              height: 6,
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#ccc",
+              borderRadius: 10,
+            },
+          }}
+        >
+          {media.length === 0 && (
+            <Box
+               className="no-media-info"
+           
+              sx={{
+                width: "100%",
+                height: 200,
+                borderRadius: 2,
+
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1.2,
+
+                backgroundColor: theme ? "#fcfafa" : "#111",
+                border: theme
+                  ? "1px dashed rgba(0,0,0,0.25)"
+                  : "1px dashed rgba(255,255,255,0.25)",
+
+                color: theme ? "#555" : "rgba(255,255,255,0.75)",
+                textAlign: "center",
+                padding:"10px"
+              }}
+            >
+              <Box sx={{ fontSize: 16, fontWeight: 600 }}>
+                No media uploaded yet
+              </Box>
+
+              <Box sx={{ fontSize: 14, maxWidth: 420 }}>
+                Upload photos or videos to showcase your business.
+              </Box>
+
+              <Box sx={{ fontSize: 13 }}>
+                Free account: up to <strong>3</strong> media · Paid account: up
+                to <strong>5</strong> media
+              </Box>
+            </Box>
+          )}
+          {/* Media items */}
+          {media.map((item) => (
+            <Box
+              key={item.id}
+              sx={{
+                position: "relative",
+                minWidth: 220,
+                height: 200,
+                borderRadius: 2,
+                overflow: "hidden",
+                flexShrink: 0,
+                backgroundColor: "#000",
+                cursor: "pointer",
+              }}
+            >
+              {item.type === "image" ? (
+                <img
+                  src={item.src}
+                  alt=""
+                  loading="lazy"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <>
+                  <video
+                    src={item.src}
+                    autoPlay
+                    controls
+                    playsInline
+                    preload="metadata"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </>
+              )}
+            </Box>
+          ))}
+
+          {/* Add Media box */}
+          {/* Add Media box */}
+          <Box
+            sx={{
+              minWidth: 220,
+              height: 200,
+              borderRadius: 2,
+              flexShrink: 0,
+
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 1,
+
+              backgroundColor: theme ? "#fcfafa" : "#111",
+              border: theme
+                ? "1px dashed rgba(0,0,0,0.25)"
+                : "1px dashed rgba(255,255,255,0.25)",
+
+              color: theme ? "#444" : "rgba(255,255,255,0.7)",
+              cursor: "pointer",
+              transition: "all 0.25s ease",
+
+              "&:hover": {
+                backgroundColor: theme ? "#f2f2f2" : "#1a1a1a",
+                color: theme ? "#111" : "#fff",
+              },
+            }}
+          >
+            <AddPhotoAlternateOutlinedIcon
+              sx={{
+                fontSize: 42,
+                color: "inherit",
+              }}
+            />
+
+            <Box
+              sx={{
+                fontSize: 14,
+                fontWeight: 500,
+                color: "inherit",
+              }}
+            >
+              Add media
+            </Box>
+          </Box>
+        </Box>
+      </div>
+    </div>
   );
 }
 

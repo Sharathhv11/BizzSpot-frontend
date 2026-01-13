@@ -405,7 +405,7 @@ const BusinessRegistration = () => {
                     center={position}
                     zoom={13}
                     scrollWheelZoom={false}
-                    className="map-container"
+                    className="map-container-user-profile"
                   >
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
