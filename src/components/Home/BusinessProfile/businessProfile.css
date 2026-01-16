@@ -47,8 +47,11 @@
   width: 100%;
   height: 1200px;
   min-height: max-content;
+  padding-bottom: 50px;
   position: absolute;
 }
+
+
 
 .notify-business-profile-completion {
   width: 100%;
@@ -565,6 +568,301 @@
 }
 
 
+/* Section */
+.offer-section {
+  width: 100%;
+  padding: 0 20px;
+}
+
+/* Wrapper */
+.offer-wrapper {
+  min-height: max-content;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+/* Header */
+.offer-header {
+  max-width: var(--max-width);
+  width: 100%;
+  margin: 0 auto;
+  margin-bottom: 5px;
+}
+
+.offer-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.offer-header p {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Grid */
+.offer-grid {
+  height: 80%;
+  /* background-color: red; */
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  border: var(--border-light);
+  padding: 10px;
+  border-radius: var(--border-radius);
+}
+.offer-grid .no-media-info {
+  grid-column: span 3; /* takes most space, not all */
+}
+
+/* Card */
+.offer-card {
+  background-color: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); */
+  border: var(--border-light);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.offer-card:hover {
+  /* transform: translateY(-6px); */
+  /* box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18); */
+}
+
+/* Image */
+.offer-image {
+  position: relative;
+  height: 170px;
+}
+
+.offer-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Discount Badge */
+.offer-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: #512eff;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+
+.offer-image .edit-offer,
+.offer-image .delete-offer {
+  position: absolute;
+  top: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  z-index: 2;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Edit button */
+.offer-image .edit-offer {
+  right: 52px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+
+.offer-image .edit-offer:hover {
+  background-color: #eaeaea;
+  transform: scale(1.05);
+}
+
+/* Delete button */
+.offer-image .delete-offer {
+  right: 12px;
+  background-color: rgba(255, 77, 79, 0.95);
+  color: #fff;
+}
+
+.offer-image .delete-offer:hover {
+  background-color: #e63946;
+  transform: scale(1.05);
+}
+
+/* Lucide icon size control */
+.offer-image .edit-offer svg,
+.offer-image .delete-offer svg {
+  width: 16px;
+  height: 16px;
+}
+
+
+
+/* Content */
+.offer-content {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Title */
+.offer-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+/* Description */
+.offer-description {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Dates */
+.offer-dates {
+  font-size: 12px;
+  color: #777;
+  margin-top: 6px;
+}
+
+
+.offer-status{
+  padding: 2px 9px;
+  background-color: rgb(131, 131, 131);
+  height: 15px;
+  font-size: 10px;
+  color: white;
+  position: relative;
+  top: -3px;
+  border-radius: 10px;
+  margin-left: 5px;
+}
+
+
+.live{
+  background-color: rgb(2, 176, 2);
+}
+
+/* Confirm container */
+.offer-delete-confirm {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* background-color: #ca0000; */
+  border-radius: 14px;
+  /* border: 1px solid rgba(0, 0, 0, 0.08); */
+  text-align: center;
+  margin-top: 10%;
+}
+
+/* Text */
+.offer-delete-confirm p {
+  font-size: 14px;
+  font-weight: 500;
+  color: #222;
+  margin: 0;
+}
+
+/* Input */
+.confirm-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.confirm-input::placeholder {
+  color: #aaa;
+}
+
+.confirm-input:focus {
+  border-color: #ff4d4f;
+}
+
+/* Buttons wrapper */
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Cancel button */
+.confirm-cancel {
+  flex: 1;
+  background-color: #f2f2f2;
+  color: #333;
+  border: none;
+  padding: 10px 0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.confirm-cancel:hover {
+  background-color: #e6e6e6;
+}
+
+/* Delete button */
+.confirm-delete {
+  flex: 1;
+  background-color: #ff4d4f;
+  color: #ffffff;
+  border: none;
+  padding: 10px 0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.confirm-delete:hover {
+  background-color: #e63946;
+}
+
+/* Disabled delete */
+.confirm-delete:disabled {
+  background-color: #ffd6d6;
+  cursor: not-allowed;
+}
+
+
+.no-offer-placeholder{
+  width: 100%;
+  max-width: var(--max-width);
+  height: 250px;
+  margin:0 auto;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  border: var(--border-light);
+  border-radius: var(--border-radius);
+  gap: 20px;
+}
+
+
+.no-offer-placeholder > div:first-child{
+  width: 80%;
+  height: 100%;
+
+}
+
+
+
 
 @media ( width<=500px){
   .followers-container,.working-hours{
@@ -575,6 +873,10 @@
   }
   .no-media-info{
     display: none !important;
+  }
+  .add-media{
+    height: 100%;
+    width: 100%;
   }
 }
 
@@ -623,4 +925,6 @@
     width: 100%;
     padding-top: 5px;
   }
+
+  
 }

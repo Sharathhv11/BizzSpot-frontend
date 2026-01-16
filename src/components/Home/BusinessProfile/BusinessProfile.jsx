@@ -2,6 +2,7 @@ import { useNavigate, useParams, Navigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import useGet from "./../../../hooks/useGet";
+import useDelete from "./../../../hooks/useDelete";
 import Nav2 from "../Util/Nav2";
 import "./businessProfile.css";
 import businessNoProfile from "./../../../assets/businessPlaceHolder.png";
@@ -19,6 +20,9 @@ import {
   Clock,
   LocateFixed,
   ChartNoAxesColumn,
+  Pencil,
+  Trash,
+  LoaderCircle,
 } from "lucide-react";
 
 //^leaflet imports
@@ -28,6 +32,8 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+import offerBanner from "./../../../assets/offerBanner.png";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -42,6 +48,8 @@ import getUserFriendlyMessage from "../../../utils/userFriendlyErrors";
 import Switch from "@mui/material/Switch";
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
+
+import toast from "react-hot-toast";
 
 const BusinessProfile = () => {
   const { businessID } = useParams();
@@ -253,6 +261,7 @@ const BusinessProfile = () => {
           </section>
           <InfoBlock2 businessInfo={businessInfo} />
           <MediaBlock media={businessInfo?.media ?? []} theme={pageState} />
+          <OfferSection businessInfo={businessInfo} theme={pageState} />
         </main>
       )}
     </>
@@ -383,8 +392,10 @@ function InfoBlock2({ businessInfo }) {
   );
 }
 
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
+import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
+import OfferForm from "./OfferForm";
 
 function MediaBlock({ media, theme }) {
   return (
@@ -398,12 +409,12 @@ function MediaBlock({ media, theme }) {
         <Box
           sx={{
             display: "flex",
-            justifyContent:"center",
-            
+            justifyContent: "center",
+
             gap: 2,
             overflowX: "auto",
             py: 1,
-            width:"100%",
+            width: "100%",
 
             "&::-webkit-scrollbar": {
               height: 6,
@@ -416,8 +427,7 @@ function MediaBlock({ media, theme }) {
         >
           {media.length === 0 && (
             <Box
-               className="no-media-info"
-           
+              className="no-media-info"
               sx={{
                 width: "100%",
                 height: 200,
@@ -436,7 +446,7 @@ function MediaBlock({ media, theme }) {
 
                 color: theme ? "#555" : "rgba(255,255,255,0.75)",
                 textAlign: "center",
-                padding:"10px"
+                padding: "10px",
               }}
             >
               <Box sx={{ fontSize: 16, fontWeight: 600 }}>
@@ -499,8 +509,8 @@ function MediaBlock({ media, theme }) {
           ))}
 
           {/* Add Media box */}
-          {/* Add Media box */}
           <Box
+            className="add-media"
             sx={{
               minWidth: 220,
               height: 200,
@@ -547,6 +557,289 @@ function MediaBlock({ media, theme }) {
           </Box>
         </Box>
       </div>
+    </div>
+  );
+}
+
+function OfferSection({ businessInfo, theme }) {
+  const [offers, setOffers] = useState([]);
+  const { data, loading, error } = useGet(
+    businessInfo ? `business/${businessInfo._id}/offers` : null
+  );
+
+  useEffect(() => {
+    if (data) {
+      setOffers(data.data);
+    }
+  }, [data]);
+
+  const [displayForm, setDisplayForm] = useState(false);
+
+  const AddOffer = () => {
+    return (
+      <Box
+        onClick={() => {
+          const currentScrollY = window.scrollY;
+          const docHeight =
+            document.documentElement.scrollHeight - window.innerHeight;
+          const remainingHeight = docHeight - currentScrollY;
+          const additionalScrollY = (120 / 100) * remainingHeight;
+          window.scrollTo({
+            top: currentScrollY + additionalScrollY,
+            behavior: "smooth",
+          });
+          setDisplayForm(true);
+        }}
+        sx={{
+          minWidth: 260,
+          height: "100%",
+          borderRadius: 2,
+          flexShrink: 0,
+
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 1,
+
+          backgroundColor: theme ? "#fcfafa" : "#111",
+          border: theme
+            ? "1px dashed rgba(0,0,0,0.25)"
+            : "1px dashed rgba(255,255,255,0.25)",
+
+          color: theme ? "#444" : "rgba(255,255,255,0.7)",
+          cursor: "pointer",
+          transition: "all 0.25s ease",
+
+          "&:hover": {
+            backgroundColor: theme ? "#f2f2f2" : "#1a1a1a",
+            color: theme ? "#111" : "#fff",
+          },
+        }}
+      >
+        <AddCircleOutlineRoundedIcon
+          sx={{
+            fontSize: 42,
+            color: "inherit",
+          }}
+        />
+
+        <Box
+          sx={{
+            fontSize: 14,
+            fontWeight: 500,
+            color: "inherit",
+          }}
+        >
+          Add Offer
+        </Box>
+      </Box>
+    );
+  };
+
+  return (
+    <>
+      <section className="offer-section">
+        <div className="offer-header">
+          <h2>Offers</h2>
+          <p>Current ongoing and upcoming offers</p>
+        </div>
+        {offers?.length !== 0 ? (
+          <div className="offer-wrapper">
+            <div className="offer-grid">
+              {offers.map((offer, index) => (
+                <OfferCard
+                  key={index}
+                  offer={offer}
+                  businessID={businessInfo?._id}
+                  offerState={[offers, setOffers]}
+                />
+              ))}
+
+              <AddOffer />
+            </div>
+          </div>
+        ) : (
+          <div className="no-offer-placeholder">
+            <div>
+              <Box
+                className="no-media-info"
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 1.2,
+                  backgroundColor: theme ? "#fcfafa" : "#111",
+                  border: theme
+                    ? "1px dashed rgba(0,0,0,0.25)"
+                    : "1px dashed rgba(255,255,255,0.25)",
+                  color: theme ? "#555" : "rgba(255,255,255,0.75)",
+                  textAlign: "center",
+                  padding: "10px",
+                }}
+              >
+                <Box sx={{ fontSize: 16, fontWeight: 600 }}>
+                  No offers created yet
+                </Box>
+
+                <Box sx={{ fontSize: 14, maxWidth: 420 }}>
+                  Create special offers to attract more customers to your
+                  business.
+                </Box>
+
+                <Box sx={{ fontSize: 13 }}>
+                  Free account: up to <strong>3</strong> offers · Paid account:
+                  up to <strong>5</strong> offers
+                </Box>
+              </Box>
+            </div>
+            <AddOffer />
+          </div>
+        )}
+
+        {displayForm && businessInfo?._id && (
+          <OfferForm
+            displayForm={setDisplayForm}
+            businessID={businessInfo?._id}
+            offers={[offers, setOffers]}
+          />
+        )}
+      </section>
+    </>
+  );
+}
+
+function OfferCard({ offer, businessID, offerState }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
+  const { deleteData, responseData, error, loading } = useDelete();
+
+  const handleDelete = async () => {
+    if (confirmDelete && confirmText === offer.offerName) {
+      try {
+        await deleteData(`business/${businessID}/offers/${offer._id}`);
+
+        const updatedOffers = offerState[0].filter(
+          ({ _id }) => _id !== offer._id
+        );
+        offerState[1](updatedOffers);
+
+        toast.success("Offer deleted successfully! 🎉");
+      } catch (error) {
+        toast.error(
+          error?.response?.data?.message ||
+            "Something went wrong, please try again."
+        );
+      } finally {
+        setConfirmDelete(false);
+        setConfirmText("");
+      }
+    }
+  };
+
+  const now = new Date();
+  const start = new Date(offer.startingDate);
+  const end = new Date(offer.endingDate);
+
+  const status = now < start ? "upcoming" : now <= end ? "live" : "";
+  const isExpired = now > end;
+
+  // Hide expired offers completely
+  if (isExpired) {
+    return null;
+  }
+
+  return (
+    <div className="offer-card">
+      {confirmDelete ? (
+        /* DELETE CONFIRM VIEW */
+        <div className="offer-delete-confirm">
+          <p>
+            Type <strong>{offer.offerName}</strong> to confirm deletion
+          </p>
+
+          <input
+            type="text"
+            className="confirm-input"
+            placeholder="Enter offer name"
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+          />
+
+          <div className="confirm-actions">
+            <button
+              className="confirm-delete flex items-center justify-center"
+              disabled={confirmText !== offer.offerName || loading}
+              onClick={handleDelete}
+            >
+              {loading ? (
+                <LoaderCircle className="animate-spin mx-auto" color="white" />
+              ) : (
+                "Delete"
+              )}
+            </button>
+
+            <button
+              className="confirm-cancel"
+              onClick={() => {
+                setConfirmDelete(false);
+                setConfirmText("");
+              }}
+              disabled={loading}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        /* NORMAL OFFER CARD */
+        <>
+          <div className="offer-image">
+            <img src={offer.image ?? offerBanner} alt={offer.offerName} />
+
+            <span className="offer-badge">
+              {offer?.discount?.type === "percentage"
+                ? `${offer?.discount?.value}% OFF`
+                : `₹${offer?.discount?.value} OFF`}
+            </span>
+
+            <button className="edit-offer" disabled={loading}>
+              <Pencil size={16} />
+            </button>
+
+            <button
+              className="delete-offer"
+              onClick={() => setConfirmDelete(true)}
+              disabled={loading}
+            >
+              <Trash size={16} />
+            </button>
+          </div>
+
+          <div className="offer-content">
+            <h3 className="offer-title">
+              {offer.offerName}
+              {status && (
+                <span className={`offer-status ${status}`}>
+                  {status === "live" ? "LIVE" : "UPCOMING"}
+                </span>
+              )}
+            </h3>
+
+            <p className="offer-description">{offer.description}</p>
+
+            <div className="offer-dates">
+              <span>{start.toDateString()}</span>
+              <span> → </span>
+              <span>{end.toDateString()}</span>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
