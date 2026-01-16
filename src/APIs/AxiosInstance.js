@@ -1,5 +1,7 @@
 import axios from "axios";
 
+
+
 const AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
   timeout: 10000*60*2,
@@ -21,6 +23,8 @@ AxiosInstance.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem("token");
+       window.location.href = "/login";
+
     }
 
     return Promise.reject(error);

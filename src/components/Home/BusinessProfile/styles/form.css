@@ -81,20 +81,6 @@
   flex: 1;
 }
 
-/* BUTTON */
-.offer-form> button {
-  margin-top: 10px;
-  padding: 10px;
-  font-size: 14px;
-  border-radius: var(--border-radius);
-  border: none;
-  background: #512eff;
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 
 /* INPUTS & SELECTS */
@@ -141,12 +127,40 @@
   width: 100%;
 }
 
-.offer-register-cancel-btn{
-  position: absolute;
-  top: 10px;
-  right: 25%;
-  background-color: transparent ;
+.offer-form-btn-container{
+  width: 80%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  margin : 0 auto;
+  gap: 10px;
+}
+
+
+.offer-form-btn-container button{
+  flex: 1;
+  height: 100%;
   cursor: pointer;
-  background-color: rgb(255, 39, 39);
-  color: white;
+}
+
+.offer-register-cancel-btn{
+  height: 100%;
+  width: 30%;
+  background-color: rgb(235, 231, 231);
+  border-radius: var(--border-radius);
+}
+
+.offer-form-btn-container button:last-child {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: var(--border-radius);
+  border: none;
+  background: #512eff;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

@@ -574,6 +574,7 @@ function OfferSection({ businessInfo, theme }) {
   }, [data]);
 
   const [displayForm, setDisplayForm] = useState(false);
+  const [initialState, setInitialState] = useState({});
 
   const AddOffer = () => {
     return (
@@ -590,6 +591,8 @@ function OfferSection({ businessInfo, theme }) {
           });
           setDisplayForm(true);
         }}
+
+        className="add-offer-btn"
         sx={{
           minWidth: 260,
           height: "100%",
@@ -653,6 +656,8 @@ function OfferSection({ businessInfo, theme }) {
                   offer={offer}
                   businessID={businessInfo?._id}
                   offerState={[offers, setOffers]}
+                  setInitialState={setInitialState}
+                  displayForm={setDisplayForm}
                 />
               ))}
 
@@ -706,6 +711,8 @@ function OfferSection({ businessInfo, theme }) {
             displayForm={setDisplayForm}
             businessID={businessInfo?._id}
             offers={[offers, setOffers]}
+            initialState={initialState}
+            clearInitialState={setInitialState}
           />
         )}
       </section>
@@ -713,7 +720,7 @@ function OfferSection({ businessInfo, theme }) {
   );
 }
 
-function OfferCard({ offer, businessID, offerState }) {
+function OfferCard({ offer, businessID, offerState, setInitialState,displayForm }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const { deleteData, responseData, error, loading } = useDelete();
@@ -807,7 +814,14 @@ function OfferCard({ offer, businessID, offerState }) {
                 : `₹${offer?.discount?.value} OFF`}
             </span>
 
-            <button className="edit-offer" disabled={loading}>
+            <button
+              className="edit-offer"
+              disabled={loading}
+              onClick={() => {
+                setInitialState(offer);
+                displayForm(true);
+              }}
+            >
               <Pencil size={16} />
             </button>
 

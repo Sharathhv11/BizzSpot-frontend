@@ -1,25 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./styles/form.css";
 import { CircleX, LoaderCircle, X } from "lucide-react";
 import usePost from "./../../../hooks/usePost";
+import usePatch from "./../../../hooks/usePatch";
 import toast from "react-hot-toast";
 import { useRef } from "react";
 
-const OfferForm = ({ offers, displayForm, businessID }) => {
+const OfferForm = ({
+  offers,
+  displayForm,
+  businessID,
+  initialState = {},
+  clearInitialState,
+}) => {
   //  Form state with all offer fields
   const [formData, setFormData] = useState({
     offerName: "",
     description: "",
     discountType: "percentage",
     discountValue: "",
-    offerBanner: null,
     startingDate: "",
     endingDate: "",
   });
 
+  const [updatedBanner, setUpdatedBanner] = useState(false);
+
+  useEffect(() => {
+    if (initialState && initialState._id) {
+      // EDIT MODE
+      setFormData({
+        offerName: initialState.offerName || "",
+        description: initialState.description || "",
+        discountType: initialState.discount?.type || "percentage",
+        discountValue: initialState.discount?.value?.toString() || "",
+        startingDate: initialState.startingDate
+          ? new Date(initialState.startingDate).toISOString().split("T")[0]
+          : "",
+        endingDate: initialState.endingDate
+          ? new Date(initialState.endingDate).toISOString().split("T")[0]
+          : "",
+      });
+
+      setPreview(initialState.image);
+    }
+  }, [initialState]);
+
   const bannerRef = useRef();
 
   const { postData, responseData, error: serverError, loading } = usePost();
+  const {
+    patchData,
+    responseData: patchResponseData,
+    error: patchError,
+    loading: patchLoading,
+  } = usePatch();
 
   //  Image preview and error states
   const [preview, setPreview] = useState(null);
@@ -35,9 +69,8 @@ const OfferForm = ({ offers, displayForm, businessID }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    setFormData((prev) => ({ ...prev, image: file }));
     setPreview(URL.createObjectURL(file));
+    setUpdatedBanner(true);
   };
 
   //  Form submission with validation and FormData creation
@@ -72,33 +105,67 @@ const OfferForm = ({ offers, displayForm, businessID }) => {
     payload.append("discount[type]", formData.discountType);
     payload.append("discount[value]", Number(formData.discountValue));
 
-    payload.append("startingDate", formData.startingDate);
-    payload.append("endingDate", formData.endingDate);
+    payload.append(
+      "startingDate",
+      new Date(formData.startingDate + "T00:00:00Z").toISOString()
+    );
+    payload.append(
+      "endingDate",
+      new Date(formData.endingDate + "T00:00:00Z").toISOString()
+    );
 
-    if (bannerRef.current.files[0]) {
+    if (bannerRef.current.files[0] && updatedBanner) {
       payload.append("offerBanner", bannerRef.current.files[0]); // Use correct backend field name
     }
 
     setError("");
 
     try {
-      const serverResponse = await postData(
-        `business/${businessID}/offers`,
-        payload,
-        {
-          "Content-Type": "multipart/form-data",
+      let serverResponse;
+
+      if (!initialState || Object.keys(initialState).length === 0) {
+        //  CREATE MODE
+        serverResponse = await postData(
+          `business/${businessID}/offers`,
+          payload,
+          {
+            "Content-Type": "multipart/form-data",
+          }
+        );
+
+        // Add NEW offer to array
+        const nOffers = [...offers[0], serverResponse?.data];
+        offers[1](nOffers);
+
+        toast.success("Offer created successfully! 🎉");
+      } else {
+        for (let [key, value] of payload.entries()) {
+          console.log(key, value);
         }
-      );
 
-      toast.success("Offer created successfully! 🎉");
-      displayForm(false);
+        serverResponse = await patchData(
+          `business/${businessID}/offers/${initialState._id}`,
+          payload,
+          {
+            "Content-Type": "multipart/form-data",
+          }
+        );
 
-      const nOffers = [...offers[0], serverResponse?.data];
-      offers[1](nOffers);
+        // Replace OLD offer with NEW server data
+        const updatedOffers = offers[0].map((offer) =>
+          offer._id === initialState._id ? serverResponse?.data : offer
+        );
+        offers[1](updatedOffers);
+
+        clearInitialState({});
+        toast.success("Offer updated successfully! 🎉");
+      }
+
+      displayForm(false); // Close form (common for both)
     } catch (error) {
       toast.error(
         error?.response?.data?.message ||
-          "something went wrong please try again."
+          "Something went wrong please try again."
       );
     }
   };
@@ -195,22 +262,27 @@ const OfferForm = ({ offers, displayForm, businessID }) => {
         )}
 
         {/*  Submit button */}
-        <button type="submit">
-          {loading ? (
-            <LoaderCircle className="animate-spin mx-auto" color="white" />
-          ) : (
-            "Save Offer"
-          )}
-        </button>
+        <div className="offer-form-btn-container">
+          <button
+            className="offer-register-cancel-btn"
+            onClick={() => {
+              displayForm(false);
+              clearInitialState({});
+            }}
+          >
+           cancel
+          </button>
+          <button type="submit">
+            {loading || patchLoading ? (
+              <LoaderCircle className="animate-spin mx-auto" color="white" />
+            ) : Object.keys(initialState).length !== 0 ? (
+              "Update Offer"
+            ) : (
+              "Save Offer"
+            )}
+          </button>
+        </div>
       </form>
-      <button
-        className="offer-register-cancel-btn"
-        onClick={() => {
-          displayForm(false);
-        }}
-      >
-        <X />
-      </button>
     </div>
   );
 };

@@ -874,9 +874,12 @@
   .no-media-info{
     display: none !important;
   }
-  .add-media{
+  .add-media,.add-offer-btn{
     height: 100%;
     width: 100%;
+  }
+  .no-offer-placeholder{
+    gap: 0;
   }
 }
 
