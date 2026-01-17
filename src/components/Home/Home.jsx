@@ -6,13 +6,6 @@ import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   useAuthRedirect();
-
-
-  const user = useSelector((state) => state.user.userInfo);
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
-
   const navigate = useNavigate();
 
   return (
@@ -20,7 +13,7 @@ const Home = () => {
       <Nav />
 
       <button onClick={()=>{
-        navigate("/business/695fb26753254f6b32035a")
+        navigate("/profile/695f39c4770edd681df381c7")
       }}>
         test purpose 
       </button>

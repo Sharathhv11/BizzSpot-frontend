@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate,Navigate } from "react-router-dom";
+import { useNavigate, Navigate, useParams } from "react-router-dom";
 import "./profile.css";
 import noDp from "./../../../assets/noDp.png";
 import useGet from "./../../../hooks/useGet";
@@ -11,71 +11,112 @@ import {
   Star,
   BadgeCheck,
   Store,
+  TriangleAlert,
 } from "lucide-react";
 import Nav2 from "../Util/Nav2";
 import businessPlaceHolder from "./../../../assets/businessPlaceHolder.png";
 
-import Box from "@mui/material/Box";
-import Rating from "@mui/material/Rating";
-import Typography from "@mui/material/Typography";
-
 import { setUserBusiness } from "../../../redux/reducers/user";
+import { changeRedirectUserID } from "../../../redux/reducers/pageState";
+import getUserFriendlyMessage from "../../../utils/userFriendlyErrors";
+
 
 const Profile = () => {
-  const user = useSelector((state) => state.user.userInfo);
+  const { userID } = useParams();
+
+  //^ states presents in the redux store
+  let user = useSelector((state) => state.user.userInfo);
   const pageState = useSelector((state) => state.pageState.theme);
+
   const navigate = useNavigate();
   const [showFollowList, setShowFollowList] = useState(false);
+  const [owner, setOwner] = useState(false);
 
- if (!user) {
-   return <Navigate to="/" replace />;
+  if (!user) {
+    return <Navigate to="/" replace />;
   }
+
+  useEffect(() => {
+    if (userID === user?.id) {
+      setOwner(true);
+    }
+  }, [userID, user]);
+
+  const {
+    data: userData,
+    loading,
+    error,
+  } = useGet(!owner ? `user?userID=${userID}` : null);
+
+  const targetUser = owner ? user : userData?.data;
 
   return (
     <>
-      <Nav2 pageState={pageState} user={user} />
-      <Main
-        user={user}
-        pageState={pageState}
-        updateFollowList={setShowFollowList}
-      />
-      <FollowList
-        visibility={showFollowList}
-        updateVisibility={setShowFollowList}
-      />
+      <Nav2 pageState={pageState} user={targetUser} redirect={`/`} />
+      {error ? (
+        (
+        <div className="broken-link-container">
+          <div>
+            <img src={noDp} alt="business not found" />
+          </div>
+          <div>
+            <div className="error-lucide">
+              <TriangleAlert />
+            </div>
+            {getUserFriendlyMessage(error)}
+          </div>
+        </div>
+      )
+      ) : (
+        <>
+          <Main
+            user={targetUser}
+            pageState={pageState}
+            updateFollowList={setShowFollowList}
+            owner={owner}
+          />
+          <FollowList
+            visibility={showFollowList}
+            updateVisibility={setShowFollowList}
+          />
+        </>
+      )}
     </>
   );
 };
 
-const greenRatingStyle = (theme) => ({
-  "& .MuiRating-iconFilled": {
-    color: theme.palette.success.main,
-  },
-  "& .MuiRating-iconHover": {
-    color: theme.palette.success.dark,
-  },
-});
-
-const Main = ({ user, pageState: theme, updateFollowList }) => {
-  //* api call to get the user profile information
-  const { data } = useGet(user?.id ? `follow/count?userID=${user?.id}` : null);
+const Main = ({ user, pageState: theme, updateFollowList, owner }) => {
+  const { data: followCount } = useGet(
+    user?.id ? `follow/count?userID=${user?.id}` : null
+  );
 
   const dispatch = useDispatch();
-  const { usersBusiness, hasFetchedBusinesses } = useSelector(
+  const { usersBusiness: ownerBusiness, hasFetchedBusinesses } = useSelector(
     (state) => state.user
   );
 
-  const shouldFetch = user?.id && !hasFetchedBusinesses;
-
+  const shouldFetchBusinesses =
+    user?.id && (!owner || (!hasFetchedBusinesses && owner));
   const { data: businessList } = useGet(
-    shouldFetch ? `business?ownedBy=${user?.id}` : null
+    shouldFetchBusinesses ? `business?ownedBy=${user?.id}` : null
   );
 
+  //  COMPUTED: Use Redux for owner, API for others
+  const displayBusinesses = owner
+    ? ownerBusiness || []
+    : businessList?.data || [];
+
   useEffect(() => {
-    if (businessList?.data && !hasFetchedBusinesses) {
+    if (businessList?.data && owner && !hasFetchedBusinesses) {
       dispatch(setUserBusiness(businessList.data));
     }
-  }, [businessList, hasFetchedBusinesses, dispatch]);
+  }, [businessList?.data, owner, hasFetchedBusinesses, dispatch]);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(changeRedirectUserID(user?.id));
+    }
+  }, [user]);
 
   const navigate = useNavigate();
 
@@ -87,43 +128,40 @@ const Main = ({ user, pageState: theme, updateFollowList }) => {
     >
       <section>
         <div className="profile-header">
-          {/* Profile Image */}
           <img src={user?.profilePicture || noDp} alt="profile" />
-
-          {/* Right Section */}
           <div className="profile-right">
-            {/* User Info */}
             <div className="profile-info">
               <h1>{user?.name || "Name"}</h1>
               <span>{user?.email || "email"}</span>
               <span>{user?.phone_no || "phone number"}</span>
             </div>
-
-            {/* Following */}
             <button
               className="profile-following"
-              onClick={() => {
-                updateFollowList(true);
-              }}
+              onClick={() => updateFollowList(true)}
             >
               <span>Following</span>
-              <span className="follow-count">{data?.data?.count ?? 0}</span>
+              <span className="follow-count">
+                {followCount?.data?.count ?? 0}
+              </span>
             </button>
-
-            {/* Edit Button */}
-            <button className="edit-btn">
-              <SquarePen size={16} />
-              Edit
-            </button>
+            {owner && (
+              <button className="edit-btn">
+                <SquarePen size={16} />
+                Edit
+              </button>
+            )}
           </div>
         </div>
         <div className="business_registration-container">
-          {usersBusiness?.length > 0 ? (
-            usersBusiness.map((business) => (
-              <div className="business-rich" key={business._id} onClick={()=>{
-                navigate(`/business/${business._id}`);
-              }}>
-                {/* Image */}
+          {/*Use displayBusinesses everywhere */}
+          {displayBusinesses.length > 0 ? (
+            displayBusinesses.map((business) => (
+              <div
+                className="business-rich"
+                key={business._id}
+                onClick={() => navigate(`/business/${business._id}`)}
+              >
+                {/* Your perfect business card JSX stays the same */}
                 <div className="business-img-wrapper">
                   <img
                     src={business.profile || businessPlaceHolder}
@@ -131,16 +169,12 @@ const Main = ({ user, pageState: theme, updateFollowList }) => {
                     className="business-rich-img"
                   />
                 </div>
-
-                {/* Info */}
                 <div className="business-rich-info">
-                  {/* Header */}
                   <div className="business-rich-header">
                     <div className="title">
                       <Store size={18} />
                       <h3>{business.businessName}</h3>
                     </div>
-
                     <span
                       className={`business-status ${
                         business.status === "Open" ? "open" : "closed"
@@ -149,8 +183,6 @@ const Main = ({ user, pageState: theme, updateFollowList }) => {
                       {business.status}
                     </span>
                   </div>
-
-                  {/* Description */}
                   <p className="business-rich-desc">
                     {business.description.length <= 50 ? (
                       business.description
@@ -161,23 +193,18 @@ const Main = ({ user, pageState: theme, updateFollowList }) => {
                       </>
                     )}
                   </p>
-
-                  {/* Meta */}
                   <div className="business-rich-meta">
                     <span>
                       <MapPin size={16} />
                       {business.location.area}, {business.location.city},{" "}
                       {business.location.state}
                     </span>
-
                     <span>
-                      <Phone size={16} />+
+                      <Phone size={16} />
                       {business.phoneNo?.[0]?.phone?.countryCode}{" "}
                       {business.phoneNo?.[0]?.phone?.number}
                     </span>
                   </div>
-
-                  {/* Footer */}
                   <div className="business-rich-footer">
                     <span className="rating">
                       <Star size={16} />
@@ -188,7 +215,6 @@ const Main = ({ user, pageState: theme, updateFollowList }) => {
                           ).toFixed(1)
                         : "New"}
                     </span>
-
                     <span className="completion">
                       <BadgeCheck size={16} />
                       {business.profileCompletion}% Complete
@@ -200,22 +226,19 @@ const Main = ({ user, pageState: theme, updateFollowList }) => {
           ) : (
             <div
               className="business-not-registered-container"
-              onClick={() => {
-                navigate("/register-business");
-              }}
+              onClick={() => navigate("/register-business")}
             >
               <span>not yet registered Business</span>
-              <div></div>
+              {owner && <div></div>}
             </div>
           )}
 
-          {usersBusiness?.length > 0 ? (
+          {/*Use displayBusinesses here too */}
+          {displayBusinesses.length > 0 && owner ? (
             <div className="profile-register-more-btn-container">
               <button
                 className="profile-register-more-btn"
-                onClick={() => {
-                  navigate("/register-business");
-                }}
+                onClick={() => navigate("/register-business")}
               >
                 <Store />
                 register business

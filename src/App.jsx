@@ -41,7 +41,7 @@ function App() {
               <ForgotPassword/>
             }
           ></Route>
-          <Route path="/profile" element={<Profile/>}></Route>
+          <Route path="/profile/:userID" element={<Profile/>}></Route>
           <Route path="/register-business" element={<BusinessRegistration/>}/>
           <Route path="/business/:businessID" element={<BusinessProfile/>}/>
         </Routes>

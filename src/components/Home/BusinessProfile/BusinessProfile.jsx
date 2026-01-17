@@ -56,7 +56,8 @@ const BusinessProfile = () => {
   const [owned, setOwned] = useState(false);
   const [businessInfo, setBusinessInfo] = useState(null);
   const [descVisibility, setDescVisibility] = useState(false);
-  const navigate = useNavigate();
+
+  const redirectUserID = useSelector((state) => state.pageState.redirectUserID);
 
   //^verify that businessID is exists in redux state
   const userOwnedBusiness = useSelector((state) => state.user.usersBusiness);
@@ -97,9 +98,15 @@ const BusinessProfile = () => {
     }
   }, [data]);
 
+  
+
   return (
     <>
-      <Nav2 pageState={pageState} user={user} redirect={"/profile"} />
+      <Nav2
+        pageState={pageState}
+        user={user}
+        redirect={redirectUserID?`/profile/${redirectUserID}`:null}
+      />
       {error ? (
         <div className="broken-link-container">
           <div>
@@ -591,7 +598,6 @@ function OfferSection({ businessInfo, theme }) {
           });
           setDisplayForm(true);
         }}
-
         className="add-offer-btn"
         sx={{
           minWidth: 260,
@@ -720,7 +726,13 @@ function OfferSection({ businessInfo, theme }) {
   );
 }
 
-function OfferCard({ offer, businessID, offerState, setInitialState,displayForm }) {
+function OfferCard({
+  offer,
+  businessID,
+  offerState,
+  setInitialState,
+  displayForm,
+}) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const { deleteData, responseData, error, loading } = useDelete();

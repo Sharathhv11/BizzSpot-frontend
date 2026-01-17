@@ -47,7 +47,7 @@ const Nav = () => {
             <img src={userInfo?.profilePicture || dftImage} alt="profile" />
             <div className="profile-menu">
               <button>
-                <Link to="/profile" className="w-full h-full flex gap-1.5 items-center justify-start">
+                <Link to={`/profile/${userInfo?.id}`} className="w-full h-full flex gap-1.5 items-center justify-start">
                 <CircleUser/>
                 <span>Profile</span>
                 </Link>
