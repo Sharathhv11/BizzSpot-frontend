@@ -13,7 +13,7 @@ const Home = () => {
       <Nav />
 
       <button onClick={()=>{
-        navigate("/profile/695f39c4770edd681df381c7")
+        navigate("/profile/695f3abb53254f6b3209429f")
       }}>
         test purpose 
       </button>

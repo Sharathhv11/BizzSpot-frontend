@@ -269,6 +269,7 @@ const BusinessProfile = () => {
           <InfoBlock2 businessInfo={businessInfo} />
           <MediaBlock media={businessInfo?.media ?? []} theme={pageState} />
           <OfferSection businessInfo={businessInfo} theme={pageState} />
+          <Review userInfo={user} businessInfo={businessInfo} owned={owned}/>
         </main>
       )}
     </>
@@ -403,6 +404,7 @@ import { Box, Button } from "@mui/material";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
 import OfferForm from "./OfferForm";
+import Review from "./Review";
 
 function MediaBlock({ media, theme }) {
   return (
