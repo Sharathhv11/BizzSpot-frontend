@@ -1,10 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import {MoveLeft} from "lucide-react"
-import "./nav2.css"
+import { MoveLeft } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { popNav } from "../../../redux/reducers/pageState";
+import "./nav2.css";
 import noDp from "./../../../assets/noDp.png";
 
-const Nav2 = ({ pageState, user,redirect }) => {
+const Nav2 = ({ pageState, user }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const {navStack} = useSelector((state) => state.pageState);
+
   return (
     <nav className={`profile-nav ${!pageState ? "profile-nav-dark" : ""}`}>
       <div>
@@ -12,7 +18,9 @@ const Nav2 = ({ pageState, user,redirect }) => {
           className={`${
             !pageState ? "profile-nav-back-btn-dark" : "profile-nav-back-btn"
           }`}
-          onClick={() => navigate(redirect?redirect:"/")}
+          onClick={() => {navigate(navStack.length>0 ? navStack[navStack.length-1] : "/");
+            dispatch(popNav());
+          }}
         >
           <MoveLeft />
         </button>

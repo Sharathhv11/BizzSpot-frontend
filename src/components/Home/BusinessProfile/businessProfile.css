@@ -861,6 +861,48 @@
 
 }
 
+.owner-mini {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  min-width: max-content;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #f5f5f5;
+  position: absolute;
+  right: 20px;
+}
+
+.owner-mini-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.owner-mini-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.owner-mini-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+}
+
+.owner-mini-email {
+  font-size: 11px;
+  color: #666;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
 
 
 

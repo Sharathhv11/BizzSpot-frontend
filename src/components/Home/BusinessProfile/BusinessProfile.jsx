@@ -56,6 +56,7 @@ const BusinessProfile = () => {
   const [owned, setOwned] = useState(false);
   const [businessInfo, setBusinessInfo] = useState(null);
   const [descVisibility, setDescVisibility] = useState(false);
+  const [shouldFetch, setShouldFetch] = useState(false);
 
   const redirectUserID = useSelector((state) => state.pageState.redirectUserID);
 
@@ -75,20 +76,23 @@ const BusinessProfile = () => {
   useEffect(() => {
     if (!userOwnedBusiness || !businessID) return;
 
-    const ownedBusiness = userOwnedBusiness.find(
-      ({ _id, owner }) => _id === businessID && owner?._id === user?.id
-    );
+    const ownedBusiness = userOwnedBusiness.find(({ _id, owner }) => {
+      const ownerId = typeof owner === "string" ? owner : owner?._id;
+
+      return _id === businessID && ownerId === user?.id;
+    });
 
     if (ownedBusiness) {
       setOwned(true);
       setBusinessInfo(ownedBusiness);
     } else {
       setOwned(false);
+      setShouldFetch(true);
     }
   }, [userOwnedBusiness, businessID, user?.id]);
 
   const { data, loading, error } = useGet(
-    !businessInfo ? `business/${businessID}` : null
+    shouldFetch ? `business/${businessID}` : null,
   );
 
   useEffect(() => {
@@ -98,14 +102,12 @@ const BusinessProfile = () => {
     }
   }, [data]);
 
-  
-
   return (
     <>
       <Nav2
         pageState={pageState}
         user={user}
-        redirect={redirectUserID?`/profile/${redirectUserID}`:null}
+        redirect={redirectUserID ? `/profile/${redirectUserID}` : null}
       />
       {error ? (
         <div className="broken-link-container">
@@ -260,23 +262,52 @@ const BusinessProfile = () => {
                   </span>
                 </div>
               </div>
-              <button className="update-profile">
-                <Pen size={16} />
-                Edit profile
-              </button>
+              {owned ? (
+                <button className="update-profile">
+                  <Pen size={16} />
+                  Edit profile
+                </button>
+              ) : (
+                businessInfo?.owner && (
+                  <div className="owner-mini">
+                    <img
+                      src={businessInfo.owner.profilePicture}
+                      alt={businessInfo.owner.username}
+                      className="owner-mini-avatar"
+                    />
+
+                    <div className="owner-mini-text">
+                      <span className="owner-mini-name">
+                        {businessInfo.owner.username}
+                      </span>
+                      <span className="owner-mini-email">
+                        {businessInfo.owner.email}
+                      </span>
+                    </div>
+                  </div>
+                )
+              )}
             </div>
           </section>
-          <InfoBlock2 businessInfo={businessInfo} />
-          <MediaBlock media={businessInfo?.media ?? []} theme={pageState} />
-          <OfferSection businessInfo={businessInfo} theme={pageState} />
-          <Review userInfo={user} businessInfo={businessInfo} owned={owned}/>
+          <InfoBlock2 businessInfo={businessInfo} owned={owned} />
+          <MediaBlock
+            media={businessInfo?.media ?? []}
+            theme={pageState}
+            owned={owned}
+          />
+          <OfferSection
+            businessInfo={businessInfo}
+            theme={pageState}
+            owned={owned}
+          />
+          <Review userInfo={user} businessInfo={businessInfo} owned={owned} />
         </main>
       )}
     </>
   );
 };
 
-function InfoBlock2({ businessInfo }) {
+function InfoBlock2({ businessInfo, owned }) {
   function RecenterButton({ position }) {
     const map = useMap();
 
@@ -292,7 +323,7 @@ function InfoBlock2({ businessInfo }) {
   }
 
   const { data } = useGet(
-    businessInfo ? `follow/count?businessID=${businessInfo._id}` : null
+    businessInfo ? `follow/count?businessID=${businessInfo._id}` : null,
   );
 
   const [isOpen, setIsOpen] = useState(false);
@@ -316,15 +347,18 @@ function InfoBlock2({ businessInfo }) {
           </h2>
 
           <h5>{data?.data?.count ?? 0}</h5>
-
-          <button
-            className="analytics-btn"
-            title="View business analytics"
-            onClick={() => navigate(`/business/${businessInfo._id}/analytics`)}
-          >
-            <ChartNoAxesColumn className="lucide-icon block2-icons" />
-            <span>Analytics</span>
-          </button>
+          {owned && (
+            <button
+              className="analytics-btn"
+              title="View business analytics"
+              onClick={() =>
+                navigate(`/business/${businessInfo._id}/analytics`)
+              }
+            >
+              <ChartNoAxesColumn className="lucide-icon block2-icons" />
+              <span>Analytics</span>
+            </button>
+          )}
         </div>
 
         <div className="working-hours">
@@ -357,18 +391,20 @@ function InfoBlock2({ businessInfo }) {
             >
               {businessInfo?.status ?? "closed"}
             </span>
-            <Switch
-              checked={isOpen}
-              onChange={(e) => setIsOpen(e.target.checked)}
-              sx={{
-                "& .MuiSwitch-switchBase.Mui-checked": {
-                  color: "#22c55e",
-                },
-                "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                  backgroundColor: "#22c55e",
-                },
-              }}
-            />
+            {owned && (
+              <Switch
+                checked={isOpen}
+                onChange={(e) => setIsOpen(e.target.checked)}
+                sx={{
+                  "& .MuiSwitch-switchBase.Mui-checked": {
+                    color: "#22c55e",
+                  },
+                  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                    backgroundColor: "#22c55e",
+                  },
+                }}
+              />
+            )}
           </div>
         </div>
 
@@ -406,7 +442,7 @@ import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRou
 import OfferForm from "./OfferForm";
 import Review from "./Review";
 
-function MediaBlock({ media, theme }) {
+function MediaBlock({ media, theme, owned }) {
   return (
     <div className="business-media-wrapper">
       <div>
@@ -518,11 +554,96 @@ function MediaBlock({ media, theme }) {
           ))}
 
           {/* Add Media box */}
+          {owned && (
+            <Box
+              className="add-media"
+              sx={{
+                minWidth: 220,
+                height: 200,
+                borderRadius: 2,
+                flexShrink: 0,
+
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1,
+
+                backgroundColor: theme ? "#fcfafa" : "#111",
+                border: theme
+                  ? "1px dashed rgba(0,0,0,0.25)"
+                  : "1px dashed rgba(255,255,255,0.25)",
+
+                color: theme ? "#444" : "rgba(255,255,255,0.7)",
+                cursor: "pointer",
+                transition: "all 0.25s ease",
+
+                "&:hover": {
+                  backgroundColor: theme ? "#f2f2f2" : "#1a1a1a",
+                  color: theme ? "#111" : "#fff",
+                },
+              }}
+            >
+              <AddPhotoAlternateOutlinedIcon
+                sx={{
+                  fontSize: 42,
+                  color: "inherit",
+                }}
+              />
+
+              <Box
+                sx={{
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: "inherit",
+                }}
+              >
+                Add media
+              </Box>
+            </Box>
+          )}
+        </Box>
+      </div>
+    </div>
+  );
+}
+
+function OfferSection({ businessInfo, theme, owned }) {
+  const [offers, setOffers] = useState([]);
+  const { data, loading, error } = useGet(
+    businessInfo ? `business/${businessInfo._id}/offers` : null,
+  );
+
+  useEffect(() => {
+    if (data) {
+      setOffers(data.data);
+    }
+  }, [data]);
+
+  const [displayForm, setDisplayForm] = useState(false);
+  const [initialState, setInitialState] = useState({});
+
+  const AddOffer = () => {
+    return (
+      <>
+        {owned && (
           <Box
-            className="add-media"
+            onClick={() => {
+              const currentScrollY = window.scrollY;
+              const docHeight =
+                document.documentElement.scrollHeight - window.innerHeight;
+              const remainingHeight = docHeight - currentScrollY;
+              const additionalScrollY = (120 / 100) * remainingHeight;
+              window.scrollTo({
+                top: currentScrollY + additionalScrollY,
+                behavior: "smooth",
+              });
+              setDisplayForm(true);
+            }}
+            className="add-offer-btn"
             sx={{
-              minWidth: 220,
-              height: 200,
+              minWidth: 260,
+              height: "100%",
               borderRadius: 2,
               flexShrink: 0,
 
@@ -547,7 +668,7 @@ function MediaBlock({ media, theme }) {
               },
             }}
           >
-            <AddPhotoAlternateOutlinedIcon
+            <AddCircleOutlineRoundedIcon
               sx={{
                 fontSize: 42,
                 color: "inherit",
@@ -561,90 +682,11 @@ function MediaBlock({ media, theme }) {
                 color: "inherit",
               }}
             >
-              Add media
+              Add Offer
             </Box>
           </Box>
-        </Box>
-      </div>
-    </div>
-  );
-}
-
-function OfferSection({ businessInfo, theme }) {
-  const [offers, setOffers] = useState([]);
-  const { data, loading, error } = useGet(
-    businessInfo ? `business/${businessInfo._id}/offers` : null
-  );
-
-  useEffect(() => {
-    if (data) {
-      setOffers(data.data);
-    }
-  }, [data]);
-
-  const [displayForm, setDisplayForm] = useState(false);
-  const [initialState, setInitialState] = useState({});
-
-  const AddOffer = () => {
-    return (
-      <Box
-        onClick={() => {
-          const currentScrollY = window.scrollY;
-          const docHeight =
-            document.documentElement.scrollHeight - window.innerHeight;
-          const remainingHeight = docHeight - currentScrollY;
-          const additionalScrollY = (120 / 100) * remainingHeight;
-          window.scrollTo({
-            top: currentScrollY + additionalScrollY,
-            behavior: "smooth",
-          });
-          setDisplayForm(true);
-        }}
-        className="add-offer-btn"
-        sx={{
-          minWidth: 260,
-          height: "100%",
-          borderRadius: 2,
-          flexShrink: 0,
-
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 1,
-
-          backgroundColor: theme ? "#fcfafa" : "#111",
-          border: theme
-            ? "1px dashed rgba(0,0,0,0.25)"
-            : "1px dashed rgba(255,255,255,0.25)",
-
-          color: theme ? "#444" : "rgba(255,255,255,0.7)",
-          cursor: "pointer",
-          transition: "all 0.25s ease",
-
-          "&:hover": {
-            backgroundColor: theme ? "#f2f2f2" : "#1a1a1a",
-            color: theme ? "#111" : "#fff",
-          },
-        }}
-      >
-        <AddCircleOutlineRoundedIcon
-          sx={{
-            fontSize: 42,
-            color: "inherit",
-          }}
-        />
-
-        <Box
-          sx={{
-            fontSize: 14,
-            fontWeight: 500,
-            color: "inherit",
-          }}
-        >
-          Add Offer
-        </Box>
-      </Box>
+        )}
+      </>
     );
   };
 
@@ -666,6 +708,7 @@ function OfferSection({ businessInfo, theme }) {
                   offerState={[offers, setOffers]}
                   setInitialState={setInitialState}
                   displayForm={setDisplayForm}
+                  owned={owned}
                 />
               ))}
 
@@ -734,6 +777,7 @@ function OfferCard({
   offerState,
   setInitialState,
   displayForm,
+  owned,
 }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -745,7 +789,7 @@ function OfferCard({
         await deleteData(`business/${businessID}/offers/${offer._id}`);
 
         const updatedOffers = offerState[0].filter(
-          ({ _id }) => _id !== offer._id
+          ({ _id }) => _id !== offer._id,
         );
         offerState[1](updatedOffers);
 
@@ -753,7 +797,7 @@ function OfferCard({
       } catch (error) {
         toast.error(
           error?.response?.data?.message ||
-            "Something went wrong, please try again."
+            "Something went wrong, please try again.",
         );
       } finally {
         setConfirmDelete(false);
@@ -828,24 +872,28 @@ function OfferCard({
                 : `₹${offer?.discount?.value} OFF`}
             </span>
 
-            <button
-              className="edit-offer"
-              disabled={loading}
-              onClick={() => {
-                setInitialState(offer);
-                displayForm(true);
-              }}
-            >
-              <Pencil size={16} />
-            </button>
+            {owned && (
+              <>
+                <button
+                  className="edit-offer"
+                  disabled={loading}
+                  onClick={() => {
+                    setInitialState(offer);
+                    displayForm(true);
+                  }}
+                >
+                  <Pencil size={16} />
+                </button>
 
-            <button
-              className="delete-offer"
-              onClick={() => setConfirmDelete(true)}
-              disabled={loading}
-            >
-              <Trash size={16} />
-            </button>
+                <button
+                  className="delete-offer"
+                  onClick={() => setConfirmDelete(true)}
+                  disabled={loading}
+                >
+                  <Trash size={16} />
+                </button>
+              </>
+            )}
           </div>
 
           <div className="offer-content">

@@ -9,7 +9,6 @@ const useAuthRedirect = (path) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.userInfo);
 
-  console.log(user);
   const userDeepCopy = {...user};
 
   const token = localStorage.getItem("token");

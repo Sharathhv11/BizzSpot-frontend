@@ -5,12 +5,23 @@ import logoLight from "./../../../assets/logo.png";
 import logoDark from "./../../../assets/logoD.png";
 import dftImage from "./../../../assets/noDp.png";
 import { Search, Sun, Moon, Menu, LogOut, CircleUser, Settings } from "lucide-react";
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 const Nav = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const isLight = useSelector((state) => state.pageState.theme);
   const dispatch = useDispatch();
+
+  const navigate = useNavigate();
+
+  const logout = () => {
+    //^ clear token from localstorage
+    localStorage.removeItem("token");
+
+    //^ navigate back to login page 
+    navigate("/login");
+
+  }
 
   return (
     <header className={`navv2 ${isLight ? "light" : "dark"}`}>
@@ -56,7 +67,7 @@ const Nav = () => {
                 <Settings/>
                 <span>Settings</span></button>
               <div className="divider" />
-              <button className="danger">
+              <button className="danger" onClick={logout}>
                 <LogOut />
                 <span>Logout</span>
               </button>

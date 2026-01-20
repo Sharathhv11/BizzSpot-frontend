@@ -12,14 +12,14 @@ import {
   BadgeCheck,
   Store,
   TriangleAlert,
+  LoaderCircle,
 } from "lucide-react";
 import Nav2 from "../Util/Nav2";
 import businessPlaceHolder from "./../../../assets/businessPlaceHolder.png";
 
 import { setUserBusiness } from "../../../redux/reducers/user";
-import { changeRedirectUserID } from "../../../redux/reducers/pageState";
+import { pushNav } from "../../../redux/reducers/pageState";
 import getUserFriendlyMessage from "../../../utils/userFriendlyErrors";
-
 
 const Profile = () => {
   const { userID } = useParams();
@@ -54,7 +54,6 @@ const Profile = () => {
     <>
       <Nav2 pageState={pageState} user={targetUser} redirect={`/`} />
       {error ? (
-        (
         <div className="broken-link-container">
           <div>
             <img src={noDp} alt="business not found" />
@@ -66,7 +65,6 @@ const Profile = () => {
             {getUserFriendlyMessage(error)}
           </div>
         </div>
-      )
       ) : (
         <>
           <Main
@@ -87,18 +85,18 @@ const Profile = () => {
 
 const Main = ({ user, pageState: theme, updateFollowList, owner }) => {
   const { data: followCount } = useGet(
-    user?.id ? `follow/count?userID=${user?.id}` : null
+    user?.id ? `follow/count?userID=${user?.id}` : null,
   );
 
   const dispatch = useDispatch();
   const { usersBusiness: ownerBusiness, hasFetchedBusinesses } = useSelector(
-    (state) => state.user
+    (state) => state.user,
   );
 
   const shouldFetchBusinesses =
     user?.id && (!owner || (!hasFetchedBusinesses && owner));
-  const { data: businessList } = useGet(
-    shouldFetchBusinesses ? `business?ownedBy=${user?.id}` : null
+  const { data: businessList, loading } = useGet(
+    shouldFetchBusinesses ? `business?ownedBy=${user?.id}` : null,
   );
 
   //  COMPUTED: Use Redux for owner, API for others
@@ -111,12 +109,6 @@ const Main = ({ user, pageState: theme, updateFollowList, owner }) => {
       dispatch(setUserBusiness(businessList.data));
     }
   }, [businessList?.data, owner, hasFetchedBusinesses, dispatch]);
-
-  useEffect(() => {
-    if (user) {
-      dispatch(changeRedirectUserID(user?.id));
-    }
-  }, [user]);
 
   const navigate = useNavigate();
 
@@ -159,7 +151,10 @@ const Main = ({ user, pageState: theme, updateFollowList, owner }) => {
               <div
                 className="business-rich"
                 key={business._id}
-                onClick={() => navigate(`/business/${business._id}`)}
+                onClick={() => {
+                  dispatch(pushNav(`/profile/${user?.id}`));
+                  navigate(`/business/${business._id}`);
+                }}
               >
                 {/* Your perfect business card JSX stays the same */}
                 <div className="business-img-wrapper">
@@ -223,13 +218,17 @@ const Main = ({ user, pageState: theme, updateFollowList, owner }) => {
                 </div>
               </div>
             ))
-          ) : (
+          ) : !loading ? (
             <div
               className="business-not-registered-container"
               onClick={() => navigate("/register-business")}
             >
               <span>not yet registered Business</span>
               {owner && <div></div>}
+            </div>
+          ) : (
+            <div className="review-loader">
+              <LoaderCircle className="animate-spin" color="black" />
             </div>
           )}
 

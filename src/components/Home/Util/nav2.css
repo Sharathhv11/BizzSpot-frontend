@@ -43,6 +43,8 @@
   height: 38px;
   border-radius: 50%;
   cursor: pointer;
+  object-fit: cover;
+  object-position: top;
 }
 
 .nav-profile-info-container h5 {
