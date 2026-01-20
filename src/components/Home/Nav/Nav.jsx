@@ -1,11 +1,20 @@
 import "./nav.css";
 import { useSelector, useDispatch } from "react-redux";
 import { changeTheme } from "../../../redux/reducers/pageState";
+import { resetStates } from "../../../redux/reducers/user";
 import logoLight from "./../../../assets/logo.png";
 import logoDark from "./../../../assets/logoD.png";
 import dftImage from "./../../../assets/noDp.png";
-import { Search, Sun, Moon, Menu, LogOut, CircleUser, Settings } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom"
+import {
+  Search,
+  Sun,
+  Moon,
+  Menu,
+  LogOut,
+  CircleUser,
+  Settings,
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Nav = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -18,10 +27,12 @@ const Nav = () => {
     //^ clear token from localstorage
     localStorage.removeItem("token");
 
-    //^ navigate back to login page 
+    //^reset the state variables
+    dispatch(resetStates());
+    
+    //^ navigate back to login page
     navigate("/login");
-
-  }
+  };
 
   return (
     <header className={`navv2 ${isLight ? "light" : "dark"}`}>
@@ -58,14 +69,18 @@ const Nav = () => {
             <img src={userInfo?.profilePicture || dftImage} alt="profile" />
             <div className="profile-menu">
               <button>
-                <Link to={`/profile/${userInfo?.id}`} className="w-full h-full flex gap-1.5 items-center justify-start">
-                <CircleUser/>
-                <span>Profile</span>
+                <Link
+                  to={`/profile/${userInfo?.id}`}
+                  className="w-full h-full flex gap-1.5 items-center justify-start"
+                >
+                  <CircleUser />
+                  <span>Profile</span>
                 </Link>
-                </button>
+              </button>
               <button>
-                <Settings/>
-                <span>Settings</span></button>
+                <Settings />
+                <span>Settings</span>
+              </button>
               <div className="divider" />
               <button className="danger" onClick={logout}>
                 <LogOut />

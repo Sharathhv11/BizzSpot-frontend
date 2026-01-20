@@ -309,6 +309,18 @@
 }
 
 
+.review-user-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.review-user-container span{
+  font-size: 11px;
+  margin-left: 3px;
+  color: #888;
+}
+
 @media (max-width: 900px) {
   .reviews-list {
     grid-template-columns: repeat(2, 1fr);

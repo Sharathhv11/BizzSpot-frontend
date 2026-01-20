@@ -1,34 +1,26 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+  userInfo: null,
+  usersBusiness: [],
+  hasFetchedBusinesses: false,
+};
+
 const userSlice = createSlice({
   name: "user",
-  initialState: {
-    userInfo: null,
-    usersBusiness: [],
-    hasFetchedBusinesses: false
-  },
+  initialState,
   reducers: {
     setUserInfo: (state, action) => {
       state.userInfo = action.payload;
     },
-    clearUserInfo: (state) => {
-      state.userInfo = null;
-    },
     setUserBusiness: (state, action) => {
-      state.usersBusiness = action.payload; 
+      state.usersBusiness = action.payload;
       state.hasFetchedBusinesses = true;
     },
-    clearUserBusiness: (state) => {
-      state.usersBusiness = [];
-    }
-  }
+    resetStates: () => initialState,
+  },
 });
 
-export const {
-  setUserInfo,
-  clearUserInfo,
-  setUserBusiness,
-  clearUserBusiness
-} = userSlice.actions;
+export const { setUserInfo, setUserBusiness, resetStates } = userSlice.actions;
 
 export default userSlice.reducer;

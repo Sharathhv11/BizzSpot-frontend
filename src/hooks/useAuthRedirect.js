@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import useGet from "./useGet";
-import { setUserInfo, clearUserInfo } from "../redux/reducers/user";
+import { setUserInfo, resetStates } from "../redux/reducers/user";
 
 const useAuthRedirect = (path) => {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const useAuthRedirect = (path) => {
 
     //^ API error → logout
     if (error) {
-      dispatch(clearUserInfo());
+      dispatch(resetStates());
       localStorage.removeItem("token");
       navigate("/login");
       return;

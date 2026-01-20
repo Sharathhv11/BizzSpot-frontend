@@ -9,15 +9,17 @@ import { useSelector, useDispatch } from "react-redux";
 import { pushNav } from "../../../redux/reducers/pageState";
 
 import useGet from "./../../../hooks/useGet";
-import { LoaderCircle, Trash, Pen } from "lucide-react";
+import useDelete from "./../../../hooks/useDelete";
 import usePatch from "../../../hooks/usePatch";
 import usePost from "../../../hooks/usePost";
+
+import { LoaderCircle, Trash, Pen } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 import formatCount from "../../../utils/countFormate";
 
-const ReviewCard = ({ review, businessInfo, owned }) => {
+const ReviewCard = ({ review, businessInfo, owned, setReloadKey }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -34,6 +36,7 @@ const ReviewCard = ({ review, businessInfo, owned }) => {
   const [dislikeCount, setDislikeCount] = useState(review.dislike?.length || 0);
 
   const { patchData, responseData, error, loading } = usePatch();
+  const { deleteData } = useDelete();
 
   const handleLike = async () => {
     const prevLiked = liked;
@@ -112,6 +115,19 @@ const ReviewCard = ({ review, businessInfo, owned }) => {
     }
   }, [review]);
 
+  const handleReviewDelete = async function () {
+    try {
+      const uri = `business/${businessInfo._id}/reviews/${review._id}`;
+      await deleteData(uri);
+      setReloadKey((prev) => prev + 1);
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message ||
+          "something went wrong please try again.",
+      );
+    }
+  };
+
   return (
     <div className="review-card">
       <div className="review-header">
@@ -130,15 +146,18 @@ const ReviewCard = ({ review, businessInfo, owned }) => {
           />
 
           <div>
-            <h4
-              className="review-username"
-              onClick={() => {
-                dispatch(pushNav(`/business/${businessInfo._id}`));
-                navigate(`/profile/${user._id}`);
-              }}
-            >
-              {user.username}
-            </h4>
+            <div className="review-user-container">
+              <h4
+                className="review-username"
+                onClick={() => {
+                  dispatch(pushNav(`/business/${businessInfo._id}`));
+                  navigate(`/profile/${user._id}`);
+                }}
+              >
+                {user.username}
+              </h4>
+              <span>(edited)</span>
+            </div>
             <Rating value={review.rating} readOnly size="small" />
           </div>
         </div>
@@ -152,7 +171,7 @@ const ReviewCard = ({ review, businessInfo, owned }) => {
                 <Pen size={14} />
                 Edit
               </div>
-              <div className="more-item danger">
+              <div className="more-item danger" onClick={handleReviewDelete}>
                 <Trash size={14} />
                 Delete
               </div>
@@ -229,7 +248,10 @@ const ReviewCard = ({ review, businessInfo, owned }) => {
                   boxShadow: "0 0 0 2px white",
                 }}
               >
-                <FavoriteIcon sx={{ fontSize: 9, color: "#fff" }} />
+                <FavoriteIcon
+                  sx={{ fontSize: 9, color: "#fff" }}
+                  titleAccess="liked by owner"
+                />
               </Box>
             </Box>
           )}
@@ -238,7 +260,7 @@ const ReviewCard = ({ review, businessInfo, owned }) => {
             <FavoriteIcon
               onClick={owned ? handleOwnerLiked : null}
               fontSize="small"
-              titleAccess="liked by owner"
+              titleAccess="liked customer review"
               sx={{
                 color: "#9e9e9e",
                 backgroundColor: "#ffffff",
@@ -265,10 +287,11 @@ const ReviewCard = ({ review, businessInfo, owned }) => {
 const Review = ({ userInfo, businessInfo, owned }) => {
   const REVIEWS_PER_PAGE = 3;
   const [currentPage, setCurrentPage] = useState(1);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const { data, loading, error } = useGet(
     userInfo && businessInfo
-      ? `business/${businessInfo._id}/reviews?limit=${REVIEWS_PER_PAGE}&page=${currentPage}`
+      ? `business/${businessInfo._id}/reviews?limit=${REVIEWS_PER_PAGE}&page=${currentPage}&r=${reloadKey}`
       : null,
   );
 
@@ -364,6 +387,7 @@ const Review = ({ userInfo, businessInfo, owned }) => {
               review={review}
               businessInfo={businessInfo}
               owned={owned}
+              setReloadKey={setReloadKey}
             />
           ))}
       </div>
