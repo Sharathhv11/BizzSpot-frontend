@@ -13,7 +13,7 @@ import useDelete from "./../../../hooks/useDelete";
 import usePatch from "../../../hooks/usePatch";
 import usePost from "../../../hooks/usePost";
 
-import { LoaderCircle, Trash, Pen } from "lucide-react";
+import { LoaderCircle, Trash, Pen, CircleX } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -288,6 +288,7 @@ const Review = ({ userInfo, businessInfo, owned }) => {
   const REVIEWS_PER_PAGE = 3;
   const [currentPage, setCurrentPage] = useState(1);
   const [reloadKey, setReloadKey] = useState(0);
+  const [reviewError, setReviewError] = useState("");
 
   const { data, loading, error } = useGet(
     userInfo && businessInfo
@@ -310,7 +311,7 @@ const Review = ({ userInfo, businessInfo, owned }) => {
     e.preventDefault();
 
     if (!rating) {
-      toast.error("Please select a rating");
+      setReviewError("Please select a rating");
       return;
     }
 
@@ -325,6 +326,8 @@ const Review = ({ userInfo, businessInfo, owned }) => {
       setComment("");
     } catch (err) {
       toast.error("Failed to submit review");
+    } finally {
+      setReviewError("");
     }
   };
 
@@ -411,7 +414,7 @@ const Review = ({ userInfo, businessInfo, owned }) => {
       )}
 
       {!owned && (
-        <form className="review-form" onSubmit={handleSubmitReview}>
+        <form className="review-form">
           <h3>Write a review</h3>
 
           {/* Rating */}
@@ -420,7 +423,7 @@ const Review = ({ userInfo, businessInfo, owned }) => {
             <Rating
               value={rating}
               onChange={(e, newValue) => setRating(newValue)}
-              size="medium"
+              className="form-rating"
             />
           </div>
 
@@ -437,10 +440,27 @@ const Review = ({ userInfo, businessInfo, owned }) => {
             <span className="char-count">{comment.length}/500</span>
           </div>
 
+          {reviewError && (
+            <div className="Error  reviewError">
+              <CircleX size={14} />
+              <span>{reviewError}</span>
+            </div>
+          )}
+
           {/* Submit */}
-          <button type="submit" className="submit-review">
-            Submit review
-          </button>
+          <div className="review-btn-container">
+            <button
+              type="submit"
+              className="submit-review"
+              onClick={handleSubmitReview}
+            >
+              {formLoading ? (
+                <LoaderCircle className="animate-spin" color="white" />
+              ) : (
+                "Submit review"
+              )}
+            </button>
+          </div>
         </form>
       )}
     </section>
