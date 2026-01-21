@@ -1,0 +1,24 @@
+:root {
+  --max-width: 1200px;
+  --border-radius: 6px;
+  --border-dark: 1px solid #565252ae;
+  --border-light: 1px solid #eaeaea;
+}
+
+
+.follow-business{
+  height: 40px;
+  width: 100px;
+
+  margin: 0 auto;
+  margin-top: 15px;
+  background-color: #512eff;
+  border-radius: var(--border-radius);
+  color: white;
+  cursor: pointer;
+}
+
+.button-disabled{
+  cursor: not-allowed;
+  background-color: #4024ca;
+}

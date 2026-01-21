@@ -33,6 +33,8 @@ import L from "leaflet";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
+import Follow from "../Util/Follow";
+
 import offerBanner from "./../../../assets/offerBanner.png";
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -326,7 +328,11 @@ function InfoBlock2({ businessInfo, owned }) {
     businessInfo ? `follow/count?businessID=${businessInfo._id}` : null,
   );
 
+  const { data: followStatus } = useGet(
+    businessInfo && !owned ? `business/${businessInfo?._id}/follow-status` : null,
+  );
   const [isOpen, setIsOpen] = useState(false);
+  const [followersCount,setFollowersCount] = useState(0);
 
   const position = businessInfo?.location?.coordinates?.coordinates
     ? [
@@ -334,6 +340,12 @@ function InfoBlock2({ businessInfo, owned }) {
         businessInfo.location.coordinates.coordinates[1],
       ]
     : [12.9716, 77.5946]; // Bangalore fallback
+
+  useEffect(()=>{
+    if(data){
+      setFollowersCount(data?.data?.count);
+    }
+  },[data]);
 
   const navigate = useNavigate();
 
@@ -346,8 +358,8 @@ function InfoBlock2({ businessInfo, owned }) {
             Followers
           </h2>
 
-          <h5>{data?.data?.count ?? 0}</h5>
-          {owned && (
+          <h5>{followersCount ?? 0}</h5>
+          {owned ? (
             <button
               className="analytics-btn"
               title="View business analytics"
@@ -358,6 +370,12 @@ function InfoBlock2({ businessInfo, owned }) {
               <ChartNoAxesColumn className="lucide-icon block2-icons" />
               <span>Analytics</span>
             </button>
+          ) : (
+            <Follow
+              businessID={businessInfo?._id}
+              status={followStatus?.data.followingStatus}
+              updateFollowersCount={setFollowersCount}
+            />
           )}
         </div>
 
