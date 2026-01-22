@@ -31,9 +31,17 @@ const ReviewCard = ({ review, businessInfo, owned, setReloadKey }) => {
   const [disLiked, setDisLiked] = useState(false);
   const [ownerLiked, setOwnerLiked] = useState(review.likedByOwner);
   const [ownerOfReview, setOwnerOfReview] = useState(false);
+  const [editReview, setEditReview] = useState(false);
 
   const [likeCount, setLikeCount] = useState(review.like?.length || 0);
   const [dislikeCount, setDislikeCount] = useState(review.dislike?.length || 0);
+
+  const [editReviewForm, setEditReviewForm] = useState({
+    rating: 0,
+    comment: "",
+  });
+  const [editReviewLoader, setEditReviewLoader] = useState(false);
+  const [editReviewError, setEditReviewError] = useState("");
 
   const { patchData, responseData, error, loading } = usePatch();
   const { deleteData } = useDelete();
@@ -106,6 +114,12 @@ const ReviewCard = ({ review, businessInfo, owned, setReloadKey }) => {
 
       setLiked(likedByUser);
       setDisLiked(dislikedByUser);
+
+      setEditReviewForm((prev) => ({
+        ...prev,
+        rating: review.rating,
+        comment: review.comment,
+      }));
     }
     setLikeCount(review.like?.length || 0);
     setDislikeCount(review.dislike?.length || 0);
@@ -128,158 +142,263 @@ const ReviewCard = ({ review, businessInfo, owned, setReloadKey }) => {
     }
   };
 
+  const handleUpdateReview = async function (e) {
+    e.preventDefault();
+
+    if (editReviewForm.rating === 0) {
+      setEditReviewError("Please select a rating from 1 to 5.");
+      return;
+    }
+
+    if (editReviewForm.comment.length === 0) {
+      setEditReviewError("please provide the valid review.");
+      return;
+    }
+    setEditReviewLoader(true);
+
+    try {
+      await patchData(
+        `business/${businessInfo._id}/reviews/${review._id}`,
+        editReviewForm,
+      );
+      toast.success("success");
+      setReloadKey((prev) => prev + 1);
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message ||
+          "something went wrong please try again.",
+      );
+    } finally {
+      setEditReviewError("");
+      setEditReviewLoader(false);
+      setEditReview(false);
+    }
+  };
+
   return (
     <div className="review-card">
-      <div className="review-header">
-        <div className="review-user">
-          <Avatar
-            src={user.profilePicture}
-            alt={user.username}
-            sx={{
-              width: 40,
-              height: 40,
-              "& img": {
-                objectFit: "cover",
-                objectPosition: "top",
-              },
-            }}
-          />
-
-          <div>
-            <div className="review-user-container">
-              <h4
-                className="review-username"
+      {editReview && ownerOfReview ? (
+        <div>
+          <form>
+            <div className="form-group">
+              <label>Rating</label>
+              <Rating
+                value={editReviewForm.rating}
+                onChange={(e, newValue) => {
+                  setEditReviewForm((prev) => ({
+                    ...prev,
+                    rating: newValue || 0,
+                  }));
+                }}
+                className="form-rating"
+              />
+            </div>
+            <div className="form-group">
+              <label>Your review</label>
+              <textarea
+                placeholder="Share your experience"
+                value={editReviewForm.comment}
+                onChange={(e) => {
+                  setEditReviewForm((prev) => ({
+                    ...prev,
+                    comment: e.target.value,
+                  }));
+                }}
+                maxLength={500}
+                required
+                className="textarea-update-review"
+              />
+              <span className="char-count">
+                {editReviewForm.comment.length}/500
+              </span>
+            </div>
+            {editReviewError && (
+              <div className="Error  reviewError">
+                <CircleX size={14} />
+                <span>{editReviewError}</span>
+              </div>
+            )}
+            <div className="review-upt-btn">
+              <button
                 onClick={() => {
-                  dispatch(pushNav(`/business/${businessInfo._id}`));
-                  navigate(`/profile/${user._id}`);
+                  setEditReview(false);
                 }}
               >
-                {user.username}
-              </h4>
-              <span>(edited)</span>
+                cancel
+              </button>
+              <button onClick={handleUpdateReview}>
+                {editReviewLoader ? (
+                  <LoaderCircle className="animate-spin" color="white" />
+                ) : (
+                  "update"
+                )}
+              </button>
             </div>
-            <Rating value={review.rating} readOnly size="small" />
-          </div>
+          </form>
         </div>
-
-        {ownerOfReview && (
-          <IconButton size="small" className="more-btn">
-            <MoreVertIcon fontSize="small" />
-
-            <div className="more-menu">
-              <div className="more-item">
-                <Pen size={14} />
-                Edit
-              </div>
-              <div className="more-item danger" onClick={handleReviewDelete}>
-                <Trash size={14} />
-                Delete
-              </div>
-            </div>
-          </IconButton>
-        )}
-      </div>
-
-      <p className="review-comment">{review.comment}</p>
-
-      <div className="review-footer">
-        <span className="review-date">
-          {new Date(review.createdAt).toLocaleDateString()}
-        </span>
-
-        <div className="review-actions">
-          <div className="reaction">
-            <button onClick={handleLike} className="reaction-btn">
-              <ThumbUpAltOutlinedIcon
-                fontSize="small"
-                sx={{ color: liked ? "#1976d2" : "#555" }}
-              />
-            </button>
-            <span className="reaction-count">{formatCount(likeCount)}</span>
-          </div>
-
-          <div className="reaction">
-            <button onClick={handleDislike} className="reaction-btn">
-              <ThumbDownAltOutlinedIcon
-                fontSize="small"
-                sx={{ color: disLiked ? "#1976d2" : "#555" }}
-              />
-            </button>
-            <span className="reaction-count">{formatCount(dislikeCount)}</span>
-          </div>
-
-          {/* owner liked indicator */}
-          {ownerLiked && businessInfo?.owner?.profilePicture && (
-            <Box
-              onClick={owned ? handleOwnerLiked : null}
-              sx={{
-                position: "relative",
-                width: 28,
-                height: 28,
-                display: "inline-block",
-                cursor: "pointer",
-                top: "7px",
-                left: "4px",
-              }}
-            >
-              {/* Owner profile image */}
+      ) : (
+        <>
+          <div className="review-header">
+            <div className="review-user">
               <Avatar
-                src={businessInfo.owner.profilePicture}
-                alt="Owner"
+                src={user.profilePicture}
+                alt={user.username}
                 sx={{
-                  width: 28,
-                  height: 28,
+                  width: 40,
+                  height: 40,
+                  "& img": {
+                    objectFit: "cover",
+                    objectPosition: "top",
+                  },
                 }}
               />
 
-              {/* Heart badge */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  bottom: -2,
-                  right: -2,
-                  width: 14,
-                  height: 14,
-                  borderRadius: "50%",
-                  backgroundColor: "#e53935",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  boxShadow: "0 0 0 2px white",
-                }}
-              >
+              <div>
+                <div className="review-user-container">
+                  <h4
+                    className="review-username"
+                    onClick={() => {
+                      dispatch(pushNav(`/business/${businessInfo._id}`));
+                      navigate(`/profile/${user._id}`);
+                    }}
+                  >
+                    {user.username}
+                  </h4>
+                  {review?.edited && <span>(edited)</span>}
+                </div>
+                <Rating value={review.rating} readOnly size="small" />
+              </div>
+            </div>
+
+            {ownerOfReview && (
+              <IconButton size="small" className="more-btn">
+                <MoreVertIcon fontSize="small" />
+
+                <div className="more-menu">
+                  <div
+                    className="more-item"
+                    onClick={() => {
+                      setEditReview(true);
+                    }}
+                  >
+                    <Pen size={14} />
+                    Edit
+                  </div>
+                  <div
+                    className="more-item danger"
+                    onClick={handleReviewDelete}
+                  >
+                    <Trash size={14} />
+                    Delete
+                  </div>
+                </div>
+              </IconButton>
+            )}
+          </div>
+          <p className="review-comment">{review.comment}</p>
+
+          <div className="review-footer">
+            <span className="review-date">
+              {new Date(review.createdAt).toLocaleDateString()}
+            </span>
+
+            <div className="review-actions">
+              <div className="reaction">
+                <button onClick={handleLike} className="reaction-btn">
+                  <ThumbUpAltOutlinedIcon
+                    fontSize="small"
+                    sx={{ color: liked ? "#1976d2" : "#555" }}
+                  />
+                </button>
+                <span className="reaction-count">{formatCount(likeCount)}</span>
+              </div>
+
+              <div className="reaction">
+                <button onClick={handleDislike} className="reaction-btn">
+                  <ThumbDownAltOutlinedIcon
+                    fontSize="small"
+                    sx={{ color: disLiked ? "#1976d2" : "#555" }}
+                  />
+                </button>
+                <span className="reaction-count">
+                  {formatCount(dislikeCount)}
+                </span>
+              </div>
+
+              {/* owner liked indicator */}
+              {ownerLiked && businessInfo?.owner?.profilePicture && (
+                <Box
+                  onClick={owned ? handleOwnerLiked : null}
+                  sx={{
+                    position: "relative",
+                    width: 28,
+                    height: 28,
+                    display: "inline-block",
+                    cursor: "pointer",
+                    top: "7px",
+                    left: "4px",
+                  }}
+                >
+                  {/* Owner profile image */}
+                  <Avatar
+                    src={businessInfo.owner.profilePicture}
+                    alt="Owner"
+                    sx={{
+                      width: 28,
+                      height: 28,
+                    }}
+                  />
+
+                  {/* Heart badge */}
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      bottom: -2,
+                      right: -2,
+                      width: 14,
+                      height: 14,
+                      borderRadius: "50%",
+                      backgroundColor: "#e53935",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      boxShadow: "0 0 0 2px white",
+                    }}
+                  >
+                    <FavoriteIcon
+                      sx={{ fontSize: 9, color: "#fff" }}
+                      titleAccess="liked by owner"
+                    />
+                  </Box>
+                </Box>
+              )}
+
+              {owned && !ownerLiked && (
                 <FavoriteIcon
-                  sx={{ fontSize: 9, color: "#fff" }}
-                  titleAccess="liked by owner"
+                  onClick={owned ? handleOwnerLiked : null}
+                  fontSize="small"
+                  titleAccess="liked customer review"
+                  sx={{
+                    color: "#9e9e9e",
+                    backgroundColor: "#ffffff",
+                    borderRadius: "50%",
+                    padding: "3px",
+                    boxShadow: "0 0 0 1px #e0e0e0",
+                    position: "relative",
+                    top: "7px",
+                    left: "4px",
+                    cursor: "pointer",
+
+                    "&:hover": {
+                      color: "#f44336",
+                    },
+                  }}
                 />
-              </Box>
-            </Box>
-          )}
-
-          {owned && !ownerLiked && (
-            <FavoriteIcon
-              onClick={owned ? handleOwnerLiked : null}
-              fontSize="small"
-              titleAccess="liked customer review"
-              sx={{
-                color: "#9e9e9e",
-                backgroundColor: "#ffffff",
-                borderRadius: "50%",
-                padding: "3px",
-                boxShadow: "0 0 0 1px #e0e0e0",
-                position: "relative",
-                top: "7px",
-                left: "4px",
-                cursor: "pointer",
-
-                "&:hover": {
-                  color: "#f44336",
-                },
-              }}
-            />
-          )}
-        </div>
-      </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
