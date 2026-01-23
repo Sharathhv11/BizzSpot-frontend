@@ -1,0 +1,104 @@
+.subscription-container {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  padding: 40px;
+}
+
+/* Cards */
+.subscription-container .subscription-card {
+  width: 280px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  background: #fff;
+}
+
+/* Headings */
+.subscription-container .subscription-card h2 {
+  margin-bottom: 8px;
+}
+
+/* Price */
+.subscription-container .price {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+/* Feature list */
+.subscription-container .subscription-card ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.subscription-container .subscription-card li {
+  margin: 8px 0;
+}
+
+/* Buttons */
+.subscription-container .btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Primary button */
+.subscription-container .btn.primary {
+  background-color: #0040ff;
+  color: white;
+}
+
+.subscription-container .btn.primary:hover {
+  background-color: #0533bc;
+}
+
+/* Disabled button */
+.subscription-container .btn.disabled {
+  background-color: #9ca3af;
+  color: white;
+  cursor: not-allowed;
+}
+
+/* Optional: highlight premium */
+.subscription-container .subscription-card.premium {
+  border: 2px solid #2563eb;
+}
+
+.subscription-container .subscription-card.free {
+  border: 1px solid #d1d5db;
+}
+
+
+.payment-error {
+  max-width: 800px;
+  margin: 20px auto 0;
+  min-height: max-content !important;
+
+  /* layout */
+  padding: 10px 14px;
+  border-radius: 6px;
+
+  /* text wrapping */
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+
+  /* colors */
+  background-color: #fee2e2; /* light red */
+  color: #991b1b;            /* dark red */
+
+  /* subtle border */
+  border: 1px solid #fecaca;
+
+  /* optional */
+  font-size: 14px;
+
+}
+
+

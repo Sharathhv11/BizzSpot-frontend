@@ -17,6 +17,12 @@ const Home = () => {
       }}>
         test purpose 
       </button>
+
+      <button className="primary border-2 " onClick={()=>{
+        navigate("/payment")
+      }}>
+        click me to go for payment page
+      </button>
     </>
   );
 };

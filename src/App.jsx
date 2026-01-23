@@ -10,7 +10,7 @@ import { ForgotPassword } from "./components/Auth/Login/ForgotPassword.jsx";
 import BusinessRegistration from "./components/Home/Business/BusinessRegistration.jsx";
 import 'leaflet/dist/leaflet.css';
 import BusinessProfile from "./components/Home/BusinessProfile/BusinessProfile.jsx";
-
+import Subscription from "./components/paymentGateWay/Subscription.jsx";
 
 function App() {
   
@@ -44,6 +44,7 @@ function App() {
           <Route path="/profile/:userID" element={<Profile/>}></Route>
           <Route path="/register-business" element={<BusinessRegistration/>}/>
           <Route path="/business/:businessID" element={<BusinessProfile/>}/>
+          <Route path="/payment" element={<Subscription/>}/>
         </Routes>
       </BrowserRouter>
     </>
