@@ -102,3 +102,49 @@
 }
 
 
+
+
+/* =========================
+   Responsive – Tablets
+   ========================= */
+@media (max-width: 900px) {
+  .subscription-container {
+    gap: 16px;
+    padding: 24px;
+  }
+
+  .subscription-container .subscription-card {
+    width: 260px;
+    padding: 20px;
+  }
+}
+
+/* =========================
+   Responsive – Mobile
+   ========================= */
+@media (max-width: 600px) {
+  .subscription-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+  }
+
+  .subscription-container .subscription-card {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .subscription-container .price {
+    font-size: 18px;
+  }
+
+  .subscription-container .btn {
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .payment-error {
+    margin: 16px;
+    font-size: 13px;
+  }
+}
