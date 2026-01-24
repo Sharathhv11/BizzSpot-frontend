@@ -111,10 +111,6 @@ const Main = ({ user, pageState: theme, updateFollowList, owner }) => {
     }
   }, [businessList?.data, owner, hasFetchedBusinesses, dispatch]);
 
-  useEffect(()=>{
-    console.log(loading);
-  },[loading])
-
   const navigate = useNavigate();
 
   return (

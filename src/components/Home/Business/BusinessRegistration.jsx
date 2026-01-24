@@ -263,7 +263,7 @@ const BusinessRegistration = () => {
       navigate(`/profile/${user.id}`);
     } catch (error) {
       const status = error?.status;
-      const code = error?.response?.data?.error?.code;
+      const code = error?.response?.data?.code;
       const message =
         error?.response?.data?.message ||
         "Something went wrong, please try again.";
