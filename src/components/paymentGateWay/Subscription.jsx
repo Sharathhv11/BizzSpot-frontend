@@ -1,23 +1,27 @@
 import { useState, useEffect } from "react";
 
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setUserInfo } from "../../redux/reducers/user";
+
 import usePost from "../../hooks/usePost";
 import "./payment.css";
 import { Navigate } from "react-router-dom";
 import logo from "./../../assets/logo.png";
 import Nav2 from "../Home/Util/Nav2";
+import toast from "react-hot-toast";
 
 const Subscription = () => {
   const user = useSelector((state) => state.user.userInfo);
   const { theme } = useSelector((state) => state.pageState);
+  if (!user) {
+    return <Navigate to="/" />;
+  }
 
   const { postData, responseData, error, loading } = usePost();
 
   const [paymentError, setPaymentError] = useState("");
 
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
+  const dispatch = useDispatch();
 
   const handlePayment = async function (e) {
     try {
@@ -41,13 +45,26 @@ const Subscription = () => {
         image: logo,
         order_id: order.id,
 
-        handler: function (response) {
-          const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-            response;
+        handler: async function (response) {
+          const body = {
+            ...response,
+            order_id: order.id,
+          };
 
-          console.log("Order ID:", razorpay_order_id);
-          console.log("Payment ID:", razorpay_payment_id);
-          console.log("Signature:", razorpay_signature);
+          try {
+            const serverVerificationRes = await postData(
+              "payment/verification",
+              body,
+            );
+            toast.success("Payment validated successfully");
+
+            dispatch(setUserInfo(serverVerificationRes.data));
+          } catch (error) {
+            toast.error(
+              error.response.data.message ||
+                "something went wrong in verification of the payment.",
+            );
+          }
 
           // send these to backend for verification
         },

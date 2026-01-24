@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate,Navigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import Nav2 from "./../Util/Nav2.jsx";
 import "./business.css";
 import { CircleX } from "lucide-react";
@@ -125,13 +125,13 @@ const BusinessRegistration = () => {
         (pos) => {
           setPosition([pos.coords.latitude, pos.coords.longitude]);
         },
-        (err) => console.error("Geolocation error:", err)
+        (err) => console.error("Geolocation error:", err),
       );
     }
   }, []);
 
   if (!user) {
-   return <Navigate to="/" replace />;
+    return <Navigate to="/" replace />;
   }
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -251,24 +251,35 @@ const BusinessRegistration = () => {
       formData.append("profile", profileRef.current.files[0]);
     }
 
-   
-
     try {
       const serverResponse = await postData("/business", formData, {
         "Content-Type": "multipart/form-data",
       });
 
-     userOwedBusiness = [...userOwedBusiness,serverResponse.data];
-     dispatch(setUserBusiness(userOwedBusiness));
+      userOwedBusiness = [...userOwedBusiness, serverResponse.data];
+      dispatch(setUserBusiness(userOwedBusiness));
       toast.success(serverResponse.message);
 
-      navigate("/profile");
+      navigate(`/profile/${user.id}`);
     } catch (error) {
-      console.error(error);
-      toast.error(
+      const status = error?.status;
+      const code = error?.response?.data?.error?.code;
+      const message =
         error?.response?.data?.message ||
-          "something went wrong please try again."
-      );
+        "Something went wrong, please try again.";
+
+      if (status === 403 && code === "SUBSCRIPTION_REQUIRED") {
+        toast.error(message);
+        navigate("/payment");
+        return;
+      }
+
+      if (status === 403 && code === "PREMIUM_LIMIT_REACHED") {
+        toast.error(message);
+        return;
+      }
+
+      toast.error(message);
     }
   };
 

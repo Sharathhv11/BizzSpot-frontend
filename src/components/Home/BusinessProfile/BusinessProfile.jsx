@@ -329,10 +329,12 @@ function InfoBlock2({ businessInfo, owned }) {
   );
 
   const { data: followStatus } = useGet(
-    businessInfo && !owned ? `business/${businessInfo?._id}/follow-status` : null,
+    businessInfo && !owned
+      ? `business/${businessInfo?._id}/follow-status`
+      : null,
   );
   const [isOpen, setIsOpen] = useState(false);
-  const [followersCount,setFollowersCount] = useState(0);
+  const [followersCount, setFollowersCount] = useState(0);
 
   const position = businessInfo?.location?.coordinates?.coordinates
     ? [
@@ -341,11 +343,11 @@ function InfoBlock2({ businessInfo, owned }) {
       ]
     : [12.9716, 77.5946]; // Bangalore fallback
 
-  useEffect(()=>{
-    if(data){
+  useEffect(() => {
+    if (data) {
       setFollowersCount(data?.data?.count);
     }
-  },[data]);
+  }, [data]);
 
   const navigate = useNavigate();
 

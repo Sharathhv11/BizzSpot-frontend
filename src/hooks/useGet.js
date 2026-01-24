@@ -6,7 +6,12 @@ const useGet = (url, dependencies = []) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   useEffect(() => {
-    if (!url) return;
+     if (!url) {
+      setData(null);
+      setError(null);
+      setLoading(false);  
+      return;
+    }
 
     const fetchData = async () => {
       setLoading(true);

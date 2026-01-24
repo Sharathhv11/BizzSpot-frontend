@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Nav2 from "../Util/Nav2";
 import businessPlaceHolder from "./../../../assets/businessPlaceHolder.png";
+import blueTick from "./../../../assets/blueTick.png";
 
 import { setUserBusiness } from "../../../redux/reducers/user";
 import { pushNav } from "../../../redux/reducers/pageState";
@@ -110,6 +111,10 @@ const Main = ({ user, pageState: theme, updateFollowList, owner }) => {
     }
   }, [businessList?.data, owner, hasFetchedBusinesses, dispatch]);
 
+  useEffect(()=>{
+    console.log(loading);
+  },[loading])
+
   const navigate = useNavigate();
 
   return (
@@ -123,7 +128,18 @@ const Main = ({ user, pageState: theme, updateFollowList, owner }) => {
           <img src={user?.profilePicture || noDp} alt="profile" />
           <div className="profile-right">
             <div className="profile-info">
-              <h1>{user?.name || "Name"}</h1>
+              <h1 className="flex items-center ">
+                {user?.name || "Name"}
+                {user?.account?.type === "premium" && (
+                  <span>
+                    <img
+                      src={blueTick}
+                      alt={"blue tick"}
+                      className="blue-tick"
+                    />
+                  </span>
+                )}
+              </h1>
               <span>{user?.email || "email"}</span>
               <span>{user?.phone_no || "phone number"}</span>
             </div>
@@ -218,7 +234,7 @@ const Main = ({ user, pageState: theme, updateFollowList, owner }) => {
                 </div>
               </div>
             ))
-          ) : !loading ? (
+          ) : displayBusinesses.length === 0 && !loading ? (
             <div
               className="business-not-registered-container"
               onClick={() => navigate("/register-business")}
