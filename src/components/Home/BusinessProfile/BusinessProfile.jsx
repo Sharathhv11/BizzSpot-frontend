@@ -52,6 +52,7 @@ import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
 
 import toast from "react-hot-toast";
+import Tweet from "./Tweet";
 
 const BusinessProfile = () => {
   const { businessID } = useParams();
@@ -303,6 +304,7 @@ const BusinessProfile = () => {
             owned={owned}
           />
           <Review userInfo={user} businessInfo={businessInfo} owned={owned} />
+          <Tweet owned={owned} businessInfo={businessInfo}/>
         </main>
       )}
     </>

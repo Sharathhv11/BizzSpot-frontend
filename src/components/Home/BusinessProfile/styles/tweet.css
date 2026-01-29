@@ -1,0 +1,287 @@
+:root {
+  --border-radius: 8px;
+  --border-light: 1px solid #e6e6e6;
+  --text-muted: #6b7280;
+  --primary: #1d9bf0;
+  --bg-soft: #f9fafb;
+}
+
+/* Timeline */
+.tweet-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 600px;
+  margin: auto;
+}
+
+/* Card */
+.tweet-card {
+  background: #fff;
+  border: var(--border-light);
+  border-radius: var(--border-radius);
+  padding: 14px 16px;
+  transition: background 0.15s ease;
+}
+
+.tweet-card:hover {
+  background: var(--bg-soft);
+}
+
+/* Header */
+.tweet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.tweet-user {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tweet-time {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.tweet-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+}
+
+/* Edited badge */
+.edited-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Content */
+.tweet-text {
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 10px 0;
+}
+
+/* Media */
+.tweet-media {
+  margin-top: 8px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tweet-media img,
+.tweet-media video {
+  width: 100%;
+  display: block;
+}
+
+/* Hashtags */
+.tweet-tags {
+  margin-top: 6px;
+}
+
+.tweet-tags span {
+  color: var(--primary);
+  font-size: 13px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.tweet-tags span:hover {
+  text-decoration: underline;
+}
+
+/* Actions */
+.tweet-actions {
+  display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  margin-top: 10px;
+  gap:20px;
+  color: var(--text-muted);
+}
+
+.tweet-actions button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 50%;
+  color: inherit;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.tweet-actions button:hover {
+  background: rgba(29, 155, 240, 0.1);
+  color: var(--primary);
+}
+
+.views {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+/* Replies */
+.tweet-replies {
+  margin-top: 10px;
+  padding-left: 12px;
+  border-left: 2px solid #eee;
+}
+
+.reply {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.reply strong {
+  font-weight: 600;
+}
+
+
+
+/* Form */
+.tweet-form {
+  max-width: 600px;
+  margin: 1.5rem auto;
+  padding: 1.25rem;
+  border: var(--border-light);
+  border-radius: var(--border-radius);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.tweet-form h1 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #222;
+}
+
+/* Textarea */
+.tweet-form textarea {
+  width: 100%;
+  min-height: 110px;
+  resize: none;
+  padding: 0.65rem;
+  font-size: 0.95rem;
+  border-radius: var(--border-radius);
+  border: var(--border-dark);
+  outline: none;
+}
+
+.tweet-form textarea:focus {
+  border-color: #000;
+}
+
+/* Inputs */
+.tweet-form input[type="text"],
+.tweet-form select {
+  width: 100%;
+  padding: 0.55rem;
+  font-size: 0.9rem;
+  border-radius: var(--border-radius);
+  border: var(--border-dark);
+  outline: none;
+}
+
+.tweet-form input[type="text"]:focus,
+.tweet-form select:focus {
+  border-color: #000;
+}
+
+/* Upload button */
+.upload-btn {
+  display: inline-block;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.85rem;
+  /* border: var(--border-dark);
+  border-radius: var(--border-radius); */
+  font-weight: 500;
+  color: blue;
+  cursor: pointer;
+  width: fit-content;
+}
+
+/* Media preview */
+.media-scroll {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding-bottom: 0.3rem;
+}
+
+.media-card {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  flex-shrink: 0;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  border: var(--border-light);
+}
+
+.media-card img,
+.media-card video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Delete media */
+.media-delete-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: red;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.media-delete-btn:hover {
+  background: #c62828;
+}
+
+/* Submit */
+.tweet-form button[type="submit"] {
+  margin-top: 0.5rem;
+  padding: 0.6rem;
+  border-radius: var(--border-radius);
+  border: none;
+  background: #512eff;
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.tweet-form button[type="submit"]:hover {
+  opacity: 0.85;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .tweet-form {
+    margin: 1rem;
+    padding: 1rem;
+  }
+}
