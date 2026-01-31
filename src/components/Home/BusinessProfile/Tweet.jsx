@@ -1,391 +1,74 @@
 import "./styles/tweet.css";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CircleX, LoaderCircle, Trash } from "lucide-react";
 import usePost from "./../../../hooks/usePost";
 import { Heart, MessageCircle, Eye, Edit3, Globe, Users } from "lucide-react";
 import { useSelector } from "react-redux";
 
-import ImageList from "@mui/material/ImageList";
-import ImageListItem from "@mui/material/ImageListItem";
 import toast from "react-hot-toast";
+import useGet from "../../../hooks/useGet";
+import { Avatar } from "@mui/material";
+import TweetCard from "../Util/TweetCard";
 
 const Tweet = ({ owned, businessInfo }) => {
-  const tweets = [
-    {
-      postedBy: "business_01",
-      tweet: "Launching our new product this week 🚀 Stay tuned!",
-      media: [{ url: "https://picsum.photos/400/300?1", type: "image" }],
-      hashtags: ["#launch", "#startup", "#tech"],
-      likes: ["user_1", "user_2"],
-      views: 120,
-      replies: [],
-      visibility: "public",
-      edited: false,
-      createdAt: "2025-01-10T10:15:00Z",
-    },
-    {
-      postedBy: "business_02",
-      tweet: "Customer feedback helps us grow. Thanks for the love ❤️",
-      media: [],
-      hashtags: ["#customers", "#feedback"],
-      likes: ["user_3"],
-      views: 95,
-      replies: [
-        {
-          userId: "user_4",
-          comment: "Well deserved 👏",
-          createdAt: "2025-01-10T11:00:00Z",
-        },
-      ],
-      visibility: "public",
-      edited: false,
-      createdAt: "2025-01-10T10:45:00Z",
-    },
-    {
-      postedBy: "business_03",
-      tweet: "Behind the scenes of our development process.",
-      media: [{ url: "https://picsum.photos/400/300?2", type: "video" }],
-      hashtags: ["#development", "#bts"],
-      likes: [],
-      views: 210,
-      replies: [],
-      visibility: "public",
-      edited: false,
-      createdAt: "2025-01-11T09:30:00Z",
-    },
-    {
-      postedBy: "business_04",
-      tweet: "We’re hiring! Join our growing team.",
-      media: [],
-      hashtags: ["#hiring", "#jobs"],
-      likes: ["user_1", "user_5", "user_6"],
-      views: 340,
-      replies: [],
-      visibility: "public",
-      edited: false,
-      createdAt: "2025-01-11T12:00:00Z",
-    },
-    {
-      postedBy: "business_05",
-      tweet: "Product update v2.1 is live 🎉",
-      media: [{ url: "https://picsum.photos/400/300?3", type: "image" }],
-      hashtags: ["#update", "#product"],
-      likes: ["user_7"],
-      views: 180,
-      replies: [],
-      visibility: "followers",
-      edited: true,
-      createdAt: "2025-01-12T08:20:00Z",
-    },
-    {
-      postedBy: "business_06",
-      tweet: "Monday motivation: keep building 💪",
-      media: [],
-      hashtags: ["#motivation"],
-      likes: [],
-      views: 60,
-      replies: [],
-      visibility: "public",
-      edited: false,
-      createdAt: "2025-01-12T09:00:00Z",
-    },
-    {
-      postedBy: "business_07",
-      tweet: "Our servers are faster than ever ⚡",
-      media: [],
-      hashtags: ["#performance", "#tech"],
-      likes: ["user_8"],
-      views: 145,
-      replies: [],
-      visibility: "public",
-      edited: false,
-      createdAt: "2025-01-13T10:10:00Z",
-    },
-    {
-      postedBy: "business_08",
-      tweet: "Thanks for 10k followers! 🎉",
-      media: [{ url: "https://picsum.photos/400/300?4", type: "image" }],
-      hashtags: ["#milestone"],
-      likes: ["user_1", "user_2", "user_3"],
-      views: 500,
-      replies: [],
-      visibility: "public",
-      edited: false,
-      createdAt: "2025-01-14T14:30:00Z",
-    },
-    {
-      postedBy: "business_09",
-      tweet: "We fixed the login issue. Sorry for the inconvenience.",
-      media: [],
-      hashtags: ["#bugfix"],
-      likes: [],
-      views: 220,
-      replies: [
-        {
-          userId: "user_9",
-          comment: "Thanks for the quick fix!",
-          createdAt: "2025-01-14T15:00:00Z",
-        },
-      ],
-      visibility: "public",
-      edited: true,
-      createdAt: "2025-01-14T14:45:00Z",
-    },
-    {
-      postedBy: "business_10",
-      tweet: "Sneak peek of our upcoming feature 👀",
-      media: [{ url: "https://picsum.photos/400/300?5", type: "image" }],
-      hashtags: ["#comingsoon"],
-      likes: ["user_10"],
-      views: 310,
-      replies: [],
-      visibility: "followers",
-      edited: false,
-      createdAt: "2025-01-15T09:00:00Z",
-    },
+  const [tweets, setTweets] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postLimit, setPostLimit] = useState(2);
+  const [totalPages, setTotalPages] = useState(0);
 
-    {
-      postedBy: "business_11",
-      tweet: "New partnership announcement soon 🤝",
-      media: [],
-      hashtags: ["#partnership"],
-      likes: [],
-      views: 80,
-      replies: [],
-      visibility: "public",
-      edited: false,
-    },
-    {
-      postedBy: "business_12",
-      tweet: "We love open source ❤️",
-      media: [],
-      hashtags: ["#opensource"],
-      likes: ["user_2"],
-      views: 150,
-      replies: [],
-      visibility: "public",
-      edited: false,
-    },
-    {
-      postedBy: "business_13",
-      tweet: "Security update deployed successfully 🔐",
-      media: [],
-      hashtags: ["#security"],
-      likes: [],
-      views: 200,
-      replies: [],
-      visibility: "public",
-      edited: false,
-    },
-    {
-      postedBy: "business_14",
-      tweet: "UI refresh coming next week 🎨",
-      media: [],
-      hashtags: ["#uiux"],
-      likes: [],
-      views: 170,
-      replies: [],
-      visibility: "public",
-      edited: false,
-    },
-    {
-      postedBy: "business_15",
-      tweet: "Customer support available 24/7 ⏰",
-      media: [],
-      hashtags: ["#support"],
-      likes: [],
-      views: 90,
-      replies: [],
-      visibility: "public",
-      edited: false,
-    },
-    {
-      postedBy: "business_16",
-      tweet: "We’re scaling up our infrastructure 📈",
-      media: [],
-      hashtags: ["#scaling"],
-      likes: [],
-      views: 260,
-      replies: [],
-      visibility: "public",
-      edited: false,
-    },
-    {
-      postedBy: "business_17",
-      tweet: "Thank you for your trust 🙏",
-      media: [],
-      hashtags: ["#gratitude"],
-      likes: [],
-      views: 110,
-      replies: [],
-      visibility: "public",
-      edited: false,
-    },
-    {
-      postedBy: "business_18",
-      tweet: "Our API docs are now live 📚",
-      media: [],
-      hashtags: ["#api"],
-      likes: [],
-      views: 300,
-      replies: [],
-      visibility: "public",
-      edited: false,
-    },
-    {
-      postedBy: "business_19",
-      tweet: "Weekend maintenance scheduled 🛠️",
-      media: [],
-      hashtags: ["#maintenance"],
-      likes: [],
-      views: 75,
-      replies: [],
-      visibility: "public",
-      edited: false,
-    },
-    {
-      postedBy: "business_20",
-      tweet: "Big things coming in 2025 🚀",
-      media: [],
-      hashtags: ["#future"],
-      likes: ["user_1"],
-      views: 420,
-      replies: [],
-      visibility: "public",
-      edited: false,
-    },
-  ];
+  const { data, loading, error } = useGet(
+    businessInfo
+      ? `business/${businessInfo._id}/tweets?limit=${postLimit}&page=${currentPage}`
+      : null,
+  );
+
+  useEffect(() => {
+    if (data) {
+      setTweets(data.data);
+      setTotalPages(data.totalPages);
+    }
+  }, [data]);
 
   return (
     <>
+      <div className="review-title post-title">
+        <h2>Published Posts</h2>
+        <p>Stories, updates, and insights</p>
+      </div>
       <section className="tweet-section">
-        {tweets.map((tweet, index) => (
-          <article key={index} className="tweet-card">
-            {/* Header */}
-            <header className="tweet-header">
-              <div>
-                <h4 className="tweet-user">{tweet.postedBy}</h4>
-                <span className="tweet-time">
-                  {tweet.createdAt
-                    ? new Date(tweet.createdAt).toLocaleString()
-                    : "Just now"}
-                </span>
-              </div>
-
-              <div className="tweet-meta">
-                {tweet.visibility === "public" ? (
-                  <Globe size={16} />
-                ) : (
-                  <Users size={16} />
-                )}
-                {tweet.edited && (
-                  <span className="edited-badge">
-                    <Edit3 size={14} /> Edited
-                  </span>
-                )}
-              </div>
-            </header>
-
-            {/* Content */}
-            <p className="tweet-text">{tweet.tweet}</p>
-
-            {/* Media */}
-            {/* Media */}
-            {tweet.media?.length > 0 && (
-              <div className="tweet-media">
-                {/* Images */}
-                {tweet.media.filter((m) => m.type === "image").length > 0 && (
-                  <ImageList
-                    cols={
-                      tweet.media.filter((m) => m.type === "image").length === 1
-                        ? 1
-                        : 2
-                    }
-                    gap={8}
-                    sx={{ borderRadius: "12px", overflow: "hidden" }}
-                  >
-                    {tweet.media
-                      .filter((m) => m.type === "image")
-                      .map((m, i) => (
-                        <ImageListItem key={i}>
-                          <img
-                            src={m.url}
-                            alt="tweet"
-                            loading="lazy"
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                              borderRadius: "12px",
-                            }}
-                          />
-                        </ImageListItem>
-                      ))}
-                  </ImageList>
+        {tweets.length > 0 && (
+          <div className="tweet-card-holder">
+            {tweets.map((tweet) => (
+              <>
+                <TweetCard tweet={tweet} key={tweet._id}/>
+              </>
+            ))}
+            {totalPages > 1 && (
+              <div className="pagination-container">
+                {Array.from({ length: currentPage }, (_, i) => i + 1).map(
+                  (page) => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={page === currentPage ? "active" : ""}
+                    >
+                      {page}
+                    </button>
+                  ),
                 )}
 
-                {/* Videos */}
-                {tweet.media
-                  .filter((m) => m.type === "video")
-                  .map((m, i) => (
-                    <video
-                      key={i}
-                      src={m.url}
-                      controls
-                      style={{
-                        width: "100%",
-                        marginTop: "8px",
-                        borderRadius: "12px",
-                      }}
-                    />
-                  ))}
+                {currentPage < totalPages && (
+                  <button onClick={() => setCurrentPage((p) => p + 1)}>
+                    Next
+                  </button>
+                )}
               </div>
             )}
-
-            {/* Hashtags */}
-            {tweet.hashtags?.length > 0 && (
-              <div className="tweet-tags">
-                {tweet.hashtags.map((tag, i) => (
-                  <span key={i}>{tag}</span>
-                ))}
-              </div>
-            )}
-
-            {/* Actions */}
-            <footer className="tweet-actions">
-              <button>
-                <Heart size={18} />
-                <span>{tweet.likes.length}</span>
-              </button>
-
-              <button>
-                <MessageCircle size={18} />
-                <span>{tweet.replies.length}</span>
-              </button>
-
-              <div className="views">
-                <Eye size={18} />
-                <span>{tweet.views}</span>
-              </div>
-            </footer>
-
-            {/* Replies */}
-            {tweet.replies.length > 0 && (
-              <div className="tweet-replies">
-                {tweet.replies.map((reply, i) => (
-                  <div key={i} className="reply">
-                    <strong>{reply.userId}</strong>
-                    <p>{reply.comment}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </article>
-        ))}
+          </div>
+        )}
+        {owned && <TweetForm businessInfo={businessInfo} />}
       </section>
-
-      {owned && <TweetForm businessInfo={businessInfo} />}
     </>
   );
 };
@@ -473,7 +156,7 @@ const TweetForm = ({ businessInfo }) => {
 
     for (let i = 0; i < mediaRef.current.files.length; i++) {
       payload.append("media", mediaRef.current.files[i]);
-      console.log( mediaRef.current.files[i])
+      console.log(mediaRef.current.files[i]);
     }
 
     try {
