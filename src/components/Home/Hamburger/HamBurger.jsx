@@ -39,7 +39,14 @@ const HamBurger = () => {
       <nav className="hamburger-links hamburger-center">
         <a href="#">Explore</a>
         <Link to="/About">About</Link>
-        <a href="#footer">Contact</a>
+        <a
+          href="#footer"
+          onClick={() => {
+            dispatch(toggleHamburgerMenu());
+          }}
+        >
+          Contact
+        </a>
       </nav>
     </div>
   );
