@@ -3,6 +3,9 @@ import useAuthRedirect from "../../hooks/useAuthRedirect";
 import { useSelector, useDispatch } from "react-redux";
 import Nav from "./Nav/Nav.jsx";
 import { useNavigate } from "react-router-dom";
+import Footer from "./Footer/Footer";
+import Feed from "./Main/Feed";
+import HamBurger from "./Hamburger/HamBurger";
 
 const Home = () => {
   useAuthRedirect();
@@ -10,19 +13,10 @@ const Home = () => {
 
   return (
     <>
+    <HamBurger/>
       <Nav />
-
-      <button onClick={()=>{
-        navigate("/profile/697450e3176c569b085d4cdc")
-      }}>
-        test purpose 
-      </button>
-
-      <button className="primary border-2 " onClick={()=>{
-        navigate("/payment")
-      }}>
-        click me to go for payment page
-      </button>
+      <Feed/>
+      <Footer/>
     </>
   );
 };

@@ -5,6 +5,7 @@ const pageState = createSlice({
   initialState: {
     theme: true, //! true for light and false for dark
     navStack: [],
+    hamburgerMenu: false, //! false = hamburger is not in the screen
   },
   reducers: {
     changeTheme: function (state) {
@@ -30,8 +31,13 @@ const pageState = createSlice({
       // used when user lands directly on a page
       state.navStack = [action.payload];
     },
+
+    toggleHamburgerMenu(state) {
+      state.hamburgerMenu = !state.hamburgerMenu;
+    },
   },
 });
 
-export const { changeTheme,pushNav,popNav,resetNav } = pageState.actions;
+export const { changeTheme, pushNav, popNav, resetNav, toggleHamburgerMenu } =
+  pageState.actions;
 export default pageState.reducer;

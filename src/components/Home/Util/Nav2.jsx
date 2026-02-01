@@ -5,18 +5,19 @@ import { popNav } from "../../../redux/reducers/pageState";
 import "./nav2.css";
 import noDp from "./../../../assets/noDp.png";
 
-const Nav2 = ({ pageState, user }) => {
+const Nav2 = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const {navStack} = useSelector((state) => state.pageState);
+  const {navStack,theme} = useSelector((state) => state.pageState);
+  const user = useSelector(state => state.user.userInfo);
 
   return (
-    <nav className={`profile-nav ${!pageState ? "profile-nav-dark" : ""}`}>
+    <nav className={`profile-nav ${!theme ? "profile-nav-dark" : ""}`}>
       <div>
         <button
           className={`${
-            !pageState ? "profile-nav-back-btn-dark" : "profile-nav-back-btn"
+            !theme ? "profile-nav-back-btn-dark" : "profile-nav-back-btn"
           }`}
           onClick={() => {navigate(navStack.length>0 ? navStack[navStack.length-1] : "/");
             dispatch(popNav());

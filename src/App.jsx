@@ -11,6 +11,7 @@ import BusinessRegistration from "./components/Home/Business/BusinessRegistratio
 import 'leaflet/dist/leaflet.css';
 import BusinessProfile from "./components/Home/BusinessProfile/BusinessProfile.jsx";
 import Subscription from "./components/paymentGateWay/Subscription.jsx";
+import About from "./components/About/About";
 
 function App() {
   
@@ -45,8 +46,10 @@ function App() {
           <Route path="/register-business" element={<BusinessRegistration/>}/>
           <Route path="/business/:businessID" element={<BusinessProfile/>}/>
           <Route path="/payment" element={<Subscription/>}/>
+          <Route path="/About" element={<About/>}/>
         </Routes>
       </BrowserRouter>
+      
     </>
   );
 }

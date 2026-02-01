@@ -1,6 +1,9 @@
 import "./nav.css";
 import { useSelector, useDispatch } from "react-redux";
-import { changeTheme } from "../../../redux/reducers/pageState";
+import {
+  changeTheme,
+  toggleHamburgerMenu,
+} from "../../../redux/reducers/pageState";
 import { resetStates } from "../../../redux/reducers/user";
 import logoLight from "./../../../assets/logo.png";
 import logoDark from "./../../../assets/logoD.png";
@@ -29,7 +32,7 @@ const Nav = () => {
 
     //^reset the state variables
     dispatch(resetStates());
-    
+
     //^ navigate back to login page
     navigate("/login");
   };
@@ -45,8 +48,8 @@ const Nav = () => {
         {/* CENTER LINKS */}
         <nav className="navv2-links">
           <a href="#">Explore</a>
-          <a href="#">About</a>
-          <a href="#">Contact</a>
+          <Link to="/About">About</Link>
+          <a href="#footer">Contact</a>
         </nav>
 
         {/* ACTIONS */}
@@ -90,7 +93,12 @@ const Nav = () => {
           </div>
 
           {/* MOBILE MENU */}
-          <button className="mobile-menu-btn">
+          <button
+            className="mobile-menu-btn"
+            onClick={() => {
+              dispatch(toggleHamburgerMenu());
+            }}
+          >
             <Menu size={22} />
           </button>
         </div>
