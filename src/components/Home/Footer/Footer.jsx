@@ -11,6 +11,7 @@ import {
 import logo from "./../../../assets/logoD.png";
 
 import "./footer.css";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -28,15 +29,13 @@ const Footer = () => {
         {/* Quick Links */}
         <div className="footer-section">
           <h3>Quick Links</h3>
+
           <ul>
             <li>
-              <a href="#">Home</a>
+              <a href="#">Explore</a>
             </li>
             <li>
-              <a href="#">About</a>
-            </li>
-            <li>
-              <a href="#">Contact</a>
+              <Link to="/About">About</Link>
             </li>
           </ul>
         </div>
@@ -72,13 +71,25 @@ const Footer = () => {
             >
               <Instagram size={20} />
             </a>
-            <a href="https://linkedin.com/in/SharathHV" target="_blank" rel="noreferrer">
+            <a
+              href="https://linkedin.com/in/SharathHV"
+              target="_blank"
+              rel="noreferrer"
+            >
               <Linkedin size={20} />
             </a>
-            <a href="https://github.com/Sharathhv11" target="_blank" rel="noreferrer">
+            <a
+              href="https://github.com/Sharathhv11"
+              target="_blank"
+              rel="noreferrer"
+            >
               <Github size={20} />
             </a>
-            <a href="https://x.com/imsharath11?s=09" target="_blank" rel="noreferrer">
+            <a
+              href="https://x.com/imsharath11?s=09"
+              target="_blank"
+              rel="noreferrer"
+            >
               <Twitter size={20} />
             </a>
           </div>

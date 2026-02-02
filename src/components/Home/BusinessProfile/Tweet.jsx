@@ -3,7 +3,7 @@ import "./styles/tweet.css";
 import { useEffect, useRef, useState } from "react";
 import { CircleX, LoaderCircle, Trash } from "lucide-react";
 import usePost from "./../../../hooks/usePost";
-import { Heart, MessageCircle, Eye, Edit3, Globe, Users } from "lucide-react";
+
 import { useSelector } from "react-redux";
 
 import toast from "react-hot-toast";

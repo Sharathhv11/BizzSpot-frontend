@@ -1,3 +1,87 @@
-.feed-section{
-    height: 1200px;
+:root {
+  --max-width: 1200px;
+  --border-radius: 6px;
+  --border-dark: 1px solid #565252ae;
+  --border-light: 1px solid #eaeaea;
+}
+
+.feed-section {
+  height: 1200px;
+  width: 100%;
+ 
+
+}
+
+.feed-section-dark{
+    background-color: #0d0d0d;
+
+}
+
+.feed-section-container {
+  width: 100%;
+  height: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.feed-meta-container {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+.feed-meta-container > div {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: var(--border-light);
+  border-right: var(--border-light);
+}
+
+.feed-section-dark .feed-meta-container > div {
+  border-bottom: var(--border-dark);
+  border-right: var(--border-dark);
+  color: white;
+}
+
+.feed-meta-container > div:first-child {
+  border-left: var(--border-light);
+}
+
+.feed-section-dark .feed-meta-container > div:first-child {
+  border-left: var(--border-dark);
+}
+
+.feed-highlight {
+  font-weight: 500;
+  background-color: rgba(244, 242, 242, 0.813);
+}
+
+.feed-section-dark .feed-highlight {
+  background-color: rgba(9, 9, 9, 0.929);
+}
+
+.feed-tweet-container {
+  width: 100%;
+  height: 95%;
+   overflow-y: auto;    
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
+ 
+}
+
+.feed-tweet-container::-webkit-scrollbar {
+  display: none;
+}
+
+
+@media ( width <= 1200px){
+    .feed-tweet-container{
+        padding: 0 20px;
+    }
 }

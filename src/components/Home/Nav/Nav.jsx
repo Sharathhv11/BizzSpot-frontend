@@ -47,7 +47,7 @@ const Nav = () => {
 
         {/* CENTER LINKS */}
         <nav className="navv2-links">
-          <a href="#">Explore</a>
+          <Link to="/Explore">Explore</Link>
           <Link to="/About">About</Link>
           <a href="#footer">Contact</a>
         </nav>
