@@ -20,12 +20,7 @@ const LIMIT = 1;
 
 const Feed = () => {
   const dispatch = useDispatch();
-  const { 
-    theme, 
-    followingFeed, 
-    forYouFeed, 
-    distance 
-  } = useSelector(
+  const { theme, followingFeed, forYouFeed, distance } = useSelector(
     (state) => state.pageState,
   );
 
@@ -36,12 +31,14 @@ const Feed = () => {
 
   const forYouQuery = `/business/tweets?type=forYou&limit=${LIMIT}&page=${forYouFeed.page}${
     location
-      ? `&latitude=${location.lat}&longitude=${location.lng}&distance=${distance}`
+      ? `&latitude=${location?.lat}&longitude=${location?.lng}&distance=${distance}`
       : ""
   }`;
 
   const { data: forYouData, loading: forYouLoading } = useGet(
-    !feedType ? forYouQuery : null,
+    !feedType && !isNaN(location?.lat) && !isNaN(location?.lng)
+      ? forYouQuery
+      : null,
   );
 
   useEffect(() => {
@@ -137,7 +134,7 @@ const Feed = () => {
               }
             >
               {forYouFeed.tweets.map((tweet) => (
-                <TweetCard key={tweet._id} tweet={tweet} />
+                <TweetCard key={`for-you-${tweet._id}`} tweet={tweet} />
               ))}
             </InfiniteScroll>
           )}
@@ -171,7 +168,7 @@ const Feed = () => {
               }
             >
               {followingFeed.tweets.map((tweet) => (
-                <TweetCard key={tweet._id} tweet={tweet} />
+                <TweetCard key={`following-${tweet._id}`} tweet={tweet} />
               ))}
             </InfiniteScroll>
           )}

@@ -12,7 +12,15 @@ const useLocation = () => {
           lng: pos.coords.longitude,
         });
       },
-      (err) => setError(err.message)
+      (err) => {
+        console.error(err);
+        setError(err.message);
+      },
+      {
+        enableHighAccuracy: true, 
+        timeout: 10000,
+        maximumAge: 0,
+      },
     );
   }, []);
 

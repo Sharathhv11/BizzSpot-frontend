@@ -156,7 +156,6 @@ const TweetForm = ({ businessInfo }) => {
 
     for (let i = 0; i < mediaRef.current.files.length; i++) {
       payload.append("media", mediaRef.current.files[i]);
-      console.log(mediaRef.current.files[i]);
     }
 
     try {
