@@ -8,6 +8,8 @@ import {
   updateForYouFeedPage,
   updateFollowingHasMore,
   updateForYouHasMore,
+  addForYouFetchedPage,
+  addFollowingFetchedPage,
 } from "./../../../redux/reducers/pageState";
 import useGet from "./../../../hooks/useGet";
 import TweetCard from "../Util/TweetCard";
@@ -16,7 +18,7 @@ import { LoaderCircle } from "lucide-react";
 import useLocation from "@/hooks/useLocation";
 import noPost from "./../../../assets/no-post.png";
 
-const LIMIT = 1;
+const LIMIT = 10;
 
 const Feed = () => {
   const dispatch = useDispatch();
@@ -29,16 +31,16 @@ const Feed = () => {
 
   const { location } = useLocation();
 
-  const forYouQuery = `/business/tweets?type=forYou&limit=${LIMIT}&page=${forYouFeed.page}${
-    location
-      ? `&latitude=${location?.lat}&longitude=${location?.lng}&distance=${distance}`
-      : ""
-  }`;
+  //  Only fetch if page NOT already fetched
+  const forYouQuery = `/business/tweets?type=forYou&limit=${LIMIT}&page=${forYouFeed.page}${`&latitude=${location?.lat}&longitude=${location?.lng}&distance=${distance}`}`;
 
   const { data: forYouData, loading: forYouLoading } = useGet(
-    !feedType && !isNaN(location?.lat) && !isNaN(location?.lng)
+    !feedType &&
+      !forYouFeed.fetchedPages.includes(forYouFeed.page) &&
+      !isNaN(location?.lat) &&
+      !isNaN(location?.lng)
       ? forYouQuery
-      : null,
+      : null, // CACHE CHECK
   );
 
   useEffect(() => {
@@ -52,12 +54,17 @@ const Feed = () => {
 
     // decide hasMore and update Redux
     dispatch(updateForYouHasMore(tweets.length === LIMIT));
-  }, [forYouData, dispatch]);
+
+    // ADD TO CACHE after successful fetch
+    dispatch(addForYouFetchedPage(forYouFeed.page));
+  }, [forYouData, dispatch, forYouFeed.page]);
 
   const followingQuery = `/business/tweets?type=following&limit=${LIMIT}&page=${followingFeed.page}`;
 
   const { data: followingData, loading: followingLoading } = useGet(
-    feedType ? followingQuery : null,
+    feedType && !followingFeed.fetchedPages.includes(followingFeed.page)
+      ? followingQuery
+      : null, //  CACHE CHECK
   );
 
   useEffect(() => {
@@ -71,7 +78,10 @@ const Feed = () => {
 
     // decide hasMore and update Redux
     dispatch(updateFollowingHasMore(tweets.length === LIMIT));
-  }, [followingData, dispatch]);
+
+    //  ADD TO CACHE after successful fetch
+    dispatch(addFollowingFetchedPage(followingFeed.page));
+  }, [followingData, dispatch, followingFeed.page]);
 
   const loadMoreForYou = () => {
     if (!forYouLoading && forYouFeed.hasMore) {
@@ -92,13 +102,17 @@ const Feed = () => {
         <div className="feed-meta-container">
           <div
             className={!feedType ? "feed-highlight" : ""}
-            onClick={() => setFeedType(false)}
+            onClick={() => {
+              setFeedType(false);
+            }}
           >
             For you
           </div>
           <div
             className={feedType ? "feed-highlight" : ""}
-            onClick={() => setFeedType(true)}
+            onClick={() => {
+              setFeedType(true);
+            }}
           >
             Following
           </div>

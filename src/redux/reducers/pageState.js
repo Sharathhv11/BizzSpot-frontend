@@ -10,13 +10,15 @@ const pageState = createSlice({
       tweets: [],
       page: 1,
       hasMore: true,
+      fetchedPages: [], 
     },
     forYouFeed: {
       tweets: [],
       page: 1,
       hasMore: true,
+      fetchedPages: [], 
     },
-    distance: 10000,
+    distance: 10_000,
   },
   reducers: {
     changeTheme(state) {
@@ -50,6 +52,13 @@ const pageState = createSlice({
       state.followingFeed.tweets.push(...action.payload.tweets);
     },
 
+    addFollowingFetchedPage(state, action) {
+      // Only add if not already cached
+      if (!state.followingFeed.fetchedPages.includes(action.payload)) {
+        state.followingFeed.fetchedPages.push(action.payload);
+      }
+    },
+
     updateFollowingFeedPage(state, action) {
       state.followingFeed.page = action.payload;
     },
@@ -62,11 +71,19 @@ const pageState = createSlice({
       state.followingFeed.tweets = [];
       state.followingFeed.page = 1;
       state.followingFeed.hasMore = true;
+      state.followingFeed.fetchedPages = [];  
     },
 
     /* ========= FOR YOU FEED ========= */
     setForYouFeed(state, action) {
       state.forYouFeed.tweets.push(...action.payload.tweets);
+    },
+
+    addForYouFetchedPage(state, action) {
+      // Only add if not already cached
+      if (!state.forYouFeed.fetchedPages.includes(action.payload)) {
+        state.forYouFeed.fetchedPages.push(action.payload);
+      }
     },
 
     updateForYouFeedPage(state, action) {
@@ -81,6 +98,7 @@ const pageState = createSlice({
       state.forYouFeed.tweets = [];
       state.forYouFeed.page = 1;
       state.forYouFeed.hasMore = true;
+      state.forYouFeed.fetchedPages = [];  
     },
 
     changeDistance(state, action) {
@@ -96,10 +114,12 @@ export const {
   resetNav,
   toggleHamburgerMenu,
   setFollowingFeed,
+  addFollowingFetchedPage,      
   updateFollowingFeedPage,
   updateFollowingHasMore,
   clearFollowingFeed,
   setForYouFeed,
+  addForYouFetchedPage,         
   updateForYouFeedPage,
   updateForYouHasMore,
   clearForYouFeed,
