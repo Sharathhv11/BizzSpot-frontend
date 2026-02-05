@@ -21,7 +21,8 @@ import blueTick from "./../../../assets/blueTick.png";
 import { setUserBusiness } from "../../../redux/reducers/user";
 import { pushNav } from "../../../redux/reducers/pageState";
 import getUserFriendlyMessage from "../../../utils/userFriendlyErrors";
-import Follow from "../Util/Follow";
+
+import FollowList from "../Util/FollowList";
 
 const Profile = () => {
   const { userID } = useParams();
@@ -270,7 +271,7 @@ const Main = ({
       <FollowList
         visibility={showFollowList}
         updateVisibility={updateFollowList}
-        user={user?.id}
+        id={user?.id}
         updateFollowCount={updateFollowCount}
         owner={owner}
       />
@@ -278,74 +279,5 @@ const Main = ({
   );
 };
 
-const FollowList = function ({
-  visibility,
-  updateVisibility,
-  user,
-  updateFollowCount,
-  owner,
-}) {
-  const { data, loading, error } = useGet(
-    user ? `/follow/list?id=${user}` : null,
-  );
-
-  return (
-    <div
-      className="follow-list-modal"
-      style={{
-        display: visibility ? "flex" : "none",
-        zIndex: 1000,
-      }}
-    >
-      {/* Backdrop */}
-      <div className="modal-backdrop" onClick={() => updateVisibility(false)} />
-
-      {/* Center Card */}
-      <div className="follow-list-card">
-        {/* Header */}
-        <div className="follow-header">
-          <h3>Following</h3>
-          <button onClick={() => updateVisibility(false)} className="close-btn">
-            ×
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="follow-content">
-          {loading ? (
-            <div className="loading-state">
-              <div className="spinner"></div>
-            </div>
-          ) : error ? (
-            <div className="error-state">{error.response.data.message}</div>
-          ) : !data?.data?.length ? (
-            <div className="empty-state">No accounts followed</div>
-          ) : (
-            data.data.map((business) => (
-              <div key={business._id} className="follow-item">
-                <div className="follow-avatar">
-                  <img src={business.profile} alt="" />
-                </div>
-                <div className="follow-info">
-                  <div>
-                    <div className="follow-name">{business.businessName}</div>
-                    <div className="follow-handle">@{business.email}</div>
-                  </div>
-                  {owner && (
-                    <Follow
-                      businessID={business._id}
-                      updateFollowersCount={updateFollowCount}
-                      status={true}
-                    />
-                  )}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export default Profile;

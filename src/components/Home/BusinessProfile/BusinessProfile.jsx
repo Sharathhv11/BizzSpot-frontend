@@ -53,6 +53,7 @@ import Stack from "@mui/material/Stack";
 
 import toast from "react-hot-toast";
 import Tweet from "./Tweet";
+import FollowList from "../Util/FollowList";
 
 const BusinessProfile = () => {
   const { businessID } = useParams();
@@ -353,7 +354,11 @@ function InfoBlock2({ businessInfo, owned }) {
 
   const navigate = useNavigate();
 
+  const [visibility,updateVisibility] = useState(false);
+
   return (
+    <>
+    <FollowList visibility={visibility} updateVisibility={updateVisibility} updateFollowCount={setFollowersCount} id={businessInfo?._id} owner={false} businessList={true} />
     <section className="business-section2-profile-info">
       <div>
         <div className="followers-container">
@@ -362,7 +367,7 @@ function InfoBlock2({ businessInfo, owned }) {
             Followers
           </h2>
 
-          <h5>{followersCount ?? 0}</h5>
+          <h5 className="cursor-pointer"  onClick={() => updateVisibility(true)}>{followersCount ?? 0}</h5>
           {owned ? (
             <button
               className="analytics-btn"
@@ -455,6 +460,7 @@ function InfoBlock2({ businessInfo, owned }) {
         </div>
       </div>
     </section>
+    </>
   );
 }
 

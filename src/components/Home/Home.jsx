@@ -16,6 +16,11 @@ const Home = () => {
     <HamBurger/>
       <Nav />
       <Feed/>
+      <button  onClick={()=>{
+        navigate("/business/697456e1453180af888a83b5");
+      }}>
+        click me
+      </button>
       <Footer/>
     </>
   );

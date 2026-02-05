@@ -51,6 +51,36 @@
   position: absolute;
 }
 
+/* Complete MapContainer + Controls CSS */
+.leaflet-container {
+  z-index: 1;
+}
+
+/* Fix zoom controls z-index + position */
+.leaflet-control-zoom {
+  z-index: 1000 !important;
+ 
+}
+
+/* Fix RecenterButton z-index + position */
+.leaflet-control-recenter {
+  z-index: 1001 !important;
+  bottom: 90px !important;
+  right: 20px !important;
+}
+
+/* Ensure controls stay above map */
+.leaflet-top,
+.leaflet-right,
+.leaflet-bottom,
+.leaflet-left,
+.leaflet-control-container {
+  z-index: 999 !important;
+}
+
+
+
+
 
 
 .notify-business-profile-completion {
