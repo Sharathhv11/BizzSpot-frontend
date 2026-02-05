@@ -21,6 +21,7 @@ import blueTick from "./../../../assets/blueTick.png";
 import { setUserBusiness } from "../../../redux/reducers/user";
 import { pushNav } from "../../../redux/reducers/pageState";
 import getUserFriendlyMessage from "../../../utils/userFriendlyErrors";
+import Follow from "../Util/Follow";
 
 const Profile = () => {
   const { userID } = useParams();
@@ -72,11 +73,8 @@ const Profile = () => {
             user={targetUser}
             pageState={pageState}
             updateFollowList={setShowFollowList}
+            showFollowList={showFollowList}
             owner={owner}
-          />
-          <FollowList
-            visibility={showFollowList}
-            updateVisibility={setShowFollowList}
           />
         </>
       )}
@@ -84,10 +82,21 @@ const Profile = () => {
   );
 };
 
-const Main = ({ user, pageState: theme, updateFollowList, owner }) => {
-  const { data: followCount } = useGet(
-    user?.id ? `follow/count?userID=${user?.id}` : null,
-  );
+const Main = ({
+  user,
+  pageState: theme,
+  updateFollowList,
+  owner,
+  showFollowList,
+}) => {
+  const [followCount, updateFollowCount] = useState(0);
+  const { data } = useGet(user?.id ? `follow/count?userID=${user?.id}` : null);
+
+  useEffect(() => {
+    if (data?.data) {
+      updateFollowCount(data?.data?.count);
+    }
+  }, [data]);
 
   const dispatch = useDispatch();
   const { usersBusiness: ownerBusiness, hasFetchedBusinesses } = useSelector(
@@ -114,164 +123,228 @@ const Main = ({ user, pageState: theme, updateFollowList, owner }) => {
   const navigate = useNavigate();
 
   return (
-    <main
-      className={`profile-main ${
-        theme ? "light-profile-main" : "dark-profile-main"
-      }`}
-    >
-      <section>
-        <div className="profile-header">
-          <img src={user?.profilePicture || noDp} alt="profile" />
-          <div className="profile-right">
-            <div className="profile-info">
-              <h1 className="flex items-center ">
-                {user?.name || "Name"}
-                {user?.account?.type === "premium" && (
-                  <span>
-                    <img
-                      src={blueTick}
-                      alt={"blue tick"}
-                      className="blue-tick"
-                    />
-                  </span>
-                )}
-              </h1>
-              <span>{user?.email || "email"}</span>
-              <span>{user?.phone_no || "phone number"}</span>
-            </div>
-            <button
-              className="profile-following"
-              onClick={() => updateFollowList(true)}
-            >
-              <span>Following</span>
-              <span className="follow-count">
-                {followCount?.data?.count ?? 0}
-              </span>
-            </button>
-            {owner && (
-              <button className="edit-btn">
-                <SquarePen size={16} />
-                Edit
-              </button>
-            )}
-          </div>
-        </div>
-        <div className="business_registration-container">
-          {/*Use displayBusinesses everywhere */}
-          {displayBusinesses.length > 0 ? (
-            displayBusinesses.map((business) => (
-              <div
-                className="business-rich"
-                key={business._id}
-                onClick={() => {
-                  dispatch(pushNav(`/profile/${user?.id}`));
-                  navigate(`/business/${business._id}`);
-                }}
-              >
-                {/* Your perfect business card JSX stays the same */}
-                <div className="business-img-wrapper">
-                  <img
-                    src={business.profile || businessPlaceHolder}
-                    alt={business.businessName}
-                    className="business-rich-img"
-                  />
-                </div>
-                <div className="business-rich-info">
-                  <div className="business-rich-header">
-                    <div className="title">
-                      <Store size={18} />
-                      <h3>{business.businessName}</h3>
-                    </div>
-                    <span
-                      className={`business-status ${
-                        business.status === "Open" ? "open" : "closed"
-                      }`}
-                    >
-                      {business.status}
-                    </span>
-                  </div>
-                  <p className="business-rich-desc">
-                    {business.description.length <= 50 ? (
-                      business.description
-                    ) : (
-                      <>
-                        {business.description.slice(0, 50)}…
-                        <span className="read-more"> more</span>
-                      </>
-                    )}
-                  </p>
-                  <div className="business-rich-meta">
+    <>
+      <main
+        className={`profile-main ${
+          theme ? "light-profile-main" : "dark-profile-main"
+        }`}
+      >
+        <section>
+          <div className="profile-header">
+            <img src={user?.profilePicture || noDp} alt="profile" />
+            <div className="profile-right">
+              <div className="profile-info">
+                <h1 className="flex items-center ">
+                  {user?.name || "Name"}
+                  {user?.account?.type === "premium" && (
                     <span>
-                      <MapPin size={16} />
-                      {business.location.area}, {business.location.city},{" "}
-                      {business.location.state}
+                      <img
+                        src={blueTick}
+                        alt={"blue tick"}
+                        className="blue-tick"
+                      />
                     </span>
-                    <span>
-                      <Phone size={16} />
-                      {business.phoneNo?.[0]?.phone?.countryCode}{" "}
-                      {business.phoneNo?.[0]?.phone?.number}
-                    </span>
-                  </div>
-                  <div className="business-rich-footer">
-                    <span className="rating">
-                      <Star size={16} />
-                      {business.rating.totalReview > 0
-                        ? (
-                            business.rating.sumOfReview /
-                            business.rating.totalReview
-                          ).toFixed(1)
-                        : "New"}
-                    </span>
-                    <span className="completion">
-                      <BadgeCheck size={16} />
-                      {business.profileCompletion}% Complete
-                    </span>
-                  </div>
-                </div>
+                  )}
+                </h1>
+                <span>{user?.email || "email"}</span>
+                <span>{user?.phone_no || "phone number"}</span>
               </div>
-            ))
-          ) : displayBusinesses.length === 0 && !loading ? (
-            <div
-              className="business-not-registered-container"
-              onClick={() => navigate("/register-business")}
-            >
-              <span>not yet registered Business</span>
-              {owner && <div></div>}
-            </div>
-          ) : (
-            <div className="review-loader">
-              <LoaderCircle className="animate-spin" color="black" />
-            </div>
-          )}
-
-          {/*Use displayBusinesses here too */}
-          {displayBusinesses.length > 0 && owner ? (
-            <div className="profile-register-more-btn-container">
               <button
-                className="profile-register-more-btn"
+                className="profile-following"
+                onClick={() => updateFollowList(true)}
+              >
+                <span>Following</span>
+                <span className="follow-count">{followCount ?? 0}</span>
+              </button>
+              {owner && (
+                <button className="edit-btn">
+                  <SquarePen size={16} />
+                  Edit
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="business_registration-container">
+            {/*Use displayBusinesses everywhere */}
+            {displayBusinesses.length > 0 ? (
+              displayBusinesses.map((business) => (
+                <div
+                  className="business-rich"
+                  key={business._id}
+                  onClick={() => {
+                    dispatch(pushNav(`/profile/${user?.id}`));
+                    navigate(`/business/${business._id}`);
+                  }}
+                >
+                  {/* Your perfect business card JSX stays the same */}
+                  <div className="business-img-wrapper">
+                    <img
+                      src={business.profile || businessPlaceHolder}
+                      alt={business.businessName}
+                      className="business-rich-img"
+                    />
+                  </div>
+                  <div className="business-rich-info">
+                    <div className="business-rich-header">
+                      <div className="title">
+                        <Store size={18} />
+                        <h3>{business.businessName}</h3>
+                      </div>
+                      <span
+                        className={`business-status ${
+                          business.status === "Open" ? "open" : "closed"
+                        }`}
+                      >
+                        {business.status}
+                      </span>
+                    </div>
+                    <p className="business-rich-desc">
+                      {business.description.length <= 50 ? (
+                        business.description
+                      ) : (
+                        <>
+                          {business.description.slice(0, 50)}…
+                          <span className="read-more"> more</span>
+                        </>
+                      )}
+                    </p>
+                    <div className="business-rich-meta">
+                      <span>
+                        <MapPin size={16} />
+                        {business.location.area}, {business.location.city},{" "}
+                        {business.location.state}
+                      </span>
+                      <span>
+                        <Phone size={16} />
+                        {business.phoneNo?.[0]?.phone?.countryCode}{" "}
+                        {business.phoneNo?.[0]?.phone?.number}
+                      </span>
+                    </div>
+                    <div className="business-rich-footer">
+                      <span className="rating">
+                        <Star size={16} />
+                        {business.rating.totalReview > 0
+                          ? (
+                              business.rating.sumOfReview /
+                              business.rating.totalReview
+                            ).toFixed(1)
+                          : "New"}
+                      </span>
+                      <span className="completion">
+                        <BadgeCheck size={16} />
+                        {business.profileCompletion}% Complete
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : displayBusinesses.length === 0 && !loading ? (
+              <div
+                className="business-not-registered-container"
                 onClick={() => navigate("/register-business")}
               >
-                <Store />
-                register business
-              </button>
-            </div>
-          ) : null}
-        </div>
-      </section>
-    </main>
+                <span>not yet registered Business</span>
+                {owner && <div></div>}
+              </div>
+            ) : (
+              <div className="review-loader">
+                <LoaderCircle className="animate-spin" color="black" />
+              </div>
+            )}
+
+            {/*Use displayBusinesses here too */}
+            {displayBusinesses.length > 0 && owner ? (
+              <div className="profile-register-more-btn-container">
+                <button
+                  className="profile-register-more-btn"
+                  onClick={() => navigate("/register-business")}
+                >
+                  <Store />
+                  register business
+                </button>
+              </div>
+            ) : null}
+          </div>
+        </section>
+      </main>
+      <FollowList
+        visibility={showFollowList}
+        updateVisibility={updateFollowList}
+        user={user?.id}
+        updateFollowCount={updateFollowCount}
+        owner={owner}
+      />
+    </>
   );
 };
 
-const FollowList = function ({ visibility, setShowFollowList }) {
+const FollowList = function ({
+  visibility,
+  updateVisibility,
+  user,
+  updateFollowCount,
+  owner,
+}) {
+  const { data, loading, error } = useGet(
+    user ? `/follow/list?id=${user}` : null,
+  );
+
   return (
-    <section
-      className="user-following-list"
+    <div
+      className="follow-list-modal"
       style={{
-        display: visibility ? "block" : "none",
+        display: visibility ? "flex" : "none",
+        zIndex: 1000,
       }}
     >
-      yeah this is the following list
-    </section>
+      {/* Backdrop */}
+      <div className="modal-backdrop" onClick={() => updateVisibility(false)} />
+
+      {/* Center Card */}
+      <div className="follow-list-card">
+        {/* Header */}
+        <div className="follow-header">
+          <h3>Following</h3>
+          <button onClick={() => updateVisibility(false)} className="close-btn">
+            ×
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="follow-content">
+          {loading ? (
+            <div className="loading-state">
+              <div className="spinner"></div>
+            </div>
+          ) : error ? (
+            <div className="error-state">{error.response.data.message}</div>
+          ) : !data?.data?.length ? (
+            <div className="empty-state">No accounts followed</div>
+          ) : (
+            data.data.map((business) => (
+              <div key={business._id} className="follow-item">
+                <div className="follow-avatar">
+                  <img src={business.profile} alt="" />
+                </div>
+                <div className="follow-info">
+                  <div>
+                    <div className="follow-name">{business.businessName}</div>
+                    <div className="follow-handle">@{business.email}</div>
+                  </div>
+                  {owner && (
+                    <Follow
+                      businessID={business._id}
+                      updateFollowersCount={updateFollowCount}
+                      status={true}
+                    />
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 
