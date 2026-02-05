@@ -16,11 +16,6 @@ const Home = () => {
     <HamBurger/>
       <Nav />
       <Feed/>
-        <button onClick={()=>{
-          navigate("/profile/6974e24e5ded793d3eb0cd13");
-        }}>
-          click me
-        </button>
       <Footer/>
     </>
   );
