@@ -29,7 +29,7 @@ const Feed = () => {
   // false = For You, true = Following
   const [feedType, setFeedType] = useState(false);
 
-  const { location } = useLocation();
+  const { location, locationError } = useLocation();
 
   //  Only fetch if page NOT already fetched
   const forYouQuery = `/business/tweets?type=forYou&limit=${LIMIT}&page=${forYouFeed.page}${`&latitude=${location?.lat}&longitude=${location?.lng}&distance=${distance}`}`;
@@ -95,6 +95,21 @@ const Feed = () => {
     }
   };
 
+  const EndMessage = () => {
+    return (
+      <div className="empty-feed">
+        <img src={noPost} alt="No posts" className="empty-feed__image" />
+
+        <h3 className="empty-feed__title">Nothing here yet</h3>
+
+        <p className="empty-feed__description">
+          Posts will appear here once businesses start sharing updates. Follow
+          businesses or check back later.
+        </p>
+      </div>
+    );
+  };
+
   return (
     <section className={`feed-section ${!theme ? "feed-section-dark" : ""}`}>
       <div className="feed-section-container">
@@ -121,36 +136,31 @@ const Feed = () => {
         <div className="feed-tweet-container">
           {/* FOR YOU FEED */}
           {!feedType && (
-            <InfiniteScroll
-              dataLength={forYouFeed.tweets.length}
-              next={loadMoreForYou}
-              hasMore={forYouFeed.hasMore}
-              loader={
-                <div className="h-[50px] w-full grid place-items-center">
-                  <LoaderCircle className="animate-spin" />
-                </div>
-              }
-              endMessage={
-                <div className="empty-feed">
-                  <img
-                    src={noPost}
-                    alt="No posts"
-                    className="empty-feed__image"
+            <>
+              {forYouFeed.tweets.length > 0 && <InfiniteScroll
+                dataLength={forYouFeed.tweets.length}
+                next={loadMoreForYou}
+                hasMore={forYouFeed.hasMore}
+                loader={
+                  <div className="h-[50px] w-full grid place-items-center">
+                    <LoaderCircle className="animate-spin" />
+                  </div>
+                }
+                endMessage={<EndMessage />}
+              >
+                {forYouFeed.tweets.map((tweet) => (
+                  <TweetCard
+                    key={`for-you-${tweet._id}`}
+                    tweet={tweet}
+                    currentPageURL="/"
                   />
-
-                  <h3 className="empty-feed__title">Nothing here yet</h3>
-
-                  <p className="empty-feed__description">
-                    Posts will appear here once businesses start sharing
-                    updates. Follow businesses or check back later.
-                  </p>
-                </div>
+                ))}
+              </InfiniteScroll>}
+              {
+                (!location && forYouFeed.tweets.length <= 0)  ||  forYouFeed.tweets.length <= 0 && 
+                <EndMessage/>
               }
-            >
-              {forYouFeed.tweets.map((tweet) => (
-                <TweetCard key={`for-you-${tweet._id}`} tweet={tweet} />
-              ))}
-            </InfiniteScroll>
+            </>
           )}
 
           {/* FOLLOWING FEED */}
@@ -164,25 +174,14 @@ const Feed = () => {
                   <LoaderCircle className="animate-spin" />
                 </div>
               }
-              endMessage={
-                <div className="empty-feed">
-                  <img
-                    src={noPost}
-                    alt="No posts"
-                    className="empty-feed__image"
-                  />
-
-                  <h3 className="empty-feed__title">Nothing here yet</h3>
-
-                  <p className="empty-feed__description">
-                    Posts will appear here once businesses start sharing
-                    updates. Follow businesses or check back later.
-                  </p>
-                </div>
-              }
+              endMessage={<EndMessage />}
             >
               {followingFeed.tweets.map((tweet) => (
-                <TweetCard key={`following-${tweet._id}`} tweet={tweet} />
+                <TweetCard
+                  key={`following-${tweet._id}`}
+                  tweet={tweet}
+                  currentPageURL="/"
+                />
               ))}
             </InfiniteScroll>
           )}

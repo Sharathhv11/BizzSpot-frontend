@@ -305,7 +305,7 @@ const BusinessProfile = () => {
             owned={owned}
           />
           <Review userInfo={user} businessInfo={businessInfo} owned={owned} />
-          <Tweet owned={owned} businessInfo={businessInfo}/>
+          <Tweet owned={owned} businessInfo={businessInfo} />
         </main>
       )}
     </>
@@ -354,112 +354,126 @@ function InfoBlock2({ businessInfo, owned }) {
 
   const navigate = useNavigate();
 
-  const [visibility,updateVisibility] = useState(false);
+  const [visibility, updateVisibility] = useState(false);
 
   return (
     <>
-    <FollowList visibility={visibility} updateVisibility={updateVisibility} updateFollowCount={setFollowersCount} id={businessInfo?._id} owner={false} businessList={true} />
-    <section className="business-section2-profile-info">
-      <div>
-        <div className="followers-container">
-          <h2>
-            <UserRoundCheck className="lucide-icon block2-icons" />
-            Followers
-          </h2>
-
-          <h5 className="cursor-pointer"  onClick={() => updateVisibility(true)}>{followersCount ?? 0}</h5>
-          {owned ? (
-            <button
-              className="analytics-btn"
-              title="View business analytics"
-              onClick={() =>
-                navigate(`/business/${businessInfo._id}/analytics`)
-              }
-            >
-              <ChartNoAxesColumn className="lucide-icon block2-icons" />
-              <span>Analytics</span>
-            </button>
-          ) : (
-            <Follow
-              businessID={businessInfo?._id}
-              status={followStatus?.data.followingStatus}
-              updateFollowersCount={setFollowersCount}
-            />
-          )}
-        </div>
-
-        <div className="working-hours">
-          <div>
+      <FollowList
+        visibility={visibility}
+        updateVisibility={updateVisibility}
+        updateFollowCount={setFollowersCount}
+        id={businessInfo?._id}
+        owner={false}
+        businessList={owned}
+      />
+      <section className="business-section2-profile-info">
+        <div>
+          <div className="followers-container">
             <h2>
-              <Clock className="lucide-icon block2-icons" />
-              Working Hours{" "}
-              {!businessInfo?.workingHours && <span>(Default)</span>}
+              <UserRoundCheck className="lucide-icon block2-icons" />
+              Followers
             </h2>
 
-            <p>
-              <strong>Weekdays:</strong>{" "}
-              {businessInfo?.workingHours?.weekdays?.open &&
-              businessInfo?.workingHours?.weekdays?.close
-                ? `${businessInfo.workingHours.weekdays.open} - ${businessInfo.workingHours.weekdays.close}`
-                : "9:00 AM - 6:00 PM"}
-            </p>
-
-            <p>
-              <strong>Weekends:</strong>{" "}
-              {businessInfo?.workingHours?.weekends?.open &&
-              businessInfo?.workingHours?.weekends?.close
-                ? `${businessInfo.workingHours.weekends.open} - ${businessInfo.workingHours.weekends.close}`
-                : "Closed"}
-            </p>
-            <span
-              className={`${
-                businessInfo?.status === "open" ? "status-green" : "status-red"
-              }`}
+            <h5
+              className="cursor-pointer"
+              onClick={() => updateVisibility(true)}
             >
-              {businessInfo?.status ?? "closed"}
-            </span>
-            {owned && (
-              <Switch
-                checked={isOpen}
-                onChange={(e) => setIsOpen(e.target.checked)}
-                sx={{
-                  "& .MuiSwitch-switchBase.Mui-checked": {
-                    color: "#22c55e",
-                  },
-                  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                    backgroundColor: "#22c55e",
-                  },
-                }}
+              {followersCount ?? 0}
+            </h5>
+            {owned ? (
+              <button
+                className="analytics-btn"
+                title="View business analytics"
+                onClick={() =>
+                  navigate(`/business/${businessInfo._id}/analytics`)
+                }
+              >
+                <ChartNoAxesColumn className="lucide-icon block2-icons" />
+                <span>Analytics</span>
+              </button>
+            ) : (
+              <Follow
+                businessID={businessInfo?._id}
+                status={followStatus?.data.followingStatus}
+                updateFollowersCount={setFollowersCount}
               />
             )}
           </div>
-        </div>
 
-        <div className="map-container">
-          <h2>
-            <MapPin className="lucide-icon " />
-            Business Location
-          </h2>
-          <div className="map-wrapper">
-            <MapContainer
-              key={position.join(",")}
-              center={position}
-              zoom={13}
-              scrollWheelZoom={false}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <Marker position={position}>
-                <Popup>{businessInfo?.businessName}</Popup>
-              </Marker>
-              <RecenterButton position={position} />
-            </MapContainer>
+          <div className="working-hours">
+            <div>
+              <h2>
+                <Clock className="lucide-icon block2-icons" />
+                Working Hours{" "}
+                {!businessInfo?.workingHours && <span>(Default)</span>}
+              </h2>
+
+              <p>
+                <strong>Weekdays:</strong>{" "}
+                {businessInfo?.workingHours?.weekdays?.open &&
+                businessInfo?.workingHours?.weekdays?.close
+                  ? `${businessInfo.workingHours.weekdays.open} - ${businessInfo.workingHours.weekdays.close}`
+                  : "9:00 AM - 6:00 PM"}
+              </p>
+
+              <p>
+                <strong>Weekends:</strong>{" "}
+                {businessInfo?.workingHours?.weekends?.open &&
+                businessInfo?.workingHours?.weekends?.close
+                  ? `${businessInfo.workingHours.weekends.open} - ${businessInfo.workingHours.weekends.close}`
+                  : "Closed"}
+              </p>
+              <span
+                className={`${
+                  businessInfo?.status === "open"
+                    ? "status-green"
+                    : "status-red"
+                }`}
+              >
+                {businessInfo?.status ?? "closed"}
+              </span>
+              {owned && (
+                <Switch
+                  checked={isOpen}
+                  onChange={(e) => setIsOpen(e.target.checked)}
+                  sx={{
+                    "& .MuiSwitch-switchBase.Mui-checked": {
+                      color: "#22c55e",
+                    },
+                    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                      backgroundColor: "#22c55e",
+                    },
+                  }}
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="map-container">
+            <h2>
+              <MapPin className="lucide-icon " />
+              Business Location
+            </h2>
+            <div className="map-wrapper">
+              <MapContainer
+                key={position.join(",")}
+                center={position}
+                zoom={13}
+                scrollWheelZoom={false}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker position={position}>
+                  <Popup>{businessInfo?.businessName}</Popup>
+                </Marker>
+                <RecenterButton position={position} />
+              </MapContainer>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
     </>
   );
 }

@@ -11,10 +11,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useDispatch } from "react-redux";
+import { pushNav } from "@/redux/reducers/pageState";
+import { useNavigate } from "react-router-dom";
 
-const TweetCard = ({ tweet }) => {
+const TweetCard = ({ tweet, currentPageURL }) => {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
 
   const imageMedia = tweet.media?.filter((m) => m.type === "image") || [];
 
@@ -24,11 +30,18 @@ const TweetCard = ({ tweet }) => {
         {/* Header */}
         <header className="tweet-header">
           <div>
-            <div className="tweet-owner-info">
+            <div
+              className="tweet-owner-info"
+              onClick={() => {
+                if (!currentPageURL) return;
+                dispatch(pushNav(currentPageURL));
+                navigate(`/business/${tweet.postedBy._id}`);
+              }}
+            >
               <Avatar
                 src={tweet.postedBy.profile}
                 alt="Owner"
-                sx={{ width: 28, height: 28 }}
+                sx={{ width: 28, height: 28, pointerEvents: 'none' }}
               />
               <div>
                 <h4 className="tweet-user">{tweet.postedBy.businessName}</h4>
@@ -113,8 +126,8 @@ const TweetCard = ({ tweet }) => {
       </article>
 
       <Dialog open={open} onOpenChange={setOpen}>
-  <DialogContent
-    className="
+        <DialogContent
+          className="
       w-[calc(100vw-40px)]
       max-w-5xl
       h-[50vh]
@@ -127,35 +140,30 @@ const TweetCard = ({ tweet }) => {
       md:w-[90vw]
       lg:w-[70vw]
     "
-  >
-    <Carousel className="w-full h-full">
-      <CarouselContent className="h-full">
-        {imageMedia.map((media, i) => (
-          <CarouselItem
-            key={i}
-            className="basis-full w-full h-full"
-          >
-            <img
-              src={media.url}
-              alt=""
-              className="
+        >
+          <Carousel className="w-full h-full">
+            <CarouselContent className="h-full">
+              {imageMedia.map((media, i) => (
+                <CarouselItem key={i} className="basis-full w-full h-full">
+                  <img
+                    src={media.url}
+                    alt=""
+                    className="
                 w-full 
                 h-full 
                 object-cover
                 select-none
               "
-            />
-          </CarouselItem>
-        ))}
-      </CarouselContent>
+                  />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
 
-      <CarouselPrevious className="left-3 bg-black/60 text-white hover:bg-black/80" />
-      <CarouselNext className="right-3 bg-black/60 text-white hover:bg-black/80" />
-    </Carousel>
-  </DialogContent>
-</Dialog>
-
-
+            <CarouselPrevious className="left-3 bg-black/60 text-white hover:bg-black/80" />
+            <CarouselNext className="right-3 bg-black/60 text-white hover:bg-black/80" />
+          </Carousel>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

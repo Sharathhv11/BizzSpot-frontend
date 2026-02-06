@@ -41,7 +41,7 @@ const Tweet = ({ owned, businessInfo }) => {
           <div className="tweet-card-holder">
             {tweets.map((tweet) => (
               <>
-                <TweetCard tweet={tweet} key={tweet._id}/>
+                <TweetCard tweet={tweet} key={tweet._id} />
               </>
             ))}
             {totalPages > 1 && (

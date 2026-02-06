@@ -132,6 +132,41 @@
   }
 }
 
+.no-location-icon {
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.location-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.enable-location-btn,
+.location-settings-btn {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+
 
 
 @media ( width <= 1200px){
