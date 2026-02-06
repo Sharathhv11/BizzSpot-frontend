@@ -36,7 +36,7 @@ const Feed = () => {
   // false = For You, true = Following
   const [feedType, setFeedType] = useState(false);
 
-  const { location, error: locationError } = useLocation();
+  const { location, error: locationError,canFetch } = useLocation();
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationRetryCount, setLocationRetryCount] = useState(0);
 
@@ -44,7 +44,7 @@ const Feed = () => {
   const forYouQuery = `/business/tweets?type=forYou&limit=${LIMIT}&page=${forYouFeed.page}${`&latitude=${location?.lat || null}&longitude=${location?.lng || null}&distance=${distance}`}`;
 
   const { data: forYouData, loading: forYouLoading } = useGet(
-    !feedType && !forYouFeed.fetchedPages.includes(forYouFeed.page)
+    !feedType && !forYouFeed.fetchedPages.includes(forYouFeed.page) && canFetch
       ? forYouQuery
       : null, // CACHE CHECK
   );
