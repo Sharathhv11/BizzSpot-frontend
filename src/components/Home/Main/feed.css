@@ -144,27 +144,70 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-
-.location-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
-.enable-location-btn,
-.location-settings-btn {
-  padding: 12px 20px;
+.location-error-banner {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border: 1px solid #fca5a5;
   border-radius: 12px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
+  padding: 20px;
+  margin: 16px 0;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: center;
+  gap: 16px;
+  align-items: flex-start;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
 }
+
+.error-icon {
+  font-size: 24px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.error-content h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #991b1b;
+}
+
+.error-content p {
+  margin: 0 0 16px 0;
+  color: #7f1d1d;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+
+
+
+
+
+/* Dark mode */
+.dark .location-error-banner {
+  background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+  border-color: #b91c1c;
+}
+
+.dark .error-content h4 {
+  color: #fca5a5;
+}
+
+.dark .error-content p {
+  color: #f1d5d5;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .location-error-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 20px;
+  }
+  
+  .error-actions {
+    justify-content: center;
+  }
+}
+
 
 
 

@@ -14,9 +14,16 @@ import {
 import useGet from "./../../../hooks/useGet";
 import TweetCard from "../Util/TweetCard";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { LoaderCircle } from "lucide-react";
 import useLocation from "@/hooks/useLocation";
 import noPost from "./../../../assets/no-post.png";
+
+import {
+  AlertCircle,
+  RefreshCw,
+  Settings,
+  MapPin,
+  LoaderCircle,
+} from "lucide-react";
 
 const LIMIT = 10;
 
@@ -29,16 +36,15 @@ const Feed = () => {
   // false = For You, true = Following
   const [feedType, setFeedType] = useState(false);
 
-  const { location, locationError } = useLocation();
+  const { location, error: locationError } = useLocation();
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationRetryCount, setLocationRetryCount] = useState(0);
 
   //  Only fetch if page NOT already fetched
-  const forYouQuery = `/business/tweets?type=forYou&limit=${LIMIT}&page=${forYouFeed.page}${`&latitude=${location?.lat}&longitude=${location?.lng}&distance=${distance}`}`;
+  const forYouQuery = `/business/tweets?type=forYou&limit=${LIMIT}&page=${forYouFeed.page}${`&latitude=${location?.lat || null}&longitude=${location?.lng || null}&distance=${distance}`}`;
 
   const { data: forYouData, loading: forYouLoading } = useGet(
-    !feedType &&
-      !forYouFeed.fetchedPages.includes(forYouFeed.page) &&
-      !isNaN(location?.lat) &&
-      !isNaN(location?.lng)
+    !feedType && !forYouFeed.fetchedPages.includes(forYouFeed.page)
       ? forYouQuery
       : null, // CACHE CHECK
   );
@@ -95,6 +101,10 @@ const Feed = () => {
     }
   };
 
+  
+
+  
+
   const EndMessage = () => {
     return (
       <div className="empty-feed">
@@ -137,7 +147,21 @@ const Feed = () => {
           {/* FOR YOU FEED */}
           {!feedType && (
             <>
-              {forYouFeed.tweets.length > 0 && <InfiniteScroll
+              {locationError && (
+                <div className="location-error-banner">
+                  <AlertCircle className="error-icon text-red-500" size={24} />
+
+                  <div className="error-content">
+                    <h4>Enable Location for Nearby Posts</h4>
+                    <p>
+                      Turn on location access to discover posts from businesses
+                      near you. You'll still see interest-based recommendations.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <InfiniteScroll
                 dataLength={forYouFeed.tweets.length}
                 next={loadMoreForYou}
                 hasMore={forYouFeed.hasMore}
@@ -155,11 +179,7 @@ const Feed = () => {
                     currentPageURL="/"
                   />
                 ))}
-              </InfiniteScroll>}
-              {
-                (!location && forYouFeed.tweets.length <= 0)  ||  forYouFeed.tweets.length <= 0 && 
-                <EndMessage/>
-              }
+              </InfiniteScroll>
             </>
           )}
 

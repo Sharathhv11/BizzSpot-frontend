@@ -1,0 +1,44 @@
+:root {
+  --max-width: 1200px;
+  --border-radius: 6px;
+  --border-dark: 1px solid #565252ae;
+  --border-light: 1px solid #eaeaea;
+}
+
+
+.business-explore-section{
+    width: 100%;
+    padding:10px  20px;
+}
+
+.location-error-simple {
+  text-align: center;
+  padding: 40px 20px;
+  max-width: 400px;
+  margin: 40px auto;
+}
+
+.error-icon-large {
+  color: #ef4444;
+  margin: 0 auto 16px;
+}
+
+.location-error-simple h3 {
+  color: #dc2626;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.location-error-simple p {
+  color: #7f1d1d;
+  font-size: 16px;
+  margin: 0 0 4px 0;
+}
+
+
+.explore-business-container{
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+}

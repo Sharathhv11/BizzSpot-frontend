@@ -10,13 +10,19 @@ const pageState = createSlice({
       tweets: [],
       page: 1,
       hasMore: true,
-      fetchedPages: [], 
+      fetchedPages: [],
     },
     forYouFeed: {
       tweets: [],
       page: 1,
       hasMore: true,
-      fetchedPages: [], 
+      fetchedPages: [],
+    },
+    exploreFeed: {
+      businesses: [],
+      page: 1,
+      hasMore: true,
+      fetchedPages: [],
     },
     distance: 10_000,
   },
@@ -71,7 +77,7 @@ const pageState = createSlice({
       state.followingFeed.tweets = [];
       state.followingFeed.page = 1;
       state.followingFeed.hasMore = true;
-      state.followingFeed.fetchedPages = [];  
+      state.followingFeed.fetchedPages = [];
     },
 
     /* ========= FOR YOU FEED ========= */
@@ -98,11 +104,35 @@ const pageState = createSlice({
       state.forYouFeed.tweets = [];
       state.forYouFeed.page = 1;
       state.forYouFeed.hasMore = true;
-      state.forYouFeed.fetchedPages = [];  
+      state.forYouFeed.fetchedPages = [];
     },
 
     changeDistance(state, action) {
       state.distance = action.payload;
+    },
+    setExploreFeed(state, action) {
+      state.exploreFeed.businesses.push(...action.payload.businesses);
+    },
+
+    addExploreFetchedPage(state, action) {
+      if (!state.exploreFeed.fetchedPages.includes(action.payload)) {
+        state.exploreFeed.fetchedPages.push(action.payload);
+      }
+    },
+
+    updateExploreFeedPage(state, action) {
+      state.exploreFeed.page = action.payload;
+    },
+
+    updateExploreHasMore(state, action) {
+      state.exploreFeed.hasMore = action.payload;
+    },
+
+    clearExploreFeed(state) {
+      state.exploreFeed.businesses = [];
+      state.exploreFeed.page = 1;
+      state.exploreFeed.hasMore = true;
+      state.exploreFeed.fetchedPages = [];
     },
   },
 });
@@ -114,16 +144,21 @@ export const {
   resetNav,
   toggleHamburgerMenu,
   setFollowingFeed,
-  addFollowingFetchedPage,      
+  addFollowingFetchedPage,
   updateFollowingFeedPage,
   updateFollowingHasMore,
   clearFollowingFeed,
   setForYouFeed,
-  addForYouFetchedPage,         
+  addForYouFetchedPage,
   updateForYouFeedPage,
   updateForYouHasMore,
   clearForYouFeed,
   changeDistance,
+  setExploreFeed,
+  addExploreFetchedPage,
+  updateExploreFeedPage,
+  updateExploreHasMore,
+  clearExploreFeed,
 } = pageState.actions;
 
 export default pageState.reducer;

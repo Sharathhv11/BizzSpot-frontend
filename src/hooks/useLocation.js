@@ -13,8 +13,7 @@ const useLocation = () => {
         });
       },
       (err) => {
-        console.error(err);
-        setError(err.message);
+        setError(err);
       },
       {
         enableHighAccuracy: true, 
