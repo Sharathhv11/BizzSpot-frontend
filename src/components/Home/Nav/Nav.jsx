@@ -62,7 +62,12 @@ const Nav = () => {
             {isLight ? <Moon size={18} /> : <Sun size={18} />}
           </button>
 
-          <button className="search-btn">
+          <button
+            className="search-btn"
+            onClick={() => {
+              navigate("/Search");
+            }}
+          >
             <Search size={16} />
             <span className="search-text">Search nearby</span>
           </button>

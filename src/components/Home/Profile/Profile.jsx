@@ -107,7 +107,7 @@ const Main = ({
   const shouldFetchBusinesses =
     user?.id && (!owner || (!hasFetchedBusinesses && owner));
   const { data: businessList, loading } = useGet(
-    shouldFetchBusinesses ? `business?ownedBy=${user?.id}` : null,
+    shouldFetchBusinesses ? `business/owned?ownedBy=${user?.id}` : null,
   );
 
   //  COMPUTED: Use Redux for owner, API for others

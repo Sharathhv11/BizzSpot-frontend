@@ -13,6 +13,7 @@ import BusinessProfile from "./components/Home/BusinessProfile/BusinessProfile.j
 import Subscription from "./components/paymentGateWay/Subscription.jsx";
 import About from "./components/About/About";
 import Explore from "./components/Explore/Explore";
+import Search from "./components/Home/Search/Search";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path="/payment" element={<Subscription />} />
           <Route path="/About" element={<About />} />
           <Route path="/Explore" element={<Explore />} />
+          <Route path="/Search" element={<Search />} />
         </Routes>
       </BrowserRouter>
     </>

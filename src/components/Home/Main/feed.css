@@ -80,7 +80,7 @@
 }
 
 .empty-feed {
-  height: 60vh;
+  height: 30vh;
   width: 100%;
   display: flex;
   flex-direction: column;
