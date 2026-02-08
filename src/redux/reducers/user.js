@@ -17,10 +17,18 @@ const userSlice = createSlice({
       state.usersBusiness = action.payload;
       state.hasFetchedBusinesses = true;
     },
+    removeUserBusiness: (state, action) => {
+      const idToRemove = action.payload;
+
+      state.usersBusiness = state.usersBusiness.filter(
+        (business) => business._id !== idToRemove,
+      );
+    },
+
     resetStates: () => initialState,
   },
 });
 
-export const { setUserInfo, setUserBusiness, resetStates } = userSlice.actions;
+export const { setUserInfo, setUserBusiness, resetStates,removeUserBusiness } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -1,0 +1,129 @@
+.delete-business-btn{
+    width: 150px;
+    height: 40px;
+    margin : 0 auto;
+    background-color: #ec0808;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    gap: 10px;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+}
+
+.delete-business-btn:hover{
+    background-color: #c31818;
+}
+
+/* Overlay */
+.delete-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: grid;
+  place-items: center;
+  z-index: 999;
+}
+
+/* Modal */
+.delete-modal {
+  width: 95%;
+  max-width: 420px;
+  background: white;
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  animation: pop 0.2s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Header */
+.delete-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.warning-icon {
+  color: #ef4444;
+}
+
+/* Warning text */
+.delete-warning {
+  font-size: 14px;
+  margin-bottom: 16px;
+  color: #444;
+}
+
+/* Confirmation input */
+.confirm-box label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.confirm-box input {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  outline: none;
+}
+
+.confirm-box input:focus {
+  border-color: #ef4444;
+}
+
+/* Buttons */
+.delete-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cancel-btn,
+.delete-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.cancel-btn {
+  background: #eee;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

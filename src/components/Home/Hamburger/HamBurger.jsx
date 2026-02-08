@@ -12,6 +12,10 @@ const HamBurger = () => {
   const { hamburgerMenu, theme } = useSelector((state) => state.pageState);
   const dispatch = useDispatch();
 
+  const navHandlers = () => {
+            dispatch(toggleHamburgerMenu());
+          };
+
   return (
     <div
       className={`hamburger-menu
@@ -29,21 +33,27 @@ const HamBurger = () => {
       {/* Close Button */}
       <button
         className={`hamburger-close ${!theme ? "close-dark" : "close-light"}`}
-        onClick={() => {
-          dispatch(toggleHamburgerMenu());
-        }}
+        onClick={navHandlers}
       >
         <X size={24} />
       </button>
 
       <nav className="hamburger-links hamburger-center">
-        <a href="#">Explore</a>
-        <Link to="/About">About</Link>
+        <Link
+          to="Explore"
+          onClick={navHandlers}
+        >
+          Explore
+        </Link>
+        <Link
+          to="/About"
+          onClick={navHandlers}
+        >
+          About
+        </Link>
         <a
           href="#footer"
-          onClick={() => {
-            dispatch(toggleHamburgerMenu());
-          }}
+          onClick={navHandlers}
         >
           Contact
         </a>

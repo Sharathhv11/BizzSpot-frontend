@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import  InfiniteScroll  from "react-infinite-scroll-component";
+import InfiniteScroll from "react-infinite-scroll-component";
 import Nav2 from "../Home/Util/Nav2";
 import useLocation from "@/hooks/useLocation";
 import useGet from "@/hooks/useGet";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, LoaderCircle } from "lucide-react";
 import {
   setExploreFeed,
   addExploreFetchedPage,
@@ -16,7 +16,7 @@ import {
 import "./explore.css";
 import BusinessCard from "../Home/Util/BusinessCard";
 
-const LIMIT = 1; // Better UX than 1
+const LIMIT = 20; // Better UX than 1
 
 const Explore = () => {
   const dispatch = useDispatch();
@@ -43,7 +43,7 @@ const Explore = () => {
   const { data: exploreData, loading: exploreLoading } = useGet(
     location && !exploreFeed.fetchedPages.includes(exploreFeed.page)
       ? exploreQuery
-      : null // CACHE CHECK - exact Feed pattern
+      : null, // CACHE CHECK - exact Feed pattern
   );
 
   // Handle explore data (EXACT Feed pattern)
@@ -55,6 +55,7 @@ const Explore = () => {
     if (businesses.length > 0) {
       dispatch(setExploreFeed({ businesses }));
     }
+
 
     // decide hasMore and update Redux
     dispatch(updateExploreHasMore(businesses.length === LIMIT));
@@ -88,31 +89,36 @@ const Explore = () => {
             <h3>Location Access Needed</h3>
             <p>Enable location to discover businesses nearby you</p>
           </div>
-        ) : location ? (
+        ) : (
           <div className="explore-business-container">
-            <h1>Explore Nearby Businesses ({exploreFeed.businesses.length})</h1>
+            <h1>Explore Nearby Businesses</h1>
             <InfiniteScroll
               dataLength={exploreFeed.businesses.length}
               next={loadMoreExplore}
               hasMore={exploreFeed.hasMore}
               loader={
                 <div className="h-[50px] w-full grid place-items-center">
-                  Loading more businesses...
+                  <LoaderCircle className="animate-spin" />
                 </div>
               }
               endMessage={<EndMessage />}
+              className="infiniteScroller"
             >
-              {exploreFeed.businesses.length === 0 ? (
+              {exploreFeed.businesses.length === 0 && !exploreFeed.hasMore ? (
                 <p>No businesses found nearby</p>
               ) : (
-                exploreFeed.businesses.map((business) => (
-                 <BusinessCard business={business} key={business._id}/>
-                ))
+                <div className="business-grid">
+                  {exploreFeed.businesses.map((business) => (
+                    <BusinessCard
+                      business={business}
+                      key={business._id}
+                      currentPageURL={"/Explore"}
+                    />
+                  ))}
+                </div>
               )}
             </InfiniteScroll>
           </div>
-        ) : (
-          <div>Loading location...</div>
         )}
       </section>
     </>

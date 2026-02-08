@@ -2,17 +2,19 @@ import React from "react";
 import { MapPin, Phone, Star, Sparkles } from "lucide-react";
 import "./businessCard.css";
 import noProfile from "./../../../assets/businessNoFound.png";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { pushNav } from "@/redux/reducers/pageState";
 
 const WORD_LIMIT = 14;
 
-const BusinessCard = ({ business, onClick }) => {
+const BusinessCard = ({ business,currentPageURL }) => {
   const hasRating = business.rating?.totalReview > 0;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const rating = hasRating
-    ? (
-        business.rating.sumOfReview /
-        business.rating.totalReview
-      ).toFixed(1)
+    ? (business.rating.sumOfReview / business.rating.totalReview).toFixed(1)
     : null;
 
   const phone = business.phoneNo?.[0]?.phone?.number;
@@ -22,12 +24,16 @@ const BusinessCard = ({ business, onClick }) => {
   const words = desc.split(" ");
   const shouldTrim = words.length > WORD_LIMIT;
 
-  const previewText = shouldTrim
-    ? words.slice(0, WORD_LIMIT).join(" ")
-    : desc;
+  const previewText = shouldTrim ? words.slice(0, WORD_LIMIT).join(" ") : desc;
 
   return (
-    <div className="biz-card" onClick={() => onClick?.(business)}>
+    <div
+      className="biz-card"
+      onClick={() => {
+        dispatch(pushNav(currentPageURL));
+        navigate(`/business/${business._id}`);
+      }}
+    >
       {/* IMAGE */}
       <div className="biz-image-wrap">
         <img
@@ -37,7 +43,7 @@ const BusinessCard = ({ business, onClick }) => {
         />
 
         {/* smart badge */}
-        <div className="badge rating">
+        <div className="badge rating-businessCard">
           {hasRating ? (
             <>
               <Star size={12} fill="white" /> {rating}
@@ -74,9 +80,7 @@ const BusinessCard = ({ business, onClick }) => {
         {/* description preview */}
         <p className="biz-desc">
           {previewText}
-          {shouldTrim && (
-            <span className="more-text"> ...more</span>
-          )}
+          {shouldTrim && <span className="more-text"> ...more</span>}
         </p>
 
         <div className="biz-meta">

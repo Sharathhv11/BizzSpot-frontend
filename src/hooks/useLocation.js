@@ -9,8 +9,8 @@ const useLocation = () => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocation({
-          lat: pos.coords.latitude, //
-          lng: pos.coords.longitude, //
+          lat:pos.coords.latitude,
+          lng:pos.coords.longitude,
         });
         setCanFetch(true);
       },

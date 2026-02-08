@@ -306,6 +306,7 @@ const BusinessProfile = () => {
           />
           <Review userInfo={user} businessInfo={businessInfo} owned={owned} />
           <Tweet owned={owned} businessInfo={businessInfo} />
+          {owned && <DeleteBusiness business={businessInfo}/>}
         </main>
       )}
     </>
@@ -483,6 +484,7 @@ import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternate
 import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
 import OfferForm from "./OfferForm";
 import Review from "./Review";
+import DeleteBusiness from "./DeleteBusiness";
 
 function MediaBlock({ media, theme, owned }) {
   return (
