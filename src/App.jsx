@@ -14,6 +14,7 @@ import Subscription from "./components/paymentGateWay/Subscription.jsx";
 import About from "./components/About/About";
 import Explore from "./components/Explore/Explore";
 import Search from "./components/Home/Search/Search";
+import UpdateProfile from "./components/Home/Profile/UpdateProfile";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/About" element={<About />} />
           <Route path="/Explore" element={<Explore />} />
           <Route path="/Search" element={<Search />} />
+          <Route path="/Update-Profile" element={<UpdateProfile/>} />
         </Routes>
       </BrowserRouter>
     </>

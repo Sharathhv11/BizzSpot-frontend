@@ -158,7 +158,9 @@ const Main = ({
                 <span className="follow-count">{followCount ?? 0}</span>
               </button>
               {owner && (
-                <button className="edit-btn">
+                <button className="edit-btn" onClick={()=>{
+                  navigate("/Update-Profile");
+                }}>
                   <SquarePen size={16} />
                   Edit
                 </button>
