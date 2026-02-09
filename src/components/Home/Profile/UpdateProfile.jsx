@@ -8,6 +8,7 @@ import { setUserInfo } from "../../../redux/reducers/user.js";
 import toast from "react-hot-toast";
 import Nav2 from "../Util/Nav2";
 import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const UpdateProfile = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -15,6 +16,7 @@ const UpdateProfile = () => {
 
   const [showAllCategories, setShowAllCategories] = useState(false);
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
@@ -120,15 +122,17 @@ const UpdateProfile = () => {
     }
 
     try {
-      
       const serverResponse = await patchData(`/user/${userInfo.id}`, payload, {
         "Content-Type": "multipart/form-data",
       });
       dispatch(setUserInfo(serverResponse.data));
+      navigate(`/profile/${userInfo.id}`);
       toast.success("Profile updated!");
-    } catch(error) {
-      toast.error( error?.response?.data?.message ||
-        "Something went wrong, please try again.");
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message ||
+          "Something went wrong, please try again.",
+      );
     }
   };
 
@@ -169,14 +173,14 @@ const UpdateProfile = () => {
     } else {
       setPhoneError("");
     }
-
   }, [formData.name, formData.username, formData.phone_no]);
 
   const visibleCategories = showAllCategories
     ? categories
     : categories.slice(0, 4);
 
-    const isFormValid = nameError === "" && usernameError === "" && phoneError === "";
+  const isFormValid =
+    nameError === "" && usernameError === "" && phoneError === "";
 
   return (
     <>
@@ -301,7 +305,6 @@ const UpdateProfile = () => {
                 onClick={handleInterest}
               >
                 {interest}
-               
               </button>
             ))}
 
