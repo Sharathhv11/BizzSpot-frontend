@@ -62,6 +62,8 @@ const BusinessProfile = () => {
   const [descVisibility, setDescVisibility] = useState(false);
   const [shouldFetch, setShouldFetch] = useState(false);
 
+  const navigate = useNavigate();
+
   const redirectUserID = useSelector((state) => state.pageState.redirectUserID);
 
   //^verify that businessID is exists in redux state
@@ -267,7 +269,9 @@ const BusinessProfile = () => {
                 </div>
               </div>
               {owned ? (
-                <button className="update-profile">
+                <button className="update-profile" onClick={()=>{
+                  navigate(`/Update-Business/${businessInfo?._id}`);
+                }}>
                   <Pen size={16} />
                   Edit profile
                 </button>

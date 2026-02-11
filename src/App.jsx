@@ -15,6 +15,7 @@ import About from "./components/About/About";
 import Explore from "./components/Explore/Explore";
 import Search from "./components/Home/Search/Search";
 import UpdateProfile from "./components/Home/Profile/UpdateProfile";
+import UpdateBusiness from "./components/Home/BusinessProfile/UpdateBusiness";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path="/Explore" element={<Explore />} />
           <Route path="/Search" element={<Search />} />
           <Route path="/Update-Profile" element={<UpdateProfile/>} />
+          <Route path="/Update-Business/:businessID" element={<UpdateBusiness/>} />
         </Routes>
       </BrowserRouter>
     </>
