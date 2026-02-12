@@ -78,8 +78,48 @@
   z-index: 999 !important;
 }
 
+.business-category-container{
+  width: 100%;
+  display: flex;
+  justify-self: start;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+  bottom: 10px;
+}
 
+.business-category{
+  width: max-content;
+  padding:4px 10px;
+  background-color: black;
+  border-radius: 14px;
+  color:white;
+  font-size: 10px;
+}
 
+.business-page-socialLinks-container{
+  width: 100%;
+  height: max-content;
+  padding-top: 5px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  top: 5px;
+}
+
+.delete-media{
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  color: white;
+  background-color: red;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  z-index: 800;
+}
 
 
 

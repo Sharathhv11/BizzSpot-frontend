@@ -1,6 +1,6 @@
 import { useNavigate, useParams, Navigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useGet from "./../../../hooks/useGet";
 import useDelete from "./../../../hooks/useDelete";
 import Nav2 from "../Util/Nav2";
@@ -159,6 +159,7 @@ const BusinessProfile = () => {
                   alt={businessInfo?.name}
                 />
               </div>
+
               <div className="business-details-container">
                 <div className="name-container">
                   {businessInfo ? (
@@ -173,6 +174,13 @@ const BusinessProfile = () => {
                     <div></div>
                   )}
                 </div>
+                {businessInfo?.categories && (
+                  <div className="business-category-container">
+                    {businessInfo.categories.map((e) => {
+                      return <span className="business-category">{e}</span>;
+                    })}
+                  </div>
+                )}
                 <div className="description-container">
                   <span>
                     <FileText className="lucide-icon" />
@@ -267,11 +275,60 @@ const BusinessProfile = () => {
                     </span>
                   </span>
                 </div>
+                {(businessInfo?.socialLinks?.facebook ||
+                  businessInfo?.socialLinks?.instagram ||
+                  businessInfo?.socialLinks?.twitter ||
+                  businessInfo?.socialLinks?.website) && (
+                  <div className="business-page-socialLinks-container">
+                    {businessInfo?.socialLinks?.facebook && (
+                      <a
+                        href={businessInfo.socialLinks.facebook}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Facebook />
+                      </a>
+                    )}
+
+                    {businessInfo?.socialLinks?.instagram && (
+                      <a
+                        href={businessInfo.socialLinks.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Instagram />
+                      </a>
+                    )}
+
+                    {businessInfo?.socialLinks?.twitter && (
+                      <a
+                        href={businessInfo.socialLinks.twitter}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Twitter />
+                      </a>
+                    )}
+
+                    {businessInfo?.socialLinks?.website && (
+                      <a
+                        href={businessInfo.socialLinks.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <WebStories />
+                      </a>
+                    )}
+                  </div>
+                )}
               </div>
               {owned ? (
-                <button className="update-profile" onClick={()=>{
-                  navigate(`/Update-Business/${businessInfo?._id}`);
-                }}>
+                <button
+                  className="update-profile"
+                  onClick={() => {
+                    navigate(`/Update-Business/${businessInfo?._id}`);
+                  }}
+                >
                   <Pen size={16} />
                   Edit profile
                 </button>
@@ -302,6 +359,8 @@ const BusinessProfile = () => {
             media={businessInfo?.media ?? []}
             theme={pageState}
             owned={owned}
+            businessID={businessInfo?._id}
+            business={businessInfo}
           />
           <OfferSection
             businessInfo={businessInfo}
@@ -310,7 +369,7 @@ const BusinessProfile = () => {
           />
           <Review userInfo={user} businessInfo={businessInfo} owned={owned} />
           <Tweet owned={owned} businessInfo={businessInfo} />
-          {owned && <DeleteBusiness business={businessInfo}/>}
+          {owned && <DeleteBusiness business={businessInfo} />}
         </main>
       )}
     </>
@@ -483,14 +542,139 @@ function InfoBlock2({ businessInfo, owned }) {
   );
 }
 
-import { Box, Button } from "@mui/material";
+import { Box, Button, Modal, Typography } from "@mui/material";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
 import OfferForm from "./OfferForm";
 import Review from "./Review";
 import DeleteBusiness from "./DeleteBusiness";
+import { Facebook, Instagram, Twitter, WebStories } from "@mui/icons-material";
+import usePost from "@/hooks/usePost";
+import { setUserBusiness } from "@/redux/reducers/user";
 
-function MediaBlock({ media, theme, owned }) {
+function MediaBlock({ media, theme, owned, business }) {
+  const [open, setOpen] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { usersBusiness } = useSelector((state) => state.user);
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+
+    const withPreview = files.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+      type: file.type.startsWith("video") ? "video" : "image",
+    }));
+
+    setSelectedFiles((prev) => [...prev, ...withPreview]);
+  };
+
+  const { postData, loading } = usePost();
+  const { deleteData } = useDelete();
+
+  const handleSubmit = async () => {
+    if (!selectedFiles.length) return;
+
+    try {
+      const formData = new FormData();
+
+      selectedFiles.forEach((item) => {
+        formData.append("media", item.file);
+      });
+
+      const serverResponse = await postData(
+        `/business/${business._id}/media`,
+        formData,
+        {
+          "Content-Type": "multipart/form-data",
+        },
+      );
+      const updatedData = usersBusiness.map((e) => {
+        if (e._id === serverResponse.data._id) return serverResponse.data;
+        else e;
+      });
+      dispatch(setUserBusiness(updatedData));
+      setOpen(false);
+      setSelectedFiles([]);
+
+      toast.success("media uploaded successfully.");
+    } catch (error) {
+      console.log(error);
+      const status = error?.status;
+      const code = error?.response?.data?.code;
+      const message =
+        error?.response?.data?.message ||
+        "Something went wrong, please try again.";
+
+      if (status === 403 && code === "SUBSCRIPTION_REQUIRED") {
+        toast.error(message);
+        navigate("/payment");
+        return;
+      }
+
+      if (status === 403 && code === "PREMIUM_LIMIT_REACHED") {
+        toast.error(message);
+        return;
+      }
+
+      toast.error(message);
+    }
+  };
+
+  const handleCancel = () => {
+    selectedFiles.forEach((f) => URL.revokeObjectURL(f.preview));
+    setSelectedFiles([]);
+    setOpen(false);
+  };
+
+  function mediaType(url) {
+    if (!url || typeof url !== "string") return "unknown";
+
+    // remove query params if any
+    const cleanUrl = url.split("?")[0];
+
+    // extract extension
+    const ext = cleanUrl.split(".").pop().toLowerCase();
+
+    const imageExt = ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"];
+    const videoExt = ["mp4", "webm", "mov", "avi", "mkv"];
+
+    if (imageExt.includes(ext)) {
+      return "image";
+    }
+    if (videoExt.includes(ext)) return "video";
+
+    return "unknown";
+  }
+
+  async function deleteMedia(url) {
+    if (!url) return;
+    const encodedUrl = encodeURIComponent(url);
+
+    try {
+      await deleteData(`business/${business._id}/media/${encodedUrl}`);
+      toast.success("successfully deleted media.");
+      const updatedData = usersBusiness.map((e) => {
+        if (e._id === business._id)
+          return {
+            ...business,
+            media: business.media.filter((u) => u !== url),
+          };
+        else e;
+      });
+      dispatch(setUserBusiness(updatedData));
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Something went wrong, please try again.",
+      );
+    }
+  }
+
   return (
     <div className="business-media-wrapper">
       <div>
@@ -499,25 +683,8 @@ function MediaBlock({ media, theme, owned }) {
       </div>
 
       <div className="business-media-container">
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-
-            gap: 2,
-            overflowX: "auto",
-            py: 1,
-            width: "100%",
-
-            "&::-webkit-scrollbar": {
-              height: 6,
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#ccc",
-              borderRadius: 10,
-            },
-          }}
-        >
+        <Box sx={{ display: "flex", gap: 2, overflowX: "auto", py: 1 }}>
+          {/* EMPTY STATE */}
           {media.length === 0 && (
             <Box
               className="no-media-info"
@@ -525,18 +692,15 @@ function MediaBlock({ media, theme, owned }) {
                 width: "100%",
                 height: 200,
                 borderRadius: 2,
-
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 1.2,
-
                 backgroundColor: theme ? "#fcfafa" : "#111",
                 border: theme
                   ? "1px dashed rgba(0,0,0,0.25)"
                   : "1px dashed rgba(255,255,255,0.25)",
-
                 color: theme ? "#555" : "rgba(255,255,255,0.75)",
                 textAlign: "center",
                 padding: "10px",
@@ -556,10 +720,11 @@ function MediaBlock({ media, theme, owned }) {
               </Box>
             </Box>
           )}
-          {/* Media items */}
+
+          {/* MEDIA ITEMS */}
           {media.map((item) => (
             <Box
-              key={item.id}
+              key={item}
               sx={{
                 position: "relative",
                 minWidth: 220,
@@ -571,9 +736,20 @@ function MediaBlock({ media, theme, owned }) {
                 cursor: "pointer",
               }}
             >
-              {item.type === "image" ? (
+              {owned && (
+                <button
+                  className="delete-media"
+                  title="delete media"
+                  onClick={() => {
+                    deleteMedia(item);
+                  }}
+                >
+                  <Trash />
+                </button>
+              )}
+              {mediaType(item) === "image" ? (
                 <img
-                  src={item.src}
+                  src={item}
                   alt=""
                   loading="lazy"
                   style={{
@@ -583,75 +759,195 @@ function MediaBlock({ media, theme, owned }) {
                   }}
                 />
               ) : (
-                <>
-                  <video
-                    src={item.src}
-                    autoPlay
-                    controls
-                    playsInline
-                    preload="metadata"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                </>
+                <video
+                  src={item}
+                  autoPlay
+                  controls
+                  playsInline
+                  preload="metadata"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
               )}
             </Box>
           ))}
 
-          {/* Add Media box */}
+          {/* ADD MEDIA */}
           {owned && (
             <Box
-              className="add-media"
+              onClick={() => setOpen(true)}
               sx={{
                 minWidth: 220,
                 height: 200,
                 borderRadius: 2,
-                flexShrink: 0,
-
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 1,
-
-                backgroundColor: theme ? "#fcfafa" : "#111",
-                border: theme
-                  ? "1px dashed rgba(0,0,0,0.25)"
-                  : "1px dashed rgba(255,255,255,0.25)",
-
-                color: theme ? "#444" : "rgba(255,255,255,0.7)",
+                border: "1px dashed #aaa",
                 cursor: "pointer",
-                transition: "all 0.25s ease",
-
-                "&:hover": {
-                  backgroundColor: theme ? "#f2f2f2" : "#1a1a1a",
-                  color: theme ? "#111" : "#fff",
-                },
               }}
             >
-              <AddPhotoAlternateOutlinedIcon
-                sx={{
-                  fontSize: 42,
-                  color: "inherit",
-                }}
-              />
-
-              <Box
-                sx={{
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: "inherit",
-                }}
-              >
-                Add media
-              </Box>
+              <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 42 }} />
+              <Typography>Add media</Typography>
             </Box>
           )}
         </Box>
       </div>
+
+      {/* upload modal */}
+      <Modal open={open} onClose={handleCancel}>
+        <Box
+          sx={{
+            width: 520,
+            maxHeight: "85vh",
+            overflowY: "auto",
+            p: 3,
+            bgcolor: theme ? "#fff" : "#1a1a1a",
+            color: theme ? "#000" : "#fff",
+            borderRadius: 3,
+            mx: "auto",
+            mt: "4%",
+            display: "flex",
+            flexDirection: "column",
+            gap: 2.5,
+            boxShadow: 24,
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: 600, textAlign: "center" }}
+          >
+            Upload Media
+          </Typography>
+
+          {/* choose files button */}
+          <Button
+            component="label"
+            sx={{
+              color: "blue",
+              fontWeight: 400,
+              borderRadius: 2,
+              py: 1.2,
+              textTransform: "none",
+            }}
+          >
+            Choose files
+            <input
+              hidden
+              type="file"
+              multiple
+              accept="image/*,video/*"
+              onChange={handleFileChange}
+            />
+          </Button>
+
+          {/* preview grid */}
+          {selectedFiles.length > 0 && (
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, 120px)",
+                gap: 1.5,
+                p: 1.5,
+                borderRadius: 2,
+                backgroundColor: theme ? "#f5f5f5" : "#111",
+              }}
+            >
+              {selectedFiles.map((item, i) => (
+                <Box
+                  key={i}
+                  sx={{
+                    width: 120,
+                    height: 120,
+                    borderRadius: 2,
+                    overflow: "hidden",
+                    backgroundColor: "#000",
+                  }}
+                >
+                  {item.type === "image" ? (
+                    <img
+                      src={item.preview}
+                      alt=""
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <video
+                      src={item.preview}
+                      muted
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  )}
+                </Box>
+              ))}
+            </Box>
+          )}
+
+          {/* action buttons */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              width: "100%",
+              gap: 1.5,
+            }}
+          >
+            <Button
+              onClick={handleCancel}
+              sx={{
+                color: theme ? "#333" : "#aaa",
+                textTransform: "none",
+
+                "&:hover": {
+                  backgroundColor: theme ? "#eee" : "#222",
+                },
+              }}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              onClick={handleSubmit}
+              disabled={!selectedFiles.length}
+              sx={{
+                backgroundColor: "#000",
+                color: "#fff",
+                fontWeight: 500,
+                borderRadius: 2,
+                px: 3,
+                textTransform: "none",
+
+                "&:hover": {
+                  backgroundColor: "#222",
+                },
+
+                "&.Mui-disabled": {
+                  backgroundColor: "#444",
+                  color: "#aaa",
+                },
+              }}
+            >
+              {loading ? (
+                <LoaderCircle className="animate-spin mx-auto" color="white" />
+              ) : (
+                "upload"
+              )}
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </div>
   );
 }
