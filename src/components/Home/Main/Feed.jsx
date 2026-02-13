@@ -36,7 +36,7 @@ const Feed = () => {
   // false = For You, true = Following
   const [feedType, setFeedType] = useState(false);
 
-  const { location, error: locationError,canFetch } = useLocation();
+  const { location, error: locationError, canFetch } = useLocation();
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationRetryCount, setLocationRetryCount] = useState(0);
 
@@ -100,10 +100,6 @@ const Feed = () => {
       dispatch(updateFollowingFeedPage(followingFeed.page + 1));
     }
   };
-
-  
-
-  
 
   const EndMessage = () => {
     return (
@@ -171,6 +167,9 @@ const Feed = () => {
                   </div>
                 }
                 endMessage={<EndMessage />}
+                style={{
+                  minHeight: "300px",
+                }}
               >
                 {forYouFeed.tweets.map((tweet) => (
                   <TweetCard

@@ -89,6 +89,8 @@
   text-align: center;
   padding: 1.5rem;
   animation: fadeIn 0.4s ease-in-out;
+  position: relative;
+  top: 50px;
 }
 
 .empty-feed__image {

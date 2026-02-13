@@ -57,6 +57,8 @@ const TweetCard = ({ tweet, currentPageURL, refreshTweets }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  
+
   const { patchData } = usePatch();
   const { deleteData } = useDelete();
 
@@ -67,7 +69,7 @@ const TweetCard = ({ tweet, currentPageURL, refreshTweets }) => {
     setDisableReplyBtn(true);
     try {
       const response = await patchData(
-        `business/${tweet?.postedBy}/tweet/${tweet?._id}?action=addReply`,
+        `business/${tweet?.postedBy?._id}/tweet/${tweet?._id}?action=addReply`,
         { comment: replyText },
       );
       setReplies(response?.data?.replies || []);
@@ -84,7 +86,7 @@ const TweetCard = ({ tweet, currentPageURL, refreshTweets }) => {
 
   const handleDeleteTweet = async function () {
     try {
-      await deleteData(`business/${tweet?.postedBy._id}/tweet/${tweet?._id}`);
+      await deleteData(`business/${tweet?.postedBy?._id}/tweet/${tweet?._id}`);
       refreshTweets((prev) => prev + 1);
       toast.success("post deleted successfully.");
     } catch (error) {
@@ -117,7 +119,7 @@ const TweetCard = ({ tweet, currentPageURL, refreshTweets }) => {
 
     setIsUpdating(true);
     try {
-      await patchData(`business/${tweet?.postedBy._id}/tweet/${tweet?._id}`, {
+      await patchData(`business/${tweet?.postedBy?._id}/tweet/${tweet?._id}`, {
         tweet: editFormData.tweet.trim(),
         hashtags: editFormData.hashtags
           .split(",")
@@ -141,7 +143,7 @@ const TweetCard = ({ tweet, currentPageURL, refreshTweets }) => {
   const handleDeleteReply = async function (replyId) {
     try {
       const response = await patchData(
-        `business/${tweet?.postedBy}/tweet/${tweet?._id}?action=deleteReply&replyId=${replyId}`,
+        `business/${tweet?.postedBy?._id}/tweet/${tweet?._id}?action=deleteReply&replyId=${replyId}`,
         {},
       );
       setReplies(response?.data?.replies || []);
@@ -157,7 +159,7 @@ const TweetCard = ({ tweet, currentPageURL, refreshTweets }) => {
     setLikeBtnDisable(true);
     try {
       //*patch data
-      await patchData(`business/${tweet?.postedBy}/tweet/${tweet?._id}`, {
+      await patchData(`business/${tweet?.postedBy?._id}/tweet/${tweet?._id}`, {
         like: userInfo?.id,
       });
       setLikes((prev) => prev + (likedBefore ? -1 : 1));
@@ -467,7 +469,7 @@ const TweetCard = ({ tweet, currentPageURL, refreshTweets }) => {
             </div>
 
             {/* Scroll body */}
-            <div className="flex-1 overflow-y-auto px-5 py-3">
+            <div className="flex-1 overflow-y-auto px-5 py-3 min-h-9">
               {replies && replies.length > 0 ? (
                 <div className="space-y-4 flex flex-col gap-1.5 h-[300px]">
                   {replies.map((reply) => (
