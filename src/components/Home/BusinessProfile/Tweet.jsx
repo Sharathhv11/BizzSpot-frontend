@@ -16,10 +16,11 @@ const Tweet = ({ owned, businessInfo }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [postLimit, setPostLimit] = useState(2);
   const [totalPages, setTotalPages] = useState(0);
+  const [refreshTweets, setRefreshTweets] = useState(0);
 
   const { data, loading, error } = useGet(
     businessInfo
-      ? `business/${businessInfo._id}/tweets?limit=${postLimit}&page=${currentPage}`
+      ? `business/${businessInfo._id}/tweets?limit=${postLimit}&page=${currentPage}&refresh=${refreshTweets}`
       : null,
   );
 
@@ -41,7 +42,12 @@ const Tweet = ({ owned, businessInfo }) => {
           <div className="tweet-card-holder">
             {tweets.map((tweet) => (
               <>
-                <TweetCard tweet={tweet} key={tweet._id} />
+                <TweetCard
+                  tweet={tweet}
+                  key={tweet._id}
+                  currentPageURL={`/business/${businessInfo._id}`}
+                  refreshTweets={setRefreshTweets}
+                />
               </>
             ))}
             {totalPages > 1 && (
@@ -67,13 +73,18 @@ const Tweet = ({ owned, businessInfo }) => {
             )}
           </div>
         )}
-        {owned && <TweetForm businessInfo={businessInfo} />}
+        {owned && (
+          <TweetForm
+            businessInfo={businessInfo}
+            refreshTweets={setRefreshTweets}
+          />
+        )}
       </section>
     </>
   );
 };
 
-const TweetForm = ({ businessInfo }) => {
+const TweetForm = ({ businessInfo, refreshTweets }) => {
   const [formData, setFormData] = useState({
     tweet: "",
     mediaFiles: [],
@@ -170,6 +181,14 @@ const TweetForm = ({ businessInfo }) => {
       toast.success(
         serverResponse.data.message || "successfully posted tweet.",
       );
+
+      refreshTweets((prev) => prev + 1);
+      setFormData({
+        tweet: "",
+        mediaFiles: [],
+        hashtags: "",
+        visibility: "public",
+      });
     } catch (error) {
       toast.error(
         error?.response?.data?.message ||

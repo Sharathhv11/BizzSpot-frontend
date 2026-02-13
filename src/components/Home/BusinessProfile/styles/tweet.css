@@ -157,11 +157,6 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.tweet-actions button:hover {
-  background: rgba(29, 155, 240, 0.1);
-  color: var(--primary);
-}
-
 .views {
   display: flex;
   align-items: center;

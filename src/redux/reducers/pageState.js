@@ -134,6 +134,35 @@ const pageState = createSlice({
       state.exploreFeed.hasMore = true;
       state.exploreFeed.fetchedPages = [];
     },
+    resetAllState(state) {
+      state.theme = initialState.theme;
+
+      state.navStack = [];
+      state.hamburgerMenu = initialState.hamburgerMenu;
+
+      state.followingFeed = {
+        tweets: [],
+        page: 1,
+        hasMore: true,
+        fetchedPages: [],
+      };
+
+      state.forYouFeed = {
+        tweets: [],
+        page: 1,
+        hasMore: true,
+        fetchedPages: [],
+      };
+
+      state.exploreFeed = {
+        businesses: [],
+        page: 1,
+        hasMore: true,
+        fetchedPages: [],
+      };
+
+      state.distance = initialState.distance;
+    },
   },
 });
 
@@ -159,6 +188,7 @@ export const {
   updateExploreFeedPage,
   updateExploreHasMore,
   clearExploreFeed,
+  resetAllState
 } = pageState.actions;
 
 export default pageState.reducer;

@@ -695,10 +695,7 @@
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.offer-card:hover {
-  /* transform: translateY(-6px); */
-  /* box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18); */
-}
+
 
 /* Image */
 .offer-image {

@@ -2,6 +2,7 @@ import "./nav.css";
 import { useSelector, useDispatch } from "react-redux";
 import {
   changeTheme,
+  resetAllState,
   toggleHamburgerMenu,
 } from "../../../redux/reducers/pageState";
 import { resetStates } from "../../../redux/reducers/user";
@@ -32,6 +33,7 @@ const Nav = () => {
 
     //^reset the state variables
     dispatch(resetStates());
+    dispatch(resetAllState())
 
     //^ navigate back to login page
     navigate("/login");
