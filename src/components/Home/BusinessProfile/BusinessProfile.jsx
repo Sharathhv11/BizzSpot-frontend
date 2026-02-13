@@ -61,8 +61,10 @@ const BusinessProfile = () => {
   const [businessInfo, setBusinessInfo] = useState(null);
   const [descVisibility, setDescVisibility] = useState(false);
   const [shouldFetch, setShouldFetch] = useState(false);
+  const [fetchUsersBusiness, setFetchUsersBusiness] = useState(false);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const redirectUserID = useSelector((state) => state.pageState.redirectUserID);
 
@@ -101,9 +103,23 @@ const BusinessProfile = () => {
     shouldFetch ? `business/${businessID}` : null,
   );
 
+  const { data: businessList } = useGet(
+    fetchUsersBusiness ? `business/owned?ownedBy=${user?.id}` : null,
+  );
+
+  useEffect(()=>{
+    if(businessList?.data )
+    {
+      dispatch(setUserBusiness(businessList?.data));
+    }
+  },[businessList])
+
   useEffect(() => {
     if (data?.data) {
-      if (data?.data?.owner === user?.id) setOwned(true);
+      if (data?.data?.owner?._id === user?.id) {
+        setFetchUsersBusiness(true);
+        setOwned(true);
+      }
       setBusinessInfo(data?.data);
     }
   }, [data]);
@@ -440,7 +456,6 @@ function InfoBlock2({ businessInfo, owned }) {
       });
       dispatch(setUserBusiness(updatedData));
     } catch (error) {
-      console.log(error);
       toast.error(
         error?.response?.data?.message ||
           "Something went wrong, please try again.",

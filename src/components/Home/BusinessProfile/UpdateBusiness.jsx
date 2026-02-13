@@ -162,9 +162,10 @@ const UpdateBusiness = () => {
   /* ================= LOAD BUSINESS ================= */
 
   useEffect(() => {
-    if (!usersBusiness?.length) return;
+    if (!usersBusiness?.length ) return;
 
-    const found = usersBusiness.find((b) => b._id === businessID);
+    
+    const found = usersBusiness.find((b) => b?._id === businessID);
     if (!found) return;
 
     setBusiness(found);
@@ -290,7 +291,7 @@ const UpdateBusiness = () => {
 
     try {
       const serverResponse = await patchData(
-        `/business/${business._id}`,
+        `/business/${business?._id}`,
         payload,
         {
            "Content-Type": "multipart/form-data",
@@ -299,11 +300,11 @@ const UpdateBusiness = () => {
 
       const updatedData = usersBusiness.map((e) => {
         if (e._id === serverResponse.data._id) return serverResponse.data;
-        else e;
+        else return e;
       });
+      navigate(`/business/${business._id}`);
       dispatch(setUserBusiness(updatedData));
       toast.success("Business updated!");
-      navigate(`/business/${business._id}`);
     } catch (error) {
       console.log(error);
       toast.error("Update failed");
