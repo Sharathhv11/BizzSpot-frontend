@@ -3,7 +3,6 @@
   --border-light: 1px solid #eaeaea;
 }
 
-
 /* main body of the profile page  */
 .profile-main {
   width: 100%;
@@ -13,12 +12,9 @@
   min-width: 300px;
 }
 
-
-
 .dark-profile-main {
   background-color: rgb(13, 13, 13);
 }
-
 
 .profile-header {
   width: 800px;
@@ -33,10 +29,10 @@
   border-bottom: var(--border-light);
 }
 
-.blue-tick{
+.blue-tick {
   height: 20px;
   width: 20px;
-  margin-left:5px
+  margin-left: 5px;
 }
 
 .dark-profile-main .profile-header {
@@ -63,7 +59,7 @@
   /* border:var(--border-light); */
 }
 
-.dark-profile-main .profile-right{
+.dark-profile-main .profile-right {
   /* border:var(--border-dark) */
 }
 
@@ -177,12 +173,13 @@
 }
 
 .business_registration-container {
-  width: 800px;
+  width: 100%;
+  max-width: 800px;
   min-height: 200px;
   height: max-content;
   min-width: 300px;
   margin: 20px auto;
-
+  padding: 0 20px;
 }
 
 .business-not-registered-container {
@@ -192,7 +189,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction:column ;
+  flex-direction: column;
   gap: 20px;
 }
 .business-not-registered-container span {
@@ -219,7 +216,7 @@
   cursor: pointer;
 }
 
-.dark-profile-main .business-not-registered-container div{
+.dark-profile-main .business-not-registered-container div {
   background-color: #1a1a1b;
   border: var(--border-dark);
 }
@@ -233,11 +230,9 @@
   background-color: #d3d2d2;
   border-radius: 10px;
 }
-.dark-profile-main
-.business-not-registered-container div::after,
-.dark-profile-main
-.business-not-registered-container div::before{
-  background-color:#343232 ;
+.dark-profile-main .business-not-registered-container div::after,
+.dark-profile-main .business-not-registered-container div::before {
+  background-color: #343232;
 }
 
 .business-not-registered-container div::after {
@@ -261,13 +256,13 @@
   background-color: #fafafa;
 }
 
-.dark-profile-main .business-rich{
+.dark-profile-main .business-rich {
   background-color: #0a0a0a;
   color: white;
-  border:var(--border-dark)
+  border: var(--border-dark);
 }
 
-.dark-profile-main .business-rich:hover{
+.dark-profile-main .business-rich:hover {
   background-color: rgb(17, 17, 17);
 }
 
@@ -334,7 +329,7 @@
   line-height: 1.5;
 }
 
-.dark-profile-main .business-rich-desc{
+.dark-profile-main .business-rich-desc {
   color: rgb(185, 182, 182);
 }
 
@@ -347,8 +342,8 @@
   color: #374151;
 }
 
-.dark-profile-main .business-rich-meta{
-  color: rgb(185, 182, 182);;
+.dark-profile-main .business-rich-meta {
+  color: rgb(185, 182, 182);
 }
 
 .business-rich-meta span {
@@ -381,22 +376,22 @@
   color: #2563eb;
 }
 
-.profile-register-more-btn-container{
-  width:100%;
+.profile-register-more-btn-container {
+  width: 100%;
   height: max-content;
   display: grid;
   place-items: center;
-  margin-top:20px;
+  margin-top: 20px;
 }
-.profile-register-more-btn{
-  height:50px;
-  width:200px;
+.profile-register-more-btn {
+  height: 50px;
+  width: 200px;
   background-color: rgb(81, 46, 255);
   color: white;
   border-radius: 3px;
   text-transform: capitalize;
   font-weight: 500;
-  margin:auto;
+  margin: auto;
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -404,15 +399,11 @@
   gap: 5px;
 }
 
-.read-more{
+.read-more {
   color: #2563eb;
   font-weight: 500;
   font-size: 12px;
 }
-
-
-
-
 
 /* ================= TABLET ================= */
 
@@ -532,7 +523,4 @@
     align-items: flex-start;
     gap: 8px;
   }
-
-  
 }
-

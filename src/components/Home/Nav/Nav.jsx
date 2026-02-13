@@ -37,6 +37,7 @@ const Nav = () => {
 
     //^ navigate back to login page
     navigate("/login");
+    
   };
 
   return (

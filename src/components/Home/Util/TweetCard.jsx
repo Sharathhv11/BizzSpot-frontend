@@ -380,6 +380,7 @@ const TweetCard = ({ tweet, currentPageURL, refreshTweets }) => {
       "
             style={{
               padding: "6px",
+              margin:"20px"
             }}
           >
             {/* Header */}
