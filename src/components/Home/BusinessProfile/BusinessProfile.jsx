@@ -391,6 +391,8 @@ function InfoBlock2({ businessInfo, owned }) {
     );
   }
 
+  const dispatch = useDispatch();
+
   const { data } = useGet(
     businessInfo ? `follow/count?businessID=${businessInfo._id}` : null,
   );
@@ -400,8 +402,11 @@ function InfoBlock2({ businessInfo, owned }) {
       ? `business/${businessInfo?._id}/follow-status`
       : null,
   );
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(businessInfo?.status === "Open");
+  const [disableSlider, setDisableSlider] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
+
+  const { patchData } = usePatch();
 
   const position = businessInfo?.location?.coordinates?.coordinates
     ? [
@@ -419,6 +424,31 @@ function InfoBlock2({ businessInfo, owned }) {
   const navigate = useNavigate();
 
   const [visibility, updateVisibility] = useState(false);
+  const { usersBusiness } = useSelector((state) => state.user);
+
+  const handleStatusChange = async function () {
+    try {
+      setDisableSlider(true);
+      setIsOpen((prev) => !prev);
+      const serverResponse = await patchData(`/business/${businessInfo?._id}`, {
+        status: isOpen ? "Closed" : "Open",
+      });
+
+      const updatedData = usersBusiness.map((e) => {
+        if (e._id === businessInfo?._id) return serverResponse.data;
+        else return e;
+      });
+      dispatch(setUserBusiness(updatedData));
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Something went wrong, please try again.",
+      );
+    } finally {
+      setDisableSlider(false);
+    }
+  };
 
   return (
     <>
@@ -489,7 +519,7 @@ function InfoBlock2({ businessInfo, owned }) {
               </p>
               <span
                 className={`${
-                  businessInfo?.status === "open"
+                  businessInfo?.status === "Open"
                     ? "status-green"
                     : "status-red"
                 }`}
@@ -498,8 +528,9 @@ function InfoBlock2({ businessInfo, owned }) {
               </span>
               {owned && (
                 <Switch
+                  disabled={disableSlider}
                   checked={isOpen}
-                  onChange={(e) => setIsOpen(e.target.checked)}
+                  onChange={handleStatusChange}
                   sx={{
                     "& .MuiSwitch-switchBase.Mui-checked": {
                       color: "#22c55e",
@@ -551,6 +582,7 @@ import DeleteBusiness from "./DeleteBusiness";
 import { Facebook, Instagram, Twitter, WebStories } from "@mui/icons-material";
 import usePost from "@/hooks/usePost";
 import { setUserBusiness } from "@/redux/reducers/user";
+import usePatch from "@/hooks/usePatch";
 
 function MediaBlock({ media, theme, owned, business }) {
   const [open, setOpen] = useState(false);
@@ -602,7 +634,6 @@ function MediaBlock({ media, theme, owned, business }) {
 
       toast.success("media uploaded successfully.");
     } catch (error) {
-      console.log(error);
       const status = error?.status;
       const code = error?.response?.data?.code;
       const message =
@@ -663,11 +694,10 @@ function MediaBlock({ media, theme, owned, business }) {
             ...business,
             media: business.media.filter((u) => u !== url),
           };
-        else e;
+        else return e;
       });
       dispatch(setUserBusiness(updatedData));
     } catch (error) {
-      console.log(error);
       toast.error(
         error?.response?.data?.message ||
           "Something went wrong, please try again.",
@@ -803,130 +833,159 @@ function MediaBlock({ media, theme, owned, business }) {
       <Modal open={open} onClose={handleCancel}>
         <Box
           sx={{
-            width: 520,
-            maxHeight: "85vh",
-            overflowY: "auto",
-            p: 3,
-            bgcolor: theme ? "#fff" : "#1a1a1a",
-            color: theme ? "#000" : "#fff",
+            width: {
+              xs: "92%", // mobile
+              sm: 520, // desktop
+            },
+            maxHeight: "90vh",
+            overflow: "hidden",
+            bgcolor: "#fff",
+            color: "#000",
             borderRadius: 3,
             mx: "auto",
-            mt: "4%",
+            mt: {
+              xs: "8vh",
+              sm: "5vh",
+            },
             display: "flex",
             flexDirection: "column",
-            gap: 2.5,
             boxShadow: 24,
           }}
         >
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: 600, textAlign: "center" }}
-          >
-            Upload Media
-          </Typography>
-
-          {/* choose files button */}
-          <Button
-            component="label"
-            sx={{
-              color: "blue",
-              fontWeight: 400,
-              borderRadius: 2,
-              py: 1.2,
-              textTransform: "none",
-            }}
-          >
-            Choose files
-            <input
-              hidden
-              type="file"
-              multiple
-              accept="image/*,video/*"
-              onChange={handleFileChange}
-            />
-          </Button>
-
-          {/* preview grid */}
-          {selectedFiles.length > 0 && (
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, 120px)",
-                gap: 1.5,
-                p: 1.5,
-                borderRadius: 2,
-                backgroundColor: theme ? "#f5f5f5" : "#111",
-              }}
-            >
-              {selectedFiles.map((item, i) => (
-                <Box
-                  key={i}
-                  sx={{
-                    width: 120,
-                    height: 120,
-                    borderRadius: 2,
-                    overflow: "hidden",
-                    backgroundColor: "#000",
-                  }}
-                >
-                  {item.type === "image" ? (
-                    <img
-                      src={item.preview}
-                      alt=""
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                  ) : (
-                    <video
-                      src={item.preview}
-                      muted
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                  )}
-                </Box>
-              ))}
-            </Box>
-          )}
-
-          {/* action buttons */}
+          {/* Header */}
           <Box
             sx={{
+              px: 3,
+              pt: 3,
+              pb: 1,
+              textAlign: "center",
+              borderBottom: "1px solid #eee",
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Upload Media
+            </Typography>
+          </Box>
+
+          {/* Body scroll area */}
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              overflowY: "auto",
               display: "flex",
-              justifyContent: "center",
-              width: "100%",
-              gap: 1.5,
+              flexDirection: "column",
+              gap: 2,
+            }}
+          >
+            {/* Choose files button */}
+            <Button
+              component="label"
+              sx={{
+                border: "1px dashed #ddd",
+                borderRadius: 2,
+                py: 1.2,
+                fontWeight: 500,
+                textTransform: "none",
+                backgroundColor: "#fafafa",
+
+                "&:hover": {
+                  backgroundColor: "#f0f0f0",
+                },
+              }}
+            >
+              Choose files
+              <input
+                hidden
+                type="file"
+                multiple
+                accept="image/*,video/*"
+                onChange={handleFileChange}
+              />
+            </Button>
+
+            {/* Preview grid */}
+            {selectedFiles.length > 0 && (
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "repeat(auto-fill, minmax(90px, 1fr))",
+                    sm: "repeat(auto-fill, 120px)",
+                  },
+                  gap: 1.5,
+                  p: 1.5,
+                  borderRadius: 2,
+                  backgroundColor: "#f7f7f7",
+                }}
+              >
+                {selectedFiles.map((item, i) => (
+                  <Box
+                    key={i}
+                    sx={{
+                      width: "100%",
+                      aspectRatio: "1 / 1",
+                      borderRadius: 2,
+                      overflow: "hidden",
+                      backgroundColor: "#000",
+                    }}
+                  >
+                    {item.type === "image" ? (
+                      <img
+                        src={item.preview}
+                        alt=""
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      <video
+                        src={item.preview}
+                        muted
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    )}
+                  </Box>
+                ))}
+              </Box>
+            )}
+          </Box>
+
+          {/* Footer actions */}
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              borderTop: "1px solid #eee",
+              display: "flex",
+              gap: 2,
             }}
           >
             <Button
+              fullWidth
               onClick={handleCancel}
               sx={{
-                color: theme ? "#333" : "#aaa",
                 textTransform: "none",
-
-                "&:hover": {
-                  backgroundColor: theme ? "#eee" : "#222",
-                },
+                borderRadius: 2,
               }}
             >
               Cancel
             </Button>
 
             <Button
+              fullWidth
               onClick={handleSubmit}
               disabled={!selectedFiles.length}
               sx={{
                 backgroundColor: "#000",
                 color: "#fff",
-                fontWeight: 500,
                 borderRadius: 2,
-                px: 3,
                 textTransform: "none",
 
                 "&:hover": {
@@ -934,15 +993,15 @@ function MediaBlock({ media, theme, owned, business }) {
                 },
 
                 "&.Mui-disabled": {
-                  backgroundColor: "#444",
-                  color: "#aaa",
+                  backgroundColor: "#ccc",
+                  color: "#777",
                 },
               }}
             >
               {loading ? (
-                <LoaderCircle className="animate-spin mx-auto" color="white" />
+                <LoaderCircle className="animate-spin mx-auto" />
               ) : (
-                "upload"
+                "Upload"
               )}
             </Button>
           </Box>
