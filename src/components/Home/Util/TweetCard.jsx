@@ -458,7 +458,7 @@ const TweetCard = ({ tweet, currentPageURL, refreshTweets }) => {
         max-h-[600px]
         overflow-hidden
       "
-            style={{ padding: "8px" }}
+            style={{ padding: "8px",margin:"20px" }}
           >
             {/* Header */}
             <div className="border-b border-gray-200 px-5 p-4">
