@@ -494,7 +494,7 @@ function InfoBlock2({ businessInfo, owned }) {
                 className="analytics-btn"
                 title="View business analytics"
                 onClick={() =>
-                  navigate(`/business/${businessInfo._id}/analytics`)
+                  navigate(`/business/${businessInfo._id}/Analytics`)
                 }
               >
                 <ChartNoAxesColumn className="lucide-icon block2-icons" />
