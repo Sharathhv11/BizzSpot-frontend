@@ -641,7 +641,7 @@ function MediaBlock({ media, theme, owned, business }) {
       );
       const updatedData = usersBusiness.map((e) => {
         if (e._id === serverResponse.data._id) return serverResponse.data;
-        else e;
+        else return e;
       });
       dispatch(setUserBusiness(updatedData));
       setOpen(false);
