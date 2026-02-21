@@ -1,11 +1,22 @@
 /* PAGE */
 
+:root {
+  --max-width: 1200px;
+  --border-radius: 6px;
+  --border-dark: 1px solid #565252ae;
+  --border-light: 1px solid #eaeaea;
+}
+
 .update-user-profile {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   padding: 3rem 1rem;
   background: #f8f9fa;
+}
+
+.dark.update-user-profile{
+  background-color: #0d0d0d;
 }
 
 /* CARD */
@@ -18,6 +29,11 @@
   border-radius: 16px;
   padding: 2.5rem 2rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.dark .update-user-profile-card{
+  background-color: #010409;
+  border:var(--border-dark)
 }
 
 .update-user-profile-card h2 {
@@ -97,6 +113,16 @@
   transition: 0.2s;
 }
 
+.dark .update-user-profile-category-selected{
+  background-color: white;
+  color: black;
+}
+
+.dark .update-user-profile-category{
+  background-color: #010409;
+  border: var(--border-dark);
+}
+
 .update-user-profile-category {
   background: #fff;
 }
@@ -149,6 +175,10 @@
   gap: 6px;
 }
 
+.dark .update-user-profile-field label{
+  color: white;
+}
+
 .update-user-profile-field label {
   font-size: 13px;
   font-weight: 500;
@@ -168,6 +198,11 @@
   background: white;
 
   transition: border 0.2s ease;
+}
+
+.dark .update-user-profile-input-wrap{
+  background-color: #0d0d0d;
+  border: var(--border-dark);
 }
 
 .update-user-profile-input-wrap:focus-within {
@@ -208,9 +243,16 @@
   transition: all 0.2s ease;
 }
 
+
+
 .update-user-profile-more-btn:hover {
   border-color: #1a1a1a;
   color: #1a1a1a;
+}
+
+.dark .update-user-profile-more-btn{
+  border-color: white;
+  color: white;
 }
 
 

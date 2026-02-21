@@ -107,12 +107,11 @@ const BusinessProfile = () => {
     fetchUsersBusiness ? `business/owned?ownedBy=${user?.id}` : null,
   );
 
-  useEffect(()=>{
-    if(businessList?.data )
-    {
+  useEffect(() => {
+    if (businessList?.data) {
       dispatch(setUserBusiness(businessList?.data));
     }
-  },[businessList])
+  }, [businessList]);
 
   useEffect(() => {
     if (data?.data) {
@@ -144,7 +143,7 @@ const BusinessProfile = () => {
           </div>
         </div>
       ) : (
-        <main className="business-profile-main">
+        <main className={`business-profile-main ${!pageState ? "dark" : ""}`}>
           {owned && businessInfo.profileCompletion < 100 && (
             <div className="notify-business-profile-completion">
               <div className="information-complete">
@@ -370,7 +369,11 @@ const BusinessProfile = () => {
               )}
             </div>
           </section>
-          <InfoBlock2 businessInfo={businessInfo} owned={owned} />
+          <InfoBlock2
+            businessInfo={businessInfo}
+            owned={owned}
+            theme={pageState}
+          />
           <MediaBlock
             media={businessInfo?.media ?? []}
             theme={pageState}
@@ -392,7 +395,7 @@ const BusinessProfile = () => {
   );
 };
 
-function InfoBlock2({ businessInfo, owned }) {
+function InfoBlock2({ businessInfo, owned, theme }) {
   function RecenterButton({ position }) {
     const map = useMap();
 
@@ -474,6 +477,7 @@ function InfoBlock2({ businessInfo, owned }) {
         id={businessInfo?._id}
         owner={false}
         businessList={owned}
+        theme={theme}
       />
       <section className="business-section2-profile-info">
         <div>

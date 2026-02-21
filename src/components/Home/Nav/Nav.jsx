@@ -33,11 +33,10 @@ const Nav = () => {
 
     //^reset the state variables
     dispatch(resetStates());
-    dispatch(resetAllState())
+    dispatch(resetAllState());
 
     //^ navigate back to login page
     navigate("/login");
-    
   };
 
   return (
@@ -89,8 +88,13 @@ const Nav = () => {
                 </Link>
               </button>
               <button>
-                <Settings />
-                <span>Settings</span>
+                <Link
+                  to="/settings"
+                  className="w-full h-full flex gap-1.5 items-center justify-start"
+                >
+                  <Settings />
+                  <span>Settings</span>
+                </Link>
               </button>
               <div className="divider" />
               <button className="danger" onClick={logout}>

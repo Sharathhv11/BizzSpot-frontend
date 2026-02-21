@@ -199,14 +199,13 @@ const Search = () => {
                   />
                 ))}
                 {displaySearchInfo && (
-  <div className="search-guide">
-   
-    <span>
-      Search by business name, category, or location (ex: City Bakery, Salon, area).
-    </span>
-  </div>
-)}
-
+                  <div className="search-guide">
+                    <span>
+                      Search by business name, category, or location (ex: City
+                      Bakery, Salon, area).
+                    </span>
+                  </div>
+                )}
               </div>
             </InfiniteScroll>
           </div>

@@ -33,6 +33,7 @@ import toast from "react-hot-toast";
 const TweetCard = ({ tweet, currentPageURL, refreshTweets }) => {
   //* user information
   const { userInfo, usersBusiness } = useSelector((state) => state.user);
+  const {theme} = useSelector(state => state.pageState);
 
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -184,7 +185,7 @@ const TweetCard = ({ tweet, currentPageURL, refreshTweets }) => {
 
   return (
     <>
-      <article key={tweet._id} className="tweet-card">
+      <article key={tweet._id} className={`tweet-card ${!theme?"dark":null}`}>
         {/* Header */}
         <header className="tweet-header">
           <div>

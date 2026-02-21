@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 const UpdateProfile = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
+  const {theme} = useSelector((state) => state.pageState);
   if (!userInfo) return <Navigate to="/" />;
 
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -186,7 +187,7 @@ const UpdateProfile = () => {
     <>
       <Nav2 />
 
-      <section className="update-user-profile">
+      <section className={`update-user-profile ${!theme?"dark":null}`}>
         <div className="update-user-profile-card">
           <h2>Edit Profile</h2>
 

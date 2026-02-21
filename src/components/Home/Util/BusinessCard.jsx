@@ -3,7 +3,7 @@ import { MapPin, Phone, Star, Sparkles } from "lucide-react";
 import "./businessCard.css";
 import noProfile from "./../../../assets/businessNoFound.png";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { pushNav } from "@/redux/reducers/pageState";
 
 const WORD_LIMIT = 14;
@@ -12,6 +12,7 @@ const BusinessCard = ({ business,currentPageURL }) => {
   const hasRating = business.rating?.totalReview > 0;
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const {theme} = useSelector(state => state.pageState);
 
   const rating = hasRating
     ? (business.rating.sumOfReview / business.rating.totalReview).toFixed(1)
@@ -28,7 +29,7 @@ const BusinessCard = ({ business,currentPageURL }) => {
 
   return (
     <div
-      className="biz-card"
+      className={`biz-card ${!theme?"dark":null}`}
       onClick={() => {
         dispatch(pushNav(currentPageURL));
         navigate(`/business/${business._id}`);

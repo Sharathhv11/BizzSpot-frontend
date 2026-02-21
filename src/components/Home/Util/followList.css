@@ -9,6 +9,12 @@
   justify-content: center;
   padding: 20px;
   z-index: 1000;
+  background-color: transparent;
+  transition: background-color 0.15s ease;
+}
+
+.dark .follow-list-modal {
+  background-color: transparent;
 }
 
 .modal-backdrop {
@@ -19,20 +25,19 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(10px);
-
 }
 
-.follow-information-wrapper{
+.follow-information-wrapper {
   display: flex;
   flex-direction: row;
-  
 }
 
 .follow-list-card {
   width: 100%;
   max-width: 420px;
   max-height: 80vh;
-  background: #fff;
+  background: #ffffff;
+  color: #1a1a1a;
   border-radius: 20px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   overflow: hidden;
@@ -40,6 +45,15 @@
   position: relative;
   z-index: 999;
   border-radius: 6px;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.dark .follow-list-card {
+  background-color: #262626;
+  color: #f8f9fa;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
 }
 
 @keyframes slideIn {
@@ -59,6 +73,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: border-color 0.15s ease;
+}
+
+.dark .follow-header {
+  border-bottom-color: #404040;
 }
 
 .follow-header h3 {
@@ -66,6 +85,10 @@
   font-size: 20px;
   font-weight: 600;
   color: #262626;
+}
+
+.dark .follow-header h3 {
+  color: #f8f9fa;
 }
 
 .close-btn {
@@ -80,12 +103,21 @@
   align-items: center;
   justify-content: center;
   color: #8e8e8e;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .close-btn:hover {
   background: #f5f5f5;
   color: #262626;
+}
+
+.dark .close-btn {
+  color: #b0b0b0;
+}
+
+.dark .close-btn:hover {
+  background-color: #333333;
+  color: #f8f9fa;
 }
 
 .follow-content {
@@ -101,11 +133,21 @@
   padding: 16px 24px;
   border-bottom: 1px solid #f2f2f2;
   cursor: pointer;
-  transition: background 0.2s;
+  transition:
+    background 0.2s,
+    background-color 0.15s ease;
 }
 
 .follow-item:hover {
   background: #fafafa;
+}
+
+.dark .follow-item {
+  border-bottom-color: #333333;
+}
+
+.dark .follow-item:hover {
+  background: #323232;
 }
 
 .follow-avatar {
@@ -143,7 +185,7 @@
   align-items: center;
 }
 
-.follow-info button{
+.follow-info button {
   position: relative;
   bottom: 10px;
   left: 10px;
@@ -156,14 +198,20 @@
   margin-bottom: 2px;
 }
 
+.dark .follow-name {
+  color: #f8f9fa;
+}
+
 .follow-handle {
   color: #8e8e8e;
   font-size: 14px;
   position: relative;
   bottom: 5px;
-
 }
 
+.dark .follow-handle {
+  color: #b0b0b0;
+}
 
 .loading-state,
 .error-state,
@@ -184,7 +232,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Scrollbar */
@@ -201,9 +251,8 @@
   border-radius: 2px;
 }
 
-
-@media ( width <= 600px ){
-    .follow-list-modal {
+@media (width <= 600px) {
+  .follow-list-modal {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;

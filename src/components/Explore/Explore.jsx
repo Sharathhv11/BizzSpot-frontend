@@ -21,7 +21,7 @@ const LIMIT = 20; // Better UX than 1
 const Explore = () => {
   const dispatch = useDispatch();
   const { location, error: locationError } = useLocation();
-  const { distance, exploreFeed } = useSelector((state) => state.pageState);
+  const { distance, exploreFeed,theme } = useSelector((state) => state.pageState);
   const { userInfo } = useSelector((state) => state.user);
 
   if (!userInfo) {
@@ -82,7 +82,7 @@ const Explore = () => {
   return (
     <>
       <Nav2 />
-      <section className="business-explore-section">
+      <section className={`business-explore-section ${!theme?"dark":null}`}>
         {locationError ? (
           <div className="location-error-simple">
             <AlertCircle size={48} className="error-icon-large" />

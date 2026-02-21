@@ -3,6 +3,7 @@ import Follow from "../Util/Follow";
 import useGet from "@/hooks/useGet";
 import "./followList.css";
 import RemoveFollower from "./RemoveFollower";
+import { useNavigate } from "react-router-dom";
 const FollowList = function ({
   visibility,
   updateVisibility,
@@ -10,7 +11,9 @@ const FollowList = function ({
   updateFollowCount,
   owner,
   businessList,
+  theme = true,
 }) {
+  const navigate = useNavigate();
   const [dataList, updateDataList] = useState([]);
   const { data, loading, error } = useGet(id ? `/follow/list?id=${id}` : null);
 
@@ -20,9 +23,19 @@ const FollowList = function ({
     }
   }, [data]);
 
+  const handleNavigateUser = (userId) => {
+    updateVisibility(false);
+    navigate(`/profile/${userId}`);
+  };
+
+  const handleNavigateBusiness = (businessId) => {
+    updateVisibility(false);
+    navigate(`/business/${businessId}`);
+  };
+
   return (
     <div
-      className="follow-list-modal"
+      className={`follow-list-modal ${!theme ? "dark" : ""}`}
       style={{
         display: visibility ? "flex" : "none",
         zIndex: 1000,
@@ -53,7 +66,15 @@ const FollowList = function ({
             <div className="empty-state">No accounts followed</div>
           ) : (
             dataList.map((e) => (
-              <div key={e._id} className="follow-item">
+              <div
+                key={e._id}
+                className="follow-item"
+                onClick={() =>
+                  e.businessName
+                    ? handleNavigateBusiness(e._id)
+                    : handleNavigateUser(e._id)
+                }
+              >
                 <div className="follow-information-wrapper">
                   <div className="follow-avatar">
                     <img src={e.profile || e.profilePicture} alt="" />
